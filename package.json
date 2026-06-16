@@ -1,0 +1,21 @@
+{
+  "name": "padalock",
+  "private": true,
+  "version": "0.0.1",
+  "description": "PadaLock — Purpose-Locked OFW Remittance on Stellar",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@padalock/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "sdk:build": "npm run build --workspace=@padalock/sdk",
+    "contract:build": "cd contracts/pada-lock && stellar contract build",
+    "contract:test": "cd contracts/pada-lock && cargo test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
