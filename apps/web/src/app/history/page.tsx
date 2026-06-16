@@ -7,6 +7,7 @@ import { getPadala, type PadalaView } from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
 import { getSentPadalaIds } from "@/lib/history";
+import { contactName } from "@/lib/contacts";
 import {
   BottomNav,
   Button,
@@ -152,8 +153,9 @@ export default function HistoryPage() {
                         {r.view.recipient.charAt(1).toUpperCase()}
                       </div>
                       <div>
-                        <div className="font-currency-md text-[13px] text-on-surface">
-                          {shorten(r.view.recipient)}
+                        <div className="font-body-sm text-body-sm font-semibold text-on-surface">
+                          {contactName(state.publicKey, r.view.recipient) ??
+                            shorten(r.view.recipient)}
                         </div>
                         <div className="font-body-sm text-body-sm text-on-surface-variant">
                           Padala #{r.id}

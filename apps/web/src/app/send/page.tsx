@@ -17,6 +17,7 @@ import {
   usdcToPhp,
 } from "@/lib/balance";
 import { recordSentPadala } from "@/lib/history";
+import { getContacts, saveContact, type Contact } from "@/lib/contacts";
 import {
   BottomNav,
   Card,
@@ -96,6 +97,8 @@ export default function SendPage() {
   const [recipient, setRecipient] = useState("");
   const [alloc, setAlloc] = useState<Allocations>(EMPTY);
   const [availUsdc, setAvailUsdc] = useState<string>("0");
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [saveName, setSaveName] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
@@ -110,6 +113,7 @@ export default function SendPage() {
     void getUsdcBalance(pub)
       .then(setAvailUsdc)
       .catch(() => setAvailUsdc("0"));
+    setContacts(getContacts(pub));
   }, [pub, router]);
 
   if (state.status !== "unlocked") return null;
@@ -206,10 +210,42 @@ export default function SendPage() {
       <TopAppBar title="Send Padala" back={() => router.back()} />
       <main className="flex flex-1 flex-col gap-lg overflow-y-auto px-margin-mobile pb-[240px] pt-md">
         {/* Recipient */}
-        <section>
-          <label className="mb-xs block font-label-caps text-label-caps uppercase text-on-surface-variant">
+        <section className="flex flex-col gap-sm">
+          <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
             Send to
           </label>
+
+          {/* Saved family members */}
+          {contacts.length > 0 && (
+            <div className="relative">
+              <select
+                value={
+                  contacts.some((c) => c.address === recipient) ? recipient : ""
+                }
+                onChange={(e) => setRecipient(e.target.value)}
+                className="h-12 w-full appearance-none rounded-xl border border-surface-variant bg-surface-container-lowest pl-10 pr-10 font-body-sm text-body-sm text-on-surface shadow-[0_4px_12px_rgba(0,0,0,0.04)] outline-none focus:border-primary"
+              >
+                <option value="">Pick a saved family member…</option>
+                {contacts.map((c) => (
+                  <option key={c.address} value={c.address}>
+                    {c.name} ({c.address.slice(0, 4)}…{c.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="material-symbols-outlined text-outline">
+                  group
+                </span>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="material-symbols-outlined text-outline">
+                  expand_more
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Raw address input */}
           <div className="flex items-center rounded-xl border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] focus-within:border-primary-container">
             <div className="mr-sm flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">
               <span className="material-symbols-outlined">person</span>
@@ -221,6 +257,37 @@ export default function SendPage() {
               className="flex-1 border-none bg-transparent font-currency-md text-[14px] text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none"
             />
           </div>
+
+          {/* Save as contact — only when a new valid address is typed */}
+          {recipient.startsWith("G") &&
+            recipient.length === 56 &&
+            !contacts.some((c) => c.address === recipient) && (
+              <div className="flex items-center gap-sm rounded-lg bg-surface-container-low p-sm">
+                <input
+                  value={saveName}
+                  onChange={(e) => setSaveName(e.target.value)}
+                  placeholder="Save as… (e.g. Nanay, Kuya Jun)"
+                  className="flex-1 border-none bg-transparent font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  disabled={!saveName.trim()}
+                  onClick={() => {
+                    if (!pub) return;
+                    setContacts(
+                      saveContact(pub, { name: saveName, address: recipient })
+                    );
+                    setSaveName("");
+                  }}
+                  className="flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40"
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    bookmark_add
+                  </span>
+                  Save
+                </button>
+              </div>
+            )}
         </section>
 
         {/* Allocator */}
