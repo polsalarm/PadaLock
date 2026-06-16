@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import {
@@ -9,7 +9,13 @@ import {
   submitSignedXdr,
   type BucketCategory,
 } from "@padalock/sdk";
-import { phpToUsdcHuman, toStroops } from "@/lib/balance";
+import {
+  fmtStroops,
+  getUsdcBalance,
+  phpToUsdcHuman,
+  toStroops,
+  usdcToPhp,
+} from "@/lib/balance";
 import { recordSentPadala } from "@/lib/history";
 import {
   BottomNav,
@@ -89,22 +95,49 @@ export default function SendPage() {
   const { state, signTxXdr } = useWallet();
   const [recipient, setRecipient] = useState("");
   const [alloc, setAlloc] = useState<Allocations>(EMPTY);
+  const [availUsdc, setAvailUsdc] = useState<string>("0");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
 
-  if (state.status !== "unlocked") {
-    if (typeof window !== "undefined") router.replace("/");
-    return null;
-  }
+  const pub = state.status === "unlocked" ? state.publicKey : null;
+
+  useEffect(() => {
+    if (!pub) {
+      router.replace("/");
+      return;
+    }
+    void getUsdcBalance(pub)
+      .then(setAvailUsdc)
+      .catch(() => setAvailUsdc("0"));
+  }, [pub, router]);
+
+  if (state.status !== "unlocked") return null;
+
+  // Available balance in human USDC + PHP.
+  const availUsdcHuman = fmtStroops(availUsdc);
+  const availablePhp = parseFloat(usdcToPhp(availUsdcHuman).replace(/,/g, ""));
 
   const totalPhp = CATEGORIES.reduce((acc, c) => {
     const n = parseFloat(alloc[c.key] || "0");
     return acc + (isNaN(n) ? 0 : n);
   }, 0);
+  const remainingPhp = Math.max(availablePhp - totalPhp, 0);
+  const overspent = totalPhp > availablePhp + 0.005;
 
   function setAmt(key: BucketCategory, v: string) {
     setAlloc({ ...alloc, [key]: v });
+  }
+
+  // Dump the remaining available balance into one bucket.
+  function useRemaining(key: BucketCategory) {
+    const otherTotal = CATEGORIES.reduce((acc, c) => {
+      if (c.key === key) return acc;
+      const n = parseFloat(alloc[c.key] || "0");
+      return acc + (isNaN(n) ? 0 : n);
+    }, 0);
+    const give = Math.max(availablePhp - otherTotal, 0);
+    setAlloc({ ...alloc, [key]: give.toFixed(2) });
   }
 
   async function submit() {
@@ -195,9 +228,14 @@ export default function SendPage() {
           <h2 className="font-headline-sm text-headline-sm text-on-surface">
             Allocate Funds
           </h2>
-          <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-            Total ₱{totalPhp.toFixed(2)}
-          </span>
+          <div className="text-right">
+            <span className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
+              Available
+            </span>
+            <span className="font-currency-md text-currency-md text-primary-container">
+              ₱{availablePhp.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-gutter">
@@ -217,6 +255,14 @@ export default function SendPage() {
                       </span>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => useRemaining(c.key)}
+                    disabled={availablePhp <= 0}
+                    className="rounded-full bg-primary-container/10 px-sm py-base font-label-caps text-label-caps uppercase text-primary transition-colors hover:bg-primary-container/20 disabled:opacity-40"
+                  >
+                    Use all
+                  </button>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-surface-container-low p-sm focus-within:ring-2 focus-within:ring-primary/20">
                   <span className="pl-xs font-currency-md text-currency-md text-on-surface-variant">
@@ -273,23 +319,43 @@ export default function SendPage() {
       {/* Action footer — sits ABOVE the bottom nav (nav h-72px) */}
       <div className="fixed inset-x-0 bottom-[72px] z-40 mx-auto w-full max-w-[480px] rounded-t-xl bg-surface-container shadow-[0_-8px_20px_rgba(93,5,24,0.08)] pt-xs">
         <div className="px-margin-mobile pb-sm">
-          <div className="mb-sm flex items-center justify-between px-xs">
+          <div className="mb-1 flex items-center justify-between px-xs">
             <span className="font-body-md text-body-md text-on-surface-variant">
               Total Allocation
             </span>
-            <span className="font-currency-lg text-currency-lg text-on-surface">
+            <span
+              className={`font-currency-lg text-currency-lg ${
+                overspent ? "text-error" : "text-on-surface"
+              }`}
+            >
               ₱ {totalPhp.toFixed(2)}
+            </span>
+          </div>
+          <div className="mb-sm flex items-center justify-between px-xs">
+            <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
+              {overspent ? "Over budget by" : "Remaining"}
+            </span>
+            <span
+              className={`font-currency-md text-currency-md ${
+                overspent ? "text-error" : "text-on-surface-variant"
+              }`}
+            >
+              ₱ {(overspent ? totalPhp - availablePhp : remainingPhp).toFixed(2)}
             </span>
           </div>
           <button
             onClick={submit}
-            disabled={busy || totalPhp <= 0}
+            disabled={busy || totalPhp <= 0 || overspent}
             className="flex h-[56px] w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-headline-md text-[18px] text-on-secondary-container transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span className="material-symbols-outlined" data-weight="fill">
               lock
             </span>
-            {busy ? "Sending…" : "Lock & Send"}
+            {busy
+              ? "Sending…"
+              : overspent
+                ? "Not enough balance"
+                : "Lock & Send"}
           </button>
         </div>
       </div>
