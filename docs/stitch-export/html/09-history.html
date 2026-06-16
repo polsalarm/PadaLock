@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#5d0518",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-surface": "#1b1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed": "#002113",
+                        "primary-fixed": "#ffdada",
+                        "surface-variant": "#e5e2e1",
+                        "secondary": "#775a00",
+                        "primary-container": "#7c1f2c",
+                        "on-secondary-fixed": "#251a00",
+                        "on-background": "#1b1b1b",
+                        "inverse-primary": "#ffb3b6",
+                        "background": "#fcf9f8",
+                        "error": "#ba1a1a",
+                        "tertiary": "#003320",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#564242",
+                        "on-primary-fixed": "#40000c",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#a4f3ca",
+                        "surface-bright": "#fcf9f8",
+                        "on-secondary-container": "#6f5400",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-fixed-dim": "#88d6af",
+                        "tertiary-container": "#004c32",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#ffc72c",
+                        "on-primary-fixed-variant": "#822430",
+                        "surface-container": "#f0eded",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "secondary-fixed": "#ffdf99",
+                        "on-primary-container": "#ff8d95",
+                        "outline": "#897172",
+                        "outline-variant": "#dcc0c0",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "inverse-surface": "#313030",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "surface": "#fcf9f8",
+                        "surface-tint": "#a23b46",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary-container": "#70be97",
+                        "on-error": "#ffffff",
+                        "jade-green": "#006b44"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sm": "12px",
+                        "xs": "8px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "margin-mobile": "20px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "touch-target": "44px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "currency-lg": ["JetBrains Mono"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "currency-md": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "currency-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "currency-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f8;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tonal-card {
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .sun-blur {
+            filter: blur(40px);
+            opacity: 0.15;
+            background: radial-gradient(circle, #ffc72c 0%, transparent 70%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- Screen Wrapper (480px max for mobile handheld feel) -->
+<div class="max-w-[480px] mx-auto min-h-screen relative flex flex-col pb-[120px]">
+<!-- Background Atmospheric Element -->
+<div class="fixed top-20 right-0 w-64 h-64 sun-blur -z-10"></div>
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 bg-surface dark:bg-surface flex justify-between items-center px-margin-mobile h-touch-target w-full">
+<button class="hover:opacity-80 transition-opacity flex items-center justify-center w-10 h-10">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary">My Padala</h1>
+<button class="hover:opacity-80 transition-opacity flex items-center justify-center w-10 h-10">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+</button>
+</header>
+<!-- Summary Strip -->
+<div class="px-margin-mobile mt-lg flex gap-md overflow-x-auto no-scrollbar">
+<div class="flex-1 bg-primary p-md rounded-xl text-on-primary min-w-[160px]">
+<p class="font-label-caps text-label-caps opacity-80 mb-xs">TOTAL SENT</p>
+<p class="font-currency-lg text-currency-lg text-white">₱ 145,000.00</p>
+</div>
+<div class="flex-1 bg-surface-container p-md rounded-xl text-on-surface-variant min-w-[140px]">
+<p class="font-label-caps text-label-caps mb-xs">ACTIVE</p>
+<p class="font-headline-md text-headline-md-mobile font-bold text-primary">2 <span class="font-body-sm text-body-sm font-normal">padalas</span></p>
+</div>
+</div>
+<!-- Transaction List -->
+<main class="px-margin-mobile mt-xl flex flex-col gap-gutter">
+<!-- Card 1: Partly Claimed -->
+<div class="tonal-card rounded-xl p-md flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-headline-sm">
+                            M
+                        </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Maria Santos</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">OCT 12, 2023</p>
+</div>
+</div>
+<div class="px-sm py-xs bg-secondary-container/20 text-on-secondary-container rounded-full font-label-caps text-[10px]">
+                        PARTLY CLAIMED
+                    </div>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-baseline">
+<span class="font-currency-lg text-currency-lg text-on-surface">₱ 25,000.00</span>
+<span class="font-currency-md text-currency-md text-on-surface-variant opacity-60">452.78 USDC</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mt-base">
+<div class="bg-jade-green h-full rounded-full w-[60%]"></div>
+</div>
+<div class="flex justify-between items-center mt-base">
+<p class="font-body-sm text-body-sm text-on-surface-variant">3 of 5 buckets claimed</p>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Fully Claimed -->
+<div class="tonal-card rounded-xl p-md flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold text-headline-sm">
+                            R
+                        </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ricardo Dela Cruz</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">OCT 05, 2023</p>
+</div>
+</div>
+<div class="px-sm py-xs bg-tertiary-fixed-dim/30 text-jade-green rounded-full font-label-caps text-[10px]">
+                        FULLY CLAIMED
+                    </div>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-baseline">
+<span class="font-currency-lg text-currency-lg text-on-surface">₱ 15,000.00</span>
+<span class="font-currency-md text-currency-md text-on-surface-variant opacity-60">271.67 USDC</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mt-base">
+<div class="bg-jade-green h-full rounded-full w-full"></div>
+</div>
+<div class="flex justify-between items-center mt-base">
+<p class="font-body-sm text-body-sm text-on-surface-variant">5 of 5 buckets claimed</p>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Locked -->
+<div class="tonal-card rounded-xl p-md flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant font-bold text-headline-sm">
+                            J
+                        </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Juan Luna</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">SEP 28, 2023</p>
+</div>
+</div>
+<div class="px-sm py-xs bg-surface-container-highest text-on-surface-variant rounded-full font-label-caps text-[10px]">
+                        LOCKED
+                    </div>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex justify-between items-baseline">
+<span class="font-currency-lg text-currency-lg text-on-surface">₱ 50,000.00</span>
+<span class="font-currency-md text-currency-md text-on-surface-variant opacity-60">905.56 USDC</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mt-base">
+<div class="bg-outline-variant h-full rounded-full w-0"></div>
+</div>
+<div class="flex justify-between items-center mt-base">
+<p class="font-body-sm text-body-sm text-on-surface-variant">0 of 4 buckets claimed</p>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">lock</span>
+</div>
+</div>
+</div>
+<!-- Empty State Section -->
+<section class="mt-xl py-xl flex flex-col items-center text-center">
+<div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-md relative overflow-hidden">
+<span class="material-symbols-outlined text-[48px] text-primary opacity-30">mail</span>
+<div class="absolute -top-1 -right-1 w-10 h-10 bg-secondary-container rounded-full blur-sm opacity-50"></div>
+</div>
+<h4 class="font-headline-md text-headline-md-mobile text-on-surface">Wala pang padala</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[240px] mt-xs">Magpadala para makita dito ang history mo</p>
+<button class="mt-lg h-touch-target px-xl bg-secondary-container text-on-secondary-container font-bold rounded-full hover:opacity-90 active:scale-95 transition-all shadow-md">
+                    Send padala
+                </button>
+</section>
+</main>
+<!-- Sticky Bottom Nav -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-[72px] px-md pb-safe bg-surface-container shadow-[0_-8px_20px_rgba(93,5,24,0.08)] rounded-t-xl">
+<!-- Home -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-lg py-xs hover:bg-surface-container-high transition-opacity active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</button>
+<!-- Padala (Active) -->
+<button class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-lg py-xs active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps mt-1">Padala</span>
+</button>
+<!-- Settings -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-lg py-xs hover:bg-surface-container-high transition-opacity active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps mt-1">Settings</span>
+</button>
+</nav>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple card tap effect
+        document.querySelectorAll('.tonal-card').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.classList.add('scale-[0.98]');
+                card.style.transition = 'transform 0.1s ease';
+            });
+            card.addEventListener('touchend', () => {
+                card.classList.remove('scale-[0.98]');
+            });
+        });
+    </script>
+</body></html>

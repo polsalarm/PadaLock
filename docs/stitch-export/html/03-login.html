@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>PadaLock - Unlock Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#897172",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#88d6af",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed": "#40000c",
+                        "tertiary-container": "#004c32",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#5d0518",
+                        "primary-container": "#7c1f2c",
+                        "inverse-primary": "#ffb3b6",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f3f0ef",
+                        "outline-variant": "#dcc0c0",
+                        "surface-tint": "#a23b46",
+                        "secondary-container": "#ffc72c",
+                        "tertiary": "#003320",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary-container": "#ff8d95",
+                        "secondary": "#775a00",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b1b",
+                        "tertiary-fixed": "#a4f3ca",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-surface": "#313030",
+                        "secondary-fixed": "#ffdf99",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1b1b1b",
+                        "primary-fixed": "#ffdada",
+                        "on-tertiary-container": "#70be97",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "on-primary-fixed-variant": "#822430",
+                        "on-secondary-container": "#6f5400",
+                        "surface": "#fcf9f8",
+                        "on-surface-variant": "#564242",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed": "#251a00",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "touch-target": "44px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "currency-md": ["JetBrains Mono"],
+                        "currency-lg": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "currency-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "currency-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Subtle sun motif background blur */
+        .sun-motif {
+            position: absolute;
+            top: -10vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            height: 80vw;
+            max-width: 400px;
+            max-height: 400px;
+            background: radial-gradient(circle, rgba(255, 199, 44, 0.15) 0%, rgba(255, 199, 44, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Custom input styling for password field */
+        .secure-input {
+            letter-spacing: 0.2em;
+        }
+        .secure-input::placeholder {
+            letter-spacing: normal;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface h-screen w-full flex flex-col items-center justify-between overflow-hidden relative">
+<!-- Warm ambient glow -->
+<div class="sun-motif"></div>
+<!-- Top Navigation (Header Anchor) - Modified for Login state (no leading/trailing icons) -->
+<header class="w-full max-w-[480px] mx-auto flex justify-center items-center px-margin-mobile h-touch-target top-0 z-10 bg-transparent mt-xs">
+<h1 class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+            PadaLock
+        </h1>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-[480px] mx-auto flex flex-col justify-center items-center px-margin-mobile z-10 relative">
+<!-- Welcome / Intent text -->
+<div class="text-center mb-xl w-full">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-base">Welcome back</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enter your password to unlock your wallet.</p>
+</div>
+<!-- Input Form -->
+<form class="w-full flex flex-col gap-lg" onsubmit="event.preventDefault(); window.location.href='#';">
+<div class="w-full relative">
+<input class="w-full h-[56px] px-md rounded-xl bg-surface-container-lowest border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary text-on-surface font-body-lg text-body-lg secure-input transition-colors duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)]" id="wallet-password" placeholder="Enter password" required="" type="password"/>
+</div>
+<button class="w-full h-[56px] rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all duration-200" type="submit">
+                Unlock
+            </button>
+</form>
+<!-- Biometrics Section (Soon) -->
+<div class="mt-xl flex flex-col items-center justify-center gap-xs opacity-50 select-none">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[28px]" style="font-variation-settings: 'FILL' 0;">fingerprint</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Biometrics Soon</span>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full max-w-[480px] mx-auto flex justify-center items-center pb-xl pt-md px-margin-mobile z-10 bg-transparent">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-outline-variant hover:decoration-primary underline-offset-4" href="#">
+            Forget wallet?
+        </a>
+</footer>
+</body></html>

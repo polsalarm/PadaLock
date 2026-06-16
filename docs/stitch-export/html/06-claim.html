@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>PadaLock - Claim Padala</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#897172",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#88d6af",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed": "#40000c",
+                        "tertiary-container": "#004c32",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#5d0518",
+                        "primary-container": "#7c1f2c",
+                        "inverse-primary": "#ffb3b6",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f3f0ef",
+                        "outline-variant": "#dcc0c0",
+                        "surface-tint": "#a23b46",
+                        "secondary-container": "#ffc72c",
+                        "tertiary": "#003320",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary-container": "#ff8d95",
+                        "secondary": "#775a00",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b1b",
+                        "tertiary-fixed": "#a4f3ca",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-surface": "#313030",
+                        "secondary-fixed": "#ffdf99",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1b1b1b",
+                        "primary-fixed": "#ffdada",
+                        "on-tertiary-container": "#70be97",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "on-primary-fixed-variant": "#822430",
+                        "on-secondary-container": "#6f5400",
+                        "surface": "#fcf9f8",
+                        "on-surface-variant": "#564242",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed": "#251a00",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "touch-target": "44px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "12px",
+                        "safe": "env(safe-area-inset-bottom, 20px)"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "currency-md": ["JetBrains Mono"],
+                        "currency-lg": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "currency-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "currency-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface');
+            color: theme('colors.on-surface');
+            -webkit-tap-highlight-color: transparent;
+        }
+        .sun-blur {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,199,44,0.15) 0%, rgba(255,199,44,0) 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        .sticky-shadow {
+            box-shadow: 0 -8px 20px rgba(93, 5, 24, 0.08);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col items-center">
+<div class="sun-blur top-[-100px] right-[-100px]"></div>
+<!-- TopAppBar -->
+<header class="w-full max-w-[480px] mx-auto sticky top-0 z-40 bg-surface/90 backdrop-blur-md">
+<div class="flex justify-between items-center px-margin-mobile h-touch-target w-full">
+<button class="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-100 flex items-center justify-center w-touch-target h-touch-target -ml-xs">
+<span class="material-symbols-outlined" data-icon="lock" data-weight="fill">lock</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary">PadaLock</h1>
+<div class="w-touch-target h-touch-target flex items-center justify-end">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="User avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYUYPERJYDJ77FYzHn4Woq7iP8U2PUbpbh1vrrN8PcjmiOBpjcAo9f6Qi3ulw_Cn-H4FZxCDFWIW_hv0ZINyF1qKP4ecbHJ_xUzji1kBBsIyPwqs2qWPThZTp4J0FMF2iXZdJZBzIwDmXkpzw4bfZ1Ds6yzEP7Sz6qvC_ziweigkwTpC-Z5yb7JdPsp4rKYT2P0IByKD1X7vmt161KeL2eN8U6MnhOFKNtmKrqjrENp-CyVZJO8WvS223XYPIQKuLe9EF-Cu4Jbpg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="w-full max-w-[480px] mx-auto px-margin-mobile pb-[100px] flex-grow flex flex-col gap-gutter mt-sm">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center py-md">
+<div class="inline-flex items-center gap-2 bg-secondary-fixed/30 px-3 py-1 rounded-full mb-3">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="mail">mail</span>
+<span class="font-label-caps text-label-caps text-on-secondary-fixed-variant uppercase">New Padala</span>
+</div>
+<h2 class="font-body-lg text-body-lg text-on-surface-variant mb-1">May padala ka galing kay <span class="font-semibold text-on-surface">Maria Santos</span></h2>
+<div class="flex items-baseline gap-1 mt-2">
+<span class="font-currency-md text-currency-md text-on-surface">₱</span>
+<span class="font-currency-lg text-[40px] leading-[48px] font-bold text-on-surface tracking-tight">45,000</span>
+</div>
+<p class="font-currency-md text-currency-md text-on-surface-variant/60 mt-1 text-sm">~ 815.00 USDC</p>
+</section>
+<!-- Education Bucket (Locked/Restricted) -->
+<article class="bg-surface-container-lowest rounded-xl p-md card-shadow border border-surface-variant/50 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 bg-error-container/20 rounded-bl-xl">
+<span class="font-label-caps text-label-caps text-on-error-container uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="lock" data-weight="fill">lock</span> Restricted
+                </span>
+</div>
+<div class="flex items-start gap-3 mb-4 pr-24">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-2xl flex-shrink-0">
+                    🎓
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Tuition Fee</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Edukasyon</p>
+</div>
+</div>
+<div class="mb-5">
+<div class="flex items-baseline gap-1">
+<span class="font-currency-md text-currency-md text-on-surface">₱</span>
+<span class="font-currency-lg text-currency-lg text-on-surface">25,000</span>
+</div>
+<p class="font-currency-md text-[12px] text-on-surface-variant/60">452.78 USDC</p>
+</div>
+<div class="space-y-3">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase">Pumili ng paaralan</label>
+<div class="relative">
+<select class="w-full h-12 appearance-none bg-surface border border-outline-variant rounded-lg pl-10 pr-10 font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+<option disabled="" selected="" value="">Select an approved school</option>
+<option value="ateneo">Ateneo de Manila University</option>
+<option value="dlsu">De La Salle University</option>
+<option value="ust">University of Santo Tomas</option>
+</select>
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="school">school</span>
+</div>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<button class="w-full h-12 bg-primary text-on-primary font-headline-sm text-[16px] font-semibold rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 active:scale-[0.98] mt-2">
+                    Claim Now
+                </button>
+</div>
+</article>
+<!-- Medical Bucket (Ready) -->
+<article class="bg-surface-container-lowest rounded-xl p-md card-shadow border border-surface-variant/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 bg-secondary-fixed/30 rounded-bl-xl">
+<span class="font-label-caps text-label-caps text-on-secondary-fixed-variant uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="medical_services" data-weight="fill">medical_services</span> Ready
+                </span>
+</div>
+<div class="flex items-start gap-3 mb-4 pr-24">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-2xl flex-shrink-0">
+                    🏥
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Checkup</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Kalusugan</p>
+</div>
+</div>
+<div class="mb-5">
+<div class="flex items-baseline gap-1">
+<span class="font-currency-md text-currency-md text-on-surface">₱</span>
+<span class="font-currency-lg text-currency-lg text-on-surface">5,000</span>
+</div>
+<p class="font-currency-md text-[12px] text-on-surface-variant/60">90.55 USDC</p>
+</div>
+<div class="space-y-3">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase">Pumili ng klinika</label>
+<div class="relative">
+<select class="w-full h-12 appearance-none bg-surface border border-outline-variant rounded-lg pl-10 pr-10 font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+<option disabled="" selected="" value="">Select an approved clinic/hospital</option>
+<option value="makati-med">Makati Medical Center</option>
+<option value="st-lukes">St. Luke's Medical Center</option>
+</select>
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="local_hospital">local_hospital</span>
+</div>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<button class="w-full h-12 bg-primary text-on-primary font-headline-sm text-[16px] font-semibold rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 active:scale-[0.98] mt-2">
+                    Claim Now
+                </button>
+</div>
+</article>
+<!-- Free Cash Bucket (Claimed) -->
+<article class="bg-surface-container-lowest rounded-xl p-md card-shadow border border-tertiary/20 relative overflow-hidden opacity-75">
+<div class="absolute inset-0 bg-surface/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
+<div class="bg-surface-container-lowest py-2 px-4 rounded-full shadow-sm border border-tertiary-fixed-dim/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="check_circle" data-weight="fill">check_circle</span>
+<span class="font-headline-sm text-sm text-tertiary-container">Claimed to GCash</span>
+</div>
+</div>
+<div class="absolute top-0 right-0 p-3 bg-tertiary-fixed/30 rounded-bl-xl">
+<span class="font-label-caps text-label-caps text-tertiary-container uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check" data-weight="fill">check</span> Claimed
+                </span>
+</div>
+<div class="flex items-start gap-3 mb-4 pr-24">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-2xl flex-shrink-0 grayscale opacity-80">
+                    🛍️
+                </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Allowance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Free Cash</p>
+</div>
+</div>
+<div class="mb-2">
+<div class="flex items-baseline gap-1 text-on-surface-variant">
+<span class="font-currency-md text-currency-md">₱</span>
+<span class="font-currency-lg text-currency-lg">15,000</span>
+</div>
+</div>
+</article>
+</main>
+<!-- Sticky Footer Bar -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest sticky-shadow pb-safe pt-xs">
+<div class="max-w-[480px] mx-auto px-margin-mobile pb-xs">
+<div class="flex justify-between items-end mb-2">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Available to Claim</p>
+<div class="flex items-baseline gap-1">
+<span class="font-currency-md text-sm text-primary">₱</span>
+<span class="font-currency-lg text-xl text-primary">30,000</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-[10px] text-on-surface-variant/60 uppercase mb-1">Total Padala</p>
+<p class="font-currency-md text-sm text-on-surface-variant">₱45,000</p>
+</div>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden flex">
+<div class="h-full bg-tertiary-container" style="width: 33.33%;"></div> <!-- Claimed -->
+<div class="h-full bg-primary/20 relative" style="width: 66.67%;">
+<div class="absolute right-0 top-0 h-full w-1 bg-surface-container-lowest"></div>
+</div> <!-- Available -->
+</div>
+</div>
+</div>
+</body></html>

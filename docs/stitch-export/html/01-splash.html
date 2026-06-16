@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PadaLock - Loading</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#897172",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#88d6af",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed": "#40000c",
+                        "tertiary-container": "#004c32",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#5d0518",
+                        "primary-container": "#7c1f2c",
+                        "inverse-primary": "#ffb3b6",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f3f0ef",
+                        "outline-variant": "#dcc0c0",
+                        "surface-tint": "#a23b46",
+                        "secondary-container": "#ffc72c",
+                        "tertiary": "#003320",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary-container": "#ff8d95",
+                        "secondary": "#775a00",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b1b",
+                        "tertiary-fixed": "#a4f3ca",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-surface": "#313030",
+                        "secondary-fixed": "#ffdf99",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1b1b1b",
+                        "primary-fixed": "#ffdada",
+                        "on-tertiary-container": "#70be97",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "on-primary-fixed-variant": "#822430",
+                        "on-secondary-container": "#6f5400",
+                        "surface": "#fcf9f8",
+                        "on-surface-variant": "#564242",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed": "#251a00",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "touch-target": "44px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "currency-md": ["JetBrains Mono"],
+                        "currency-lg": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "currency-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "currency-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .8; transform: scale(1.05); }
+        }
+
+        .sun-ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200vw;
+            height: 200vw;
+            background: radial-gradient(circle, rgba(255,199,44,0.15) 0%, rgba(255,199,44,0) 60%);
+            transform: translate(-50%, -50%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-primary-container h-screen w-full flex flex-col justify-center items-center overflow-hidden relative">
+<!-- Ambient Sun Rays -->
+<div class="sun-ray"></div>
+<main class="relative z-10 flex flex-col items-center justify-center text-center px-margin-mobile">
+<!-- Logo Container -->
+<div class="mb-lg pulse-animation flex flex-col items-center">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<!-- Outer Ring/Glow -->
+<div class="absolute inset-0 bg-secondary-container rounded-full opacity-20 blur-xl"></div>
+<!-- Heart Icon -->
+<span class="material-symbols-outlined text-surface text-[80px] absolute z-10" data-icon="favorite" data-weight="fill">favorite</span>
+<!-- Padlock Overlay -->
+<span class="material-symbols-outlined text-secondary-container text-[40px] absolute z-20 mt-4" data-icon="lock" data-weight="fill">lock</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-surface mt-md tracking-tight">PadaLock</h1>
+</div>
+<!-- Tagline -->
+<p class="font-body-lg text-body-lg text-surface-variant opacity-90 mt-sm">
+            Padala na may pangako.
+        </p>
+<!-- Loading Indicator -->
+<div class="mt-xl flex space-x-2">
+<div class="w-3 h-3 bg-secondary-container rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+<div class="w-3 h-3 bg-secondary-container rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+<div class="w-3 h-3 bg-secondary-container rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+</div>
+</main>
+<script>
+        // Simple redirect simulation for the splash screen
+        setTimeout(() => {
+            console.log("Navigation to home screen triggered.");
+            // window.location.href = '/home'; // Uncomment in real implementation
+        }, 3000);
+    </script>
+</body></html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Padala Transparency - PadaLock</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dcd9d9;
+            border-radius: 4px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#897172",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#88d6af",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed": "#40000c",
+                        "tertiary-container": "#004c32",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#5d0518",
+                        "primary-container": "#7c1f2c",
+                        "inverse-primary": "#ffb3b6",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f3f0ef",
+                        "outline-variant": "#dcc0c0",
+                        "surface-tint": "#a23b46",
+                        "secondary-container": "#ffc72c",
+                        "tertiary": "#003320",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary-container": "#ff8d95",
+                        "secondary": "#775a00",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b1b",
+                        "tertiary-fixed": "#a4f3ca",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary-fixed-variant": "#5a4300",
+                        "surface-dim": "#dcd9d9",
+                        "inverse-surface": "#313030",
+                        "secondary-fixed": "#ffdf99",
+                        "surface-variant": "#e5e2e1",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1b1b1b",
+                        "primary-fixed": "#ffdada",
+                        "on-tertiary-container": "#70be97",
+                        "secondary-fixed-dim": "#f6bf22",
+                        "on-primary-fixed-variant": "#822430",
+                        "on-secondary-container": "#6f5400",
+                        "surface": "#fcf9f8",
+                        "on-surface-variant": "#564242",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed": "#251a00",
+                        "primary-fixed-dim": "#ffb3b6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "touch-target": "44px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "12px",
+                        "safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "currency-md": ["JetBrains Mono"],
+                        "currency-lg": ["JetBrains Mono"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "currency-md": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "currency-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-[92px] selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar from JSON -->
+<header class="bg-surface dark:bg-surface docked full-width top-0 flat no shadows flex justify-between items-center px-margin-mobile h-touch-target w-full max-w-[480px] mx-auto sticky z-40">
+<button aria-label="Back" class="text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity active:scale-95 duration-100 flex items-center justify-center w-touch-target h-touch-target rounded-full -ml-xs">
+<span class="material-symbols-outlined">lock</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed text-center flex-1">PadaLock</h1>
+<div class="w-touch-target h-touch-target flex items-center justify-end">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border-2 border-surface-container">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxPumZppq9dewzm-PuJ6q4FFX7DkGa4agZkm9YWNrKvo7NlyX48sHuX6o30njJXgLXTrFZWolBup6e5eytjBrC6nh2dsODHXp0G0kHTmMkCbpZGAjKIiVJuw6iwP5n877rfkUFiRwCMwlt0P58VyhPX7jkLGu3pFGDrvnRvouv0-UsRoPnBd2h9GrbJQqPlsOT0dX7cWECRCWM0iTckTNvY1-bnCFVktivdvLrEbHOjfTlj-qxpMaVEPjCnsbVhNxageAHqOgkNAo"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-[480px] mx-auto px-margin-mobile flex flex-col gap-lg mt-xs">
+<!-- Hero: Transparency Arc -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] p-md flex flex-col items-center justify-center relative overflow-hidden border border-surface-container-low">
+<!-- Subtle Sun Motif Background (Warmth) -->
+<div class="absolute inset-0 bg-secondary-fixed opacity-10 blur-2xl rounded-full translate-y-1/2 scale-150 pointer-events-none"></div>
+<div class="relative w-full aspect-[2/1] max-w-[280px] mx-auto mt-sm">
+<!-- SVG Half Donut Chart (Animated Progress) -->
+<svg class="w-full h-full drop-shadow-sm" viewbox="0 0 100 50">
+<!-- Background Arc -->
+<path class="text-surface-variant" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="12"></path>
+<!-- Foreground Arc (75% Claimed) - Animated via inline CSS below -->
+<path class="text-tertiary-container stroke-dasharray-[125.6] stroke-dashoffset-[125.6]" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" id="progress-arc" stroke="currentColor" stroke-linecap="round" stroke-width="12" style="transition: stroke-dashoffset 1.5s ease-out;"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full text-center flex flex-col items-center translate-y-1/4">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Total Claimed</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-tertiary-container mt-[-4px]">75%</span>
+</div>
+</div>
+<div class="w-full flex justify-between items-end mt-lg px-xs border-t border-surface-container pt-md relative z-10">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL SENT</span>
+<span class="font-currency-md text-currency-md text-on-surface">₱ 24,000</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CLAIMED</span>
+<span class="font-currency-md text-currency-md text-tertiary-container">₱ 18,000</span>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<div class="grid grid-cols-2 gap-md">
+<button class="bg-primary text-on-primary rounded-full h-[48px] flex items-center justify-center gap-xs font-body-sm hover:opacity-90 active:scale-95 transition-all shadow-[0_4px_12px_rgba(93,5,24,0.15)]">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+                Resend Reminder
+            </button>
+<button class="bg-surface-container-high text-on-surface rounded-full h-[48px] flex items-center justify-center gap-xs font-body-sm hover:bg-surface-dim active:scale-95 transition-all border border-surface-dim">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+                Add Note
+            </button>
+</div>
+<!-- Activity Timeline -->
+<section class="flex flex-col gap-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Padala Activity</h2>
+<div class="relative pl-sm">
+<!-- Vertical Track -->
+<div class="absolute left-[20px] top-4 bottom-4 w-[2px] bg-surface-variant rounded-full"></div>
+<!-- Timeline Item 1: Health (Claimed) -->
+<div class="relative pl-xl pb-lg group">
+<!-- Status Node -->
+<div class="absolute left-[-4px] top-[4px] w-[16px] h-[16px] rounded-full bg-tertiary-container border-4 border-surface z-10 shadow-sm"></div>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] p-md border border-surface-container-low transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-xs">
+<span class="text-[20px]">🏥</span>
+<h3 class="font-headline-sm text-body-md font-bold text-on-surface">Health Fund</h3>
+</div>
+<span class="font-label-caps text-label-caps text-tertiary-container bg-tertiary-fixed/30 px-2 py-1 rounded-sm">CLAIMED</span>
+</div>
+<div class="flex items-baseline gap-xs mb-sm">
+<span class="font-currency-md text-currency-md text-on-surface">₱ 10,000</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-col gap-1 border-t border-surface-container pt-sm mt-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Locked at 09:14am (Nov 12)</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface">
+<img alt="Mercury Drug logo" class="w-[20px] h-[20px] rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7PYnpYxYu4vc4mB27IoVj33dHmCfbxFUfmFDhxDFthYP1iJcB1_EkA07iNh_CpmPRjZpTkM31m8Vf9Q6yhqeVgOONzneINe7m_inSAyQzPiWpWqT54CGidjmDFghB_RCQEKJy4STHu5GAq_S-zTDA4oP8gaPinhywQVdB9m7weiynGXB1dSaMHGsJyuze1__ShpLHakiU2EW_cTsuRLZLTGgC5KlAaciQVAyBEqkxEOD0WTyp9egGVm-gz1EAnHXQJV6KB14X5yQ"/>
+<span>Released to Mercury Drug at 11:02am</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2: Education (Claimed) -->
+<div class="relative pl-xl pb-lg group">
+<div class="absolute left-[-4px] top-[4px] w-[16px] h-[16px] rounded-full bg-tertiary-container border-4 border-surface z-10 shadow-sm"></div>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] p-md border border-surface-container-low transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-xs">
+<span class="text-[20px]">📚</span>
+<h3 class="font-headline-sm text-body-md font-bold text-on-surface">Tuition Fee</h3>
+</div>
+<span class="font-label-caps text-label-caps text-tertiary-container bg-tertiary-fixed/30 px-2 py-1 rounded-sm">CLAIMED</span>
+</div>
+<div class="flex items-baseline gap-xs mb-sm">
+<span class="font-currency-md text-currency-md text-on-surface">₱ 8,000</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-col gap-1 border-t border-surface-container pt-sm mt-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Locked at 09:15am (Nov 12)</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container">location_on</span>
+<span>Released at SM San Lazaro Branch at 01:45pm</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3: Groceries (Pending) -->
+<div class="relative pl-xl pb-sm group">
+<div class="absolute left-[-4px] top-[4px] w-[16px] h-[16px] rounded-full bg-secondary-container border-4 border-surface z-10 shadow-sm"></div>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.04)] p-md border border-secondary-fixed/50 transition-transform active:scale-[0.98]">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center gap-xs">
+<span class="text-[20px]">🛒</span>
+<h3 class="font-headline-sm text-body-md font-bold text-on-surface">Groceries</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary-container bg-secondary-fixed/30 px-2 py-1 rounded-sm">PENDING</span>
+</div>
+<div class="flex items-baseline gap-xs mb-sm">
+<span class="font-currency-md text-currency-md text-on-surface">₱ 6,000</span>
+</div>
+<div class="text-body-sm text-on-surface-variant flex flex-col gap-1 border-t border-surface-container pt-sm mt-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Locked at 09:16am (Nov 12)</span>
+</div>
+<div class="flex items-center gap-2 text-secondary-container opacity-80">
+<span class="material-symbols-outlined text-[16px]">hourglass_empty</span>
+<span>Awaiting claim by family</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="bg-surface-container dark:bg-surface-container shadow-[0_-8px_20px_rgba(93,5,24,0.08)] docked full-width bottom-0 rounded-t-xl fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-[72px] px-md pb-safe md:hidden">
+<!-- Inactive: Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-lg py-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<!-- Active: Padala (Semantic Match) -->
+<a class="flex flex-col items-center justify-center bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-full px-lg py-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest active:scale-95 duration-200 ease-in-out transition-all shadow-[0_8px_20px_rgba(93,5,24,0.08)] -translate-y-2" href="#">
+<span class="material-symbols-outlined mb-1 fill">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">Padala</span>
+</a>
+<!-- Inactive: Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-lg py-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+<script>
+        // Animate the progress arc on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const arc = document.getElementById('progress-arc');
+                if(arc) {
+                    // Circumference is approx 125.6 for r=40
+                    // 75% of 125.6 is 94.2. Offset needs to be 125.6 - 94.2 = 31.4 to show 75%
+                    arc.style.strokeDashoffset = '31.4';
+                }
+            }, 100);
+        });
+    </script>
+</body></html>

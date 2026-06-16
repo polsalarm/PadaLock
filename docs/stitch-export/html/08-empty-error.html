@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>PadaLock - States</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#897172",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#f6f3f2",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "tertiary-fixed-dim": "#88d6af",
+                    "on-error": "#ffffff",
+                    "surface-container": "#f0eded",
+                    "on-primary-fixed": "#40000c",
+                    "tertiary-container": "#004c32",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#5d0518",
+                    "primary-container": "#7c1f2c",
+                    "inverse-primary": "#ffb3b6",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#f3f0ef",
+                    "outline-variant": "#dcc0c0",
+                    "surface-tint": "#a23b46",
+                    "secondary-container": "#ffc72c",
+                    "tertiary": "#003320",
+                    "surface-bright": "#fcf9f8",
+                    "on-primary-container": "#ff8d95",
+                    "secondary": "#775a00",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#1b1b1b",
+                    "tertiary-fixed": "#a4f3ca",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#eae7e7",
+                    "on-secondary-fixed-variant": "#5a4300",
+                    "surface-dim": "#dcd9d9",
+                    "inverse-surface": "#313030",
+                    "secondary-fixed": "#ffdf99",
+                    "surface-variant": "#e5e2e1",
+                    "background": "#fcf9f8",
+                    "on-surface": "#1b1b1b",
+                    "primary-fixed": "#ffdada",
+                    "on-tertiary-container": "#70be97",
+                    "secondary-fixed-dim": "#f6bf22",
+                    "on-primary-fixed-variant": "#822430",
+                    "on-secondary-container": "#6f5400",
+                    "surface": "#fcf9f8",
+                    "on-surface-variant": "#564242",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-secondary-fixed": "#251a00",
+                    "primary-fixed-dim": "#ffb3b6",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#002113"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "margin-mobile": "20px",
+                    "gutter": "16px",
+                    "touch-target": "44px",
+                    "base": "4px",
+                    "xs": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Plus Jakarta Sans"],
+                    "label-caps": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "currency-md": ["JetBrains Mono"],
+                    "currency-lg": ["JetBrains Mono"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "currency-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "currency-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            },
+            "animation": {
+                "golden-pulse": "goldenPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            "keyframes": {
+                goldenPulse: {
+                    "0%, 100%": { opacity: "1", borderColor: "transparent" },
+                    "50%": { opacity: ".8", borderColor: "#ffc72c" },
+                }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Ambient blur behind elements */
+        .sun-motif {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, theme('colors.secondary-container') 0%, rgba(255,199,44,0) 70%);
+            opacity: 0.15;
+            filter: blur(40px);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col items-center justify-start pb-[100px] md:pb-lg relative overflow-x-hidden">
+<!-- Ambient background element -->
+<div class="sun-motif top-[-50px] left-[-50px]"></div>
+<!-- TopAppBar -->
+<header class="docked full-width top-0 bg-surface dark:bg-surface flex justify-between items-center px-margin-mobile h-touch-target w-full max-w-[480px] mx-auto z-40 relative">
+<button aria-label="Menu" class="flex items-center justify-center w-touch-target h-touch-target text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity active:scale-95 duration-100">
+<span class="material-symbols-outlined" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-primary dark:text-primary-fixed">PadaLock</h1>
+<button aria-label="User profile" class="flex items-center justify-center w-touch-target h-touch-target overflow-hidden rounded-full border border-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_q07QbFZAUOJZxK0iOD_x1YHqInW4D2VlaJcHbqcHwp9ZAn4xLztwlCdfdrsaN1mydX-ClTJ4xyFIFfK6lwSAV8FuMySbMiwGVwZgqRnrpFjy9N_BJ9qiQ7Yxz1SPj4VhuU8MgEqtTAHFQ3vlCdPgyYW9uKB3zUoiPab4-mbFukm-MkcbzxQ4_b4peJCxqbibJwiAew0VV_JeN8hnZsSoiF4dPvht3-LE3rx8-3LoFGbg73XMvjul4qvgAAcCLWx4ihgoFX76ZsI"/>
+</button>
+</header>
+<main class="w-full max-w-[480px] px-margin-mobile flex flex-col gap-xl mt-lg relative z-10">
+<div class="mb-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-base">System States Overview</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visual demonstration of Kapamilya Trust feedback patterns.</p>
+</div>
+<!-- 1. Empty State -->
+<section class="flex flex-col items-center text-center p-lg rounded-xl bg-surface-container-lowest shadow-[0_4px_12px_rgba(0,0,0,0.04)] relative overflow-hidden">
+<div class="sun-motif top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 !opacity-10 !w-32 !h-32"></div>
+<div class="w-24 h-24 mb-md relative flex items-center justify-center">
+<span class="material-symbols-outlined text-[64px] text-primary opacity-80" data-icon="drafts">drafts</span>
+<span class="material-symbols-outlined absolute -top-2 -right-2 text-[32px] text-secondary-container" data-icon="wb_sunny" data-weight="fill" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Wala pang padala.</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Mag-ipon muna o magpadala.</p>
+<button class="bg-primary text-on-primary h-[48px] px-lg rounded-full font-body-md text-body-md font-semibold hover:opacity-90 active:scale-95 transition-all shadow-[0_8px_20px_rgba(93,5,24,0.08)]">
+                Magpadala Ngayon
+            </button>
+</section>
+<!-- 2. Pending Transaction (Golden Pulse) -->
+<section class="relative">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-sm uppercase tracking-widest">Processing</h3>
+<div class="p-md rounded-xl bg-surface-container-lowest border-2 border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.04)] animate-golden-pulse relative overflow-hidden">
+<div class="flex items-center justify-between mb-sm">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container bg-opacity-20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="school">school</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Education Fund</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">To: Maria Santos</p>
+</div>
+</div>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim bg-secondary-container bg-opacity-10 px-xs py-base rounded">PROCESSING</span>
+</div>
+<div class="flex justify-between items-end mt-md pt-md border-t border-surface-variant">
+<span class="font-currency-md text-currency-md text-on-surface-variant">PHP</span>
+<span class="font-currency-lg text-currency-lg text-on-surface font-semibold">15,000.00</span>
+</div>
+</div>
+</section>
+<!-- 3. Error State -->
+<section class="relative">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-sm uppercase tracking-widest">Error Feedback</h3>
+<div class="p-md rounded-xl bg-error-container bg-opacity-30 border border-outline shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex gap-md items-start">
+<span class="material-symbols-outlined text-error mt-base" data-icon="error" data-weight="fill" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-error-container mb-base">Login Failed</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Mali ang password. Pakisubukan ulit.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-[72px] px-md pb-safe bg-surface-container dark:bg-surface-container shadow-[0_-8px_20px_rgba(93,5,24,0.08)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-lg py-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-lg transition-colors">
+<span class="material-symbols-outlined mb-base" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</button>
+<!-- Active/Focus Tab -->
+<button class="flex flex-col items-center justify-center bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-full px-lg py-xs shadow-[0_-8px_20px_rgba(93,5,24,0.08)] active:scale-95 duration-200 ease-in-out transform -translate-y-2">
+<span class="material-symbols-outlined mb-base" data-icon="account_balance_wallet" data-weight="fill" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">Padala</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-lg py-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-lg transition-colors">
+<span class="material-symbols-outlined mb-base" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</button>
+</nav>
+</body></html>
