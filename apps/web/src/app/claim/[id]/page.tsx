@@ -62,6 +62,21 @@ const CATEGORY_UI: Record<
   },
 };
 
+// Friendly names for the seeded testnet merchant accounts. The contract only
+// stores addresses, so we label them client-side for a human-readable dropdown.
+const MERCHANT_NAMES: Record<string, string> = {
+  GAPJSUJQF3NJR5CGON3N6G7DEVVHZMPJAVW7K5RMKQAOFK4ZUSPUPO6K:
+    "Ateneo de Manila University",
+  GAF3RRXMZNCDEBVDONOLTWXPSPVRB6YVQNIYBLBQGA3TT4FFNYYVS5L3: "Meralco (utility)",
+  GD4AHVJWY2MI3E5O7YI66XFRSJ43HYQ6FCWW5K7LOQWDTZWAM6C6PZHT:
+    "Makati Medical Center",
+  GC6NYRQP7O2TT4VFZKQXEZOX2QKQ6HHQTBCZ4TZDLIZQZZN7AKIKVMXX: "SM Supermarket",
+};
+
+function merchantLabel(addr: string): string {
+  return MERCHANT_NAMES[addr] ?? `${addr.slice(0, 6)}…${addr.slice(-6)}`;
+}
+
 function shorten(a: string): string {
   return `${a.slice(0, 6)}…${a.slice(-6)}`;
 }
@@ -409,7 +424,7 @@ function BucketCard({
                 <option value="">Select…</option>
                 {merchants.map((m) => (
                   <option key={m} value={m}>
-                    {shorten(m)}
+                    {merchantLabel(m)}
                   </option>
                 ))}
               </select>
@@ -486,9 +501,9 @@ function Receipt({
           href={merchantUrl}
           target="_blank"
           rel="noreferrer"
-          className="font-currency-md text-primary underline"
+          className="font-body-sm text-primary underline"
         >
-          {merchant.slice(0, 6)}…{merchant.slice(-6)}
+          {merchantLabel(merchant)}
         </a>
       </div>
       {txUrl && (
