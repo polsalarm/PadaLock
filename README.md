@@ -23,7 +23,14 @@ Beyond Level 1, PadaLock adds the purpose-locked remittance escrow described bel
 ~$36B/yr in OFW remittances flow into the Philippines. Senders have no spending control once funds land — common failure: lump sum spent in days, kids miss tuition, electricity gets cut.
 
 ## Solution
-OFW sends USDC split across purpose buckets (tuition / utility / medical / groceries / free cash). Restricted buckets are escrowed in a Soroban contract and claimable only to whitelisted merchant accounts. Free cash off-ramps to PHP via SEP-24 anchor.
+OFW sends USDC split across purpose buckets (tuition / utility / medical / groceries / free cash). Restricted buckets are escrowed in a Soroban contract and claimable only to whitelisted merchant accounts. Free cash off-ramps to PHP via a real SEP-24 anchor.
+
+### Features
+- **Purpose-locked buckets** — restricted buckets release only to whitelisted merchants; free cash is unrestricted.
+- **Multi-recipient padala** — each bucket names its own recipient, so one padala can fan out to several family members; each claims only their own buckets.
+- **Recurring padala** — sender prefunds N monthly runs up front; `execute_due` is permissionless (a cron / the family / the sender) and mints a fresh padala each interval; cancel refunds the unspent prefund.
+- **Real SEP-24 off-ramp** — free cash is claimed to the recipient's wallet, then cashed out via genuine SEP-10 auth + SEP-24 interactive withdraw against `testanchor.stellar.org`.
+- **Deep-link + QR claim share** — send-success shows a shareable claim link, QR, and native Share sheet for low-tech family.
 
 ## Repo
 - `contracts/pada-lock/` — Soroban contract (Rust)
