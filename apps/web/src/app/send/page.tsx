@@ -24,6 +24,7 @@ import {
   PageShell,
   TopAppBar,
 } from "@/components/ui";
+import { ClaimShare } from "@/components/claim-share";
 
 const CATEGORIES: {
   key: BucketCategory;
@@ -47,49 +48,6 @@ const EMPTY: Allocations = {
   Groceries: "",
   FreeCash: "",
 };
-
-function ClaimLinkShare({ padalaId }: { padalaId: string }) {
-  const [copied, setCopied] = useState(false);
-  const claimUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/claim/${padalaId}`
-      : `/claim/${padalaId}`;
-
-  return (
-    <div className="mt-sm rounded-lg bg-surface-container-low p-sm">
-      <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-        Share this claim link with your family
-      </div>
-      <div className="mt-1 break-all font-currency-md text-[12px] text-primary">
-        {claimUrl}
-      </div>
-      <div className="mt-sm flex gap-sm">
-        <button
-          onClick={async () => {
-            await navigator.clipboard.writeText(claimUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-          }}
-          className="flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary"
-        >
-          <span className="material-symbols-outlined text-[16px]">
-            {copied ? "check" : "content_copy"}
-          </span>
-          {copied ? "Copied" : "Copy link"}
-        </button>
-        <a
-          href={`/padala/${padalaId}`}
-          className="flex items-center gap-1 rounded-full border border-outline-variant px-md py-xs font-label-caps text-label-caps uppercase text-on-surface"
-        >
-          <span className="material-symbols-outlined text-[16px]">
-            visibility
-          </span>
-          Track releases
-        </a>
-      </div>
-    </div>
-  );
-}
 
 export default function SendPage() {
   const router = useRouter();
@@ -378,7 +336,7 @@ export default function SendPage() {
         {status && (
           <Card>
             <p className="font-body-sm text-body-sm text-on-surface">{status}</p>
-            {resultId && <ClaimLinkShare padalaId={resultId} />}
+            {resultId && <ClaimShare padalaId={resultId} />}
           </Card>
         )}
       </main>
