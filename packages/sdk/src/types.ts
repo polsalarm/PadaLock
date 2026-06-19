@@ -8,12 +8,14 @@ export type BucketCategory =
 export interface BucketInput {
   category: BucketCategory;
   amount: string; // stroops (i128 string)
+  recipient: string; // per-bucket recipient (multi-recipient padala)
 }
 
 export interface BucketView {
   id: number;
   category: BucketCategory;
   amount: string;
+  recipient: string;
   claimed: boolean;
   claimedBy?: string;
 }
@@ -21,9 +23,22 @@ export interface BucketView {
 export interface PadalaView {
   id: string;
   sender: string;
-  recipient: string;
   buckets: BucketView[];
   createdAt: number;
+  /** 0 for one-off; the recurring schedule id that minted it otherwise. */
+  recurringId: number;
+}
+
+export interface RecurringView {
+  id: string;
+  sender: string;
+  template: { category: BucketCategory; amount: string; recipient: string }[];
+  intervalSecs: number;
+  nextRun: number;
+  remaining: number;
+  perRunTotal: string;
+  prefunded: string;
+  active: boolean;
 }
 
 export const CATEGORY_TO_NUM: Record<BucketCategory, number> = {
