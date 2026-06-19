@@ -184,4 +184,30 @@ Everything else is post-MVP.
 
 ---
 
+## 10. Build status (updated 2026-06-20)
+
+Phase 0–7 shipped. Contract redeployed with multi-recipient + recurring:
+`CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` (16 merchants reseeded).
+See `docs/testnet-state.md` for live IDs + ops.
+
+- **Phase 5 / SEP-24:** ✅ real off-ramp. FreeCash claimed to recipient wallet,
+  then SEP-10 auth + SEP-24 interactive withdraw vs `testanchor.stellar.org`
+  (`packages/sdk/src/sep24.ts`, `apps/web/src/components/sep24-cashout.tsx`).
+  Asset caveat: testanchor uses its own asset; mainnet swaps PadaLock USDC → PH
+  partner anchor PHP rail.
+- **Phase 8 — SEP-7 deep-link claim:** ✅ shareable claim link + QR + native
+  Share on send-success (`apps/web/src/components/claim-share.tsx`). Note: claim
+  needs recipient auth, so it's an https deep link + QR, not a SEP-7 tx URI.
+- **Phase 8 — Multi-recipient split:** ✅ per-bucket recipient in the contract;
+  send UI "send buckets to different family members"; claim gates per bucket.
+- **Phase 8 — Recurring padala:** ✅ prefunded schedule (`create_recurring` /
+  permissionless `execute_due` / `cancel_recurring` refund). Send-page toggle +
+  `/recurring/[id]` management page. Off-chain cron calls `execute_due` when due.
+- **Phase 8 — Reputation:** not built (out of scope for this pass).
+
+Contract tests: 15/15 `cargo test`. Verified on testnet: create_padala,
+create_recurring → execute_due (mints padala with `recurring_id`).
+
+---
+
 *Smallest strong demo. Build Phase 0–7 first. Phase 8 only if green.*
