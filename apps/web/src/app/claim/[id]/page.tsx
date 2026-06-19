@@ -145,17 +145,19 @@ export default function ClaimPage({
 
   if (state.status !== "unlocked") return null;
   const publicKey = state.publicKey;
-  const isRecipient = padala && padala.recipient === publicKey;
+  // Multi-recipient: a viewer sees only the buckets addressed to them.
+  const myBuckets = padala
+    ? padala.buckets.filter((b) => b.recipient === publicKey)
+    : [];
+  const isRecipient = myBuckets.length > 0;
 
-  const totalUsdc = padala
-    ? padala.buckets.reduce((acc, b) => acc + BigInt(b.amount), 0n).toString()
-    : "0";
-  const claimedUsdc = padala
-    ? padala.buckets
-        .filter((b) => b.claimed)
-        .reduce((acc, b) => acc + BigInt(b.amount), 0n)
-        .toString()
-    : "0";
+  const totalUsdc = myBuckets
+    .reduce((acc, b) => acc + BigInt(b.amount), 0n)
+    .toString();
+  const claimedUsdc = myBuckets
+    .filter((b) => b.claimed)
+    .reduce((acc, b) => acc + BigInt(b.amount), 0n)
+    .toString();
   const totalPhp = padala ? fmtStroopsPhp(totalUsdc) : "0.00";
   const claimedPhp = padala ? fmtStroopsPhp(claimedUsdc) : "0.00";
   const claimedPct =
@@ -190,10 +192,10 @@ export default function ClaimPage({
         {padala && !isRecipient && (
           <Card>
             <p className="font-body-sm text-body-sm text-error">
-              This padala is addressed to a different recipient.
+              None of this padala&apos;s buckets are addressed to your wallet.
             </p>
             <p className="mt-1 font-currency-md text-[12px] text-on-surface-variant">
-              Expected: {shorten(padala.recipient)}
+              Your wallet: {shorten(publicKey)}
             </p>
           </Card>
         )}
@@ -233,7 +235,7 @@ export default function ClaimPage({
             </section>
 
             <div className="flex flex-col gap-gutter">
-              {padala.buckets.map((b) => (
+              {myBuckets.map((b) => (
                 <BucketCard
                   key={b.id}
                   padalaId={padala.id}
