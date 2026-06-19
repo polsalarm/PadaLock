@@ -9,7 +9,12 @@ import {
 } from '@stellar/stellar-sdk';
 import { BASE_FEE, NETWORK, PADALOCK_CONTRACT_ID } from './config';
 import { getRpcServer } from './rpc';
-import type { PadalaView, BucketCategory, BucketView } from './types';
+import type {
+  PadalaView,
+  BucketCategory,
+  BucketView,
+  RecurringView,
+} from './types';
 
 const CATEGORY_NAMES: BucketCategory[] = [
   'Tuition',
@@ -52,15 +57,16 @@ interface RawBucket {
   id: number;
   category: number;
   amount: bigint;
+  recipient: string;
   claimed: boolean;
   claimed_by?: string | null;
 }
 
 interface RawPadala {
   sender: string;
-  recipient: string;
   buckets: RawBucket[];
   created_at: bigint;
+  recurring_id: bigint;
 }
 
 export async function getPadala(callerPub: string, padalaId: string): Promise<PadalaView> {
@@ -74,6 +80,7 @@ export async function getPadala(callerPub: string, padalaId: string): Promise<Pa
     id: b.id,
     category: CATEGORY_NAMES[b.category] ?? 'FreeCash',
     amount: b.amount.toString(),
+    recipient: String(b.recipient),
     claimed: b.claimed,
     claimedBy: b.claimed_by ?? undefined,
   }));
@@ -81,9 +88,47 @@ export async function getPadala(callerPub: string, padalaId: string): Promise<Pa
   return {
     id: padalaId,
     sender: raw.sender,
-    recipient: raw.recipient,
     buckets,
     createdAt: Number(raw.created_at),
+    recurringId: Number(raw.recurring_id ?? 0),
+  };
+}
+
+interface RawRecurring {
+  sender: string;
+  template: { category: number; amount: bigint; recipient: string }[];
+  interval_secs: bigint;
+  next_run: bigint;
+  remaining: number;
+  per_run_total: bigint;
+  prefunded: bigint;
+  active: boolean;
+}
+
+export async function getRecurring(
+  callerPub: string,
+  recId: string
+): Promise<RecurringView> {
+  const raw = (await simRead(
+    callerPub,
+    'get_recurring',
+    nativeToScVal(BigInt(recId), { type: 'u64' })
+  )) as RawRecurring;
+
+  return {
+    id: recId,
+    sender: raw.sender,
+    template: raw.template.map((t) => ({
+      category: CATEGORY_NAMES[t.category] ?? 'FreeCash',
+      amount: t.amount.toString(),
+      recipient: String(t.recipient),
+    })),
+    intervalSecs: Number(raw.interval_secs),
+    nextRun: Number(raw.next_run),
+    remaining: raw.remaining,
+    perRunTotal: raw.per_run_total.toString(),
+    prefunded: raw.prefunded.toString(),
+    active: raw.active,
   };
 }
 
