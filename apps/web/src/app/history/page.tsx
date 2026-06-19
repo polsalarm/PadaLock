@@ -23,6 +23,7 @@ interface Row {
   totalUsdc: string;
   claimedCount: number;
   bucketCount: number;
+  recipients: string[]; // distinct bucket recipients (multi-recipient)
 }
 
 function shorten(a: string): string {
@@ -51,6 +52,7 @@ export default function HistoryPage() {
           totalUsdc,
           claimedCount: view.buckets.filter((b) => b.claimed).length,
           bucketCount: view.buckets.length,
+          recipients: [...new Set(view.buckets.map((b) => b.recipient))],
         });
       } catch {
         // padala not found / pruned — skip
@@ -150,12 +152,15 @@ export default function HistoryPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-sm">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tertiary-container/10 font-headline-sm text-headline-sm text-tertiary-container">
-                        {r.view.recipient.charAt(1).toUpperCase()}
+                        {r.recipients[0]?.charAt(1).toUpperCase() ?? "?"}
                       </div>
                       <div>
                         <div className="font-body-sm text-body-sm font-semibold text-on-surface">
-                          {contactName(state.publicKey, r.view.recipient) ??
-                            shorten(r.view.recipient)}
+                          {(contactName(state.publicKey, r.recipients[0]) ??
+                            shorten(r.recipients[0] ?? "")) +
+                            (r.recipients.length > 1
+                              ? ` +${r.recipients.length - 1}`
+                              : "")}
                         </div>
                         <div className="font-body-sm text-body-sm text-on-surface-variant">
                           Padala #{r.id}
