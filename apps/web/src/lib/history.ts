@@ -37,3 +37,39 @@ export function recordSentPadala(senderPub: string, padalaId: string): void {
 export function getSentPadalaIds(senderPub: string): number[] {
   return (readMap()[senderPub] ?? []).slice().sort((a, b) => b - a);
 }
+
+/**
+ * Local index of padala IDs this wallet has *received* (is a bucket recipient
+ * of), keyed by recipient pubkey. The contract has no "list by recipient"
+ * query either, so we remember IDs when the claim page confirms the viewer is
+ * a recipient. Lets family members see padalas sent to them.
+ */
+const RECV_KEY = "padalock.received.v1";
+
+function readRecvMap(): SentMap {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(RECV_KEY) ?? "{}") as SentMap;
+  } catch {
+    return {};
+  }
+}
+
+/** Record a padala id under the recipient's pubkey. */
+export function recordReceivedPadala(
+  recipientPub: string,
+  padalaId: string
+): void {
+  const id = Number(padalaId);
+  if (!Number.isFinite(id)) return;
+  const m = readRecvMap();
+  const list = m[recipientPub] ?? [];
+  if (!list.includes(id)) list.push(id);
+  m[recipientPub] = list;
+  window.localStorage.setItem(RECV_KEY, JSON.stringify(m));
+}
+
+/** Get received padala ids for a recipient, newest first. */
+export function getReceivedPadalaIds(recipientPub: string): number[] {
+  return (readRecvMap()[recipientPub] ?? []).slice().sort((a, b) => b - a);
+}
