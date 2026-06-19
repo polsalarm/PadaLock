@@ -142,7 +142,18 @@ export default function PadalaDetailPage({
                 </div>
               </div>
               <p className="mt-sm font-body-sm text-body-sm text-on-surface-variant">
-                To {shorten(padala.recipient)}
+                {(() => {
+                  const rs = [...new Set(padala.buckets.map((b) => b.recipient))];
+                  return `To ${shorten(rs[0] ?? "")}${
+                    rs.length > 1 ? ` +${rs.length - 1} more` : ""
+                  }`;
+                })()}
+                {padala.recurringId > 0 && (
+                  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-secondary-fixed/30 px-2 py-0.5 font-label-caps text-[10px] uppercase text-on-secondary-fixed-variant">
+                    <span className="material-symbols-outlined text-[12px]">event_repeat</span>
+                    recurring #{padala.recurringId}
+                  </span>
+                )}
               </p>
             </Card>
 
