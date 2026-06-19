@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import {
   buildCreatePadala,
+  buildCreateRecurring,
   pollFinality,
   submitSignedXdr,
   type BucketCategory,
@@ -60,6 +61,13 @@ export default function SendPage() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
+  // Multi-recipient: assign a different family member per bucket.
+  const [perBucket, setPerBucket] = useState(false);
+  const [bucketRecip, setBucketRecip] = useState<Allocations>(EMPTY);
+  // Recurring: prefund N monthly runs up front.
+  const [recurring, setRecurring] = useState(false);
+  const [months, setMonths] = useState("3");
+  const [recResultId, setRecResultId] = useState<string | null>(null);
 
   const pub = state.status === "unlocked" ? state.publicKey : null;
 
@@ -84,8 +92,12 @@ export default function SendPage() {
     const n = parseFloat(alloc[c.key] || "0");
     return acc + (isNaN(n) ? 0 : n);
   }, 0);
-  const remainingPhp = Math.max(availablePhp - totalPhp, 0);
-  const overspent = totalPhp > availablePhp + 0.005;
+  // Recurring escrows allocation × months up front, so the guard scales with it.
+  const escrowPhp = recurring
+    ? totalPhp * (parseInt(months || "0", 10) || 0)
+    : totalPhp;
+  const remainingPhp = Math.max(availablePhp - escrowPhp, 0);
+  const overspent = escrowPhp > availablePhp + 0.005;
 
   function setAmt(key: BucketCategory, v: string) {
     setAlloc({ ...alloc, [key]: v });
@@ -102,32 +114,54 @@ export default function SendPage() {
     setAlloc({ ...alloc, [key]: give.toFixed(2) });
   }
 
+  function validAddr(a: string): boolean {
+    return a.startsWith("G") && a.length === 56;
+  }
+
   async function submit() {
     if (state.status !== "unlocked") return;
-    const buckets = CATEGORIES.filter(
+    const active = CATEGORIES.filter(
       (c) => parseFloat(alloc[c.key] || "0") > 0
-    ).map((c) => ({
-      category: c.key,
-      amount: toStroops(String(phpToUsdcHuman(alloc[c.key]))),
-    }));
-    if (buckets.length === 0) {
+    );
+    if (active.length === 0) {
       setStatus("Allocate at least one bucket.");
       return;
     }
-    if (!recipient.startsWith("G") || recipient.length !== 56) {
-      setStatus("Recipient must be a valid Stellar public key (G...).");
+    // Resolve each bucket's recipient (per-bucket override falls back to main).
+    const buckets = active.map((c) => ({
+      category: c.key,
+      amount: toStroops(String(phpToUsdcHuman(alloc[c.key]))),
+      recipient: perBucket && bucketRecip[c.key] ? bucketRecip[c.key] : recipient,
+    }));
+    for (const b of buckets) {
+      if (!validAddr(b.recipient)) {
+        setStatus("Every bucket needs a valid recipient (G...).");
+        return;
+      }
+    }
+
+    const occ = parseInt(months || "0", 10);
+    if (recurring && (!occ || occ < 1)) {
+      setStatus("Set how many monthly runs to prefund.");
       return;
     }
 
     setBusy(true);
     setStatus("Simulating…");
     setResultId(null);
+    setRecResultId(null);
     try {
-      const { tx } = await buildCreatePadala({
-        senderPub: state.publicKey,
-        recipientPub: recipient,
-        buckets,
-      });
+      const { tx } = recurring
+        ? await buildCreateRecurring({
+            senderPub: state.publicKey,
+            template: buckets,
+            intervalSecs: 30 * 24 * 60 * 60, // ~monthly
+            occurrences: occ,
+          })
+        : await buildCreatePadala({
+            senderPub: state.publicKey,
+            buckets,
+          });
       setStatus("Signing with your wallet…");
       const signedXdr = await signTxXdr(tx.toXDR());
       setStatus("Submitting…");
@@ -135,7 +169,7 @@ export default function SendPage() {
       setStatus("Polling for finality…");
       const r = await pollFinality(hash);
       if (r.status === "SUCCESS") {
-        // Contract returns the padala id (u64 -> bigint). Decode robustly.
+        // Contract returns the id (u64 -> bigint). Decode robustly.
         const native = r.returnNative;
         const id =
           typeof native === "bigint"
@@ -145,13 +179,19 @@ export default function SendPage() {
               : typeof native === "string" && /^\d+$/.test(native)
                 ? native
                 : null;
-        if (id) {
+        if (recurring) {
+          setStatus(
+            id
+              ? `Recurring padala set up — ${occ} monthly runs prefunded in escrow.`
+              : `Recurring set up (tx ${hash.slice(0, 8)}…).`
+          );
+          setRecResultId(id);
+        } else if (id) {
           setStatus("Padala sent and locked in escrow.");
           setResultId(id);
           recordSentPadala(state.publicKey, id);
         } else {
           setStatus(`Sent (tx ${hash.slice(0, 8)}…) — open Track releases to find it.`);
-          setResultId(null);
         }
       } else {
         setStatus(`Failed: ${r.status}`);
@@ -304,9 +344,96 @@ export default function SendPage() {
                 <div className="text-right font-currency-md text-[12px] text-on-surface-variant/70">
                   ≈ {usdc} USDC
                 </div>
+
+                {/* Per-bucket recipient (multi-recipient mode) */}
+                {perBucket && parseFloat(alloc[c.key] || "0") > 0 && (
+                  <div className="mt-1 border-t border-outline-variant/30 pt-sm">
+                    <label className="mb-1 block font-label-caps text-label-caps uppercase text-on-surface-variant">
+                      Goes to
+                    </label>
+                    {contacts.length > 0 ? (
+                      <select
+                        value={bucketRecip[c.key]}
+                        onChange={(e) =>
+                          setBucketRecip({ ...bucketRecip, [c.key]: e.target.value })
+                        }
+                        className="h-11 w-full appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
+                      >
+                        <option value="">Same as main recipient</option>
+                        {contacts.map((ct) => (
+                          <option key={ct.address} value={ct.address}>
+                            {ct.name} ({ct.address.slice(0, 4)}…{ct.address.slice(-4)})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        placeholder="G… (defaults to main recipient)"
+                        value={bucketRecip[c.key]}
+                        onChange={(e) =>
+                          setBucketRecip({ ...bucketRecip, [c.key]: e.target.value })
+                        }
+                        className="h-11 w-full rounded-lg border border-outline-variant bg-surface px-md font-currency-md text-[13px] text-on-surface outline-none focus:border-primary"
+                      />
+                    )}
+                  </div>
+                )}
               </Card>
             );
           })}
+        </div>
+
+        {/* Send options — multi-recipient + recurring */}
+        <div className="flex flex-col gap-sm rounded-xl border border-outline-variant bg-surface-container-low p-md">
+          <label className="flex items-center justify-between gap-sm">
+            <span className="flex items-center gap-xs font-body-md text-body-md text-on-surface">
+              <span className="material-symbols-outlined text-tertiary-container" data-weight="fill">
+                groups
+              </span>
+              Send buckets to different family members
+            </span>
+            <input
+              type="checkbox"
+              checked={perBucket}
+              onChange={(e) => setPerBucket(e.target.checked)}
+              className="h-5 w-5 accent-primary"
+            />
+          </label>
+
+          <label className="flex items-center justify-between gap-sm border-t border-outline-variant/30 pt-sm">
+            <span className="flex items-center gap-xs font-body-md text-body-md text-on-surface">
+              <span className="material-symbols-outlined text-tertiary-container" data-weight="fill">
+                event_repeat
+              </span>
+              Make it monthly (recurring)
+            </span>
+            <input
+              type="checkbox"
+              checked={recurring}
+              onChange={(e) => setRecurring(e.target.checked)}
+              className="h-5 w-5 accent-primary"
+            />
+          </label>
+
+          {recurring && (
+            <div className="flex items-center justify-between gap-sm rounded-lg bg-surface-container px-md py-sm">
+              <span className="font-body-sm text-body-sm text-on-surface-variant">
+                Prefund how many months?
+              </span>
+              <input
+                inputMode="numeric"
+                value={months}
+                onChange={(e) => setMonths(e.target.value.replace(/[^0-9]/g, ""))}
+                className="w-16 rounded-lg border border-outline-variant bg-surface px-sm py-1 text-center font-currency-md text-[16px] text-on-surface focus:border-primary focus:outline-none"
+              />
+            </div>
+          )}
+          {recurring && (
+            <p className="font-body-sm text-[12px] text-on-surface-variant/70">
+              Total escrowed up front = allocation × months. Each month anyone can
+              release the next run; cancel anytime to refund the rest.
+            </p>
+          )}
         </div>
 
         {/* Trust disclosure */}
@@ -337,6 +464,15 @@ export default function SendPage() {
           <Card>
             <p className="font-body-sm text-body-sm text-on-surface">{status}</p>
             {resultId && <ClaimShare padalaId={resultId} />}
+            {recResultId && (
+              <a
+                href={`/recurring/${recResultId}`}
+                className="mt-sm inline-flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary"
+              >
+                <span className="material-symbols-outlined text-[16px]">event_repeat</span>
+                Manage recurring
+              </a>
+            )}
           </Card>
         )}
       </main>
@@ -346,7 +482,7 @@ export default function SendPage() {
         <div className="px-margin-mobile pb-sm">
           <div className="mb-1 flex items-center justify-between px-xs">
             <span className="font-body-md text-body-md text-on-surface-variant">
-              Total Allocation
+              {recurring ? "Monthly Allocation" : "Total Allocation"}
             </span>
             <span
               className={`font-currency-lg text-currency-lg ${
@@ -356,6 +492,16 @@ export default function SendPage() {
               ₱ {totalPhp.toFixed(2)}
             </span>
           </div>
+          {recurring && (
+            <div className="mb-1 flex items-center justify-between px-xs">
+              <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
+                Escrow now (× {months || 0})
+              </span>
+              <span className="font-currency-md text-currency-md text-tertiary-container">
+                ₱ {(totalPhp * (parseInt(months || "0", 10) || 0)).toFixed(2)}
+              </span>
+            </div>
+          )}
           <div className="mb-sm flex items-center justify-between px-xs">
             <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
               {overspent ? "Over budget by" : "Remaining"}
@@ -365,7 +511,7 @@ export default function SendPage() {
                 overspent ? "text-error" : "text-on-surface-variant"
               }`}
             >
-              ₱ {(overspent ? totalPhp - availablePhp : remainingPhp).toFixed(2)}
+              ₱ {(overspent ? escrowPhp - availablePhp : remainingPhp).toFixed(2)}
             </span>
           </div>
           <button
@@ -380,7 +526,9 @@ export default function SendPage() {
               ? "Sending…"
               : overspent
                 ? "Not enough balance"
-                : "Lock & Send"}
+                : recurring
+                  ? "Lock & Schedule"
+                  : "Lock & Send"}
           </button>
         </div>
       </div>
