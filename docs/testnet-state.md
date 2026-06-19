@@ -4,7 +4,7 @@
 > Update this file whenever you redeploy or rotate keys, then mirror into
 > `apps/web/.env.local`.
 
-**Last deployed:** 2026-06-11
+**Last deployed:** 2026-06-20 (multi-recipient + recurring rebuild)
 **Network:** Stellar testnet
 **Network passphrase:** `Test SDF Network ; September 2015`
 **RPC URL:** `https://soroban-testnet.stellar.org`
@@ -15,19 +15,24 @@
 
 | Resource | Contract ID |
 |----------|-------------|
-| **PadaLock** | `CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X` |
+| **PadaLock** | `CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` |
 | **USDC SAC** | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
 
 **Stellar Expert:**
-- PadaLock → https://stellar.expert/explorer/testnet/contract/CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X
+- PadaLock → https://stellar.expert/explorer/testnet/contract/CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443
 - USDC SAC → https://stellar.expert/explorer/testnet/contract/CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 
-**Wasm hash:** `d68fc856c0a3bc266c01ea9ec2115392b8008b14f2e73f596a5edd6de51c3f87`
-**Wasm size:** 7973 bytes
+**Wasm hash:** `b0929ce9208e8626f4f0615f4aa0f8f4332711ed0c10cdfc7a420dc38861ebb0`
+**Wasm size:** 15036 bytes
+**Exported fns:** `__constructor add_merchant cancel_recurring claim create_padala create_recurring execute_due get_merchants get_padala get_recurring`
 
 **Deploy txs:**
 - SAC deploy: https://stellar.expert/explorer/testnet/tx/9b4a382a7f66bff017926ba8060c798daac034716e953e8f7619901d39f8cb2d
-- PadaLock deploy: https://stellar.expert/explorer/testnet/tx/b90179767a01ff3727cf02d4ca7de3a4898cd890091847e53f0bbf7526fda611
+- PadaLock wasm upload: https://stellar.expert/explorer/testnet/tx/ab8b3ed7468e832438df52f06e0a1d2f8fafbcb75e8b507832d2adfbcdb32ddb
+- PadaLock deploy (multi-recipient + recurring): https://stellar.expert/explorer/testnet/tx/071336227025b374f49b1e11092e52c0f3d8b548c58e11a47d34752cf4cd4407
+
+> **Prior contract (single-recipient, pre-2026-06-20):**
+> `CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X` — deprecated, do not use.
 
 ---
 
@@ -59,8 +64,9 @@ Keys live in `C:\Users\Admin\.config\stellar\identity\*.toml`.
 `apps/web/.env.local`:
 
 ```env
-NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X
+NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443
 NEXT_PUBLIC_USDC_SAC_TESTNET=CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
+NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN=testanchor.stellar.org
 ```
 
 Update both this file AND `.env.local` after any redeploy.
@@ -88,10 +94,31 @@ stellar contract invoke \
 ### Read padala
 ```bash
 stellar contract invoke \
-  --id CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X \
+  --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
   --source padalock-admin --network testnet \
   -- get_padala --padala_id <N>
 ```
+
+### Recurring padala (prefunded schedule)
+`create_recurring` escrows `occurrences * total` up front. `execute_due` is
+**permissionless** — anyone may trigger it once `next_run` has elapsed (a cron,
+the family, or the sender). `cancel_recurring` refunds the unspent prefund to the
+sender. Each run mints a normal Padala (`recurring_id` = schedule id).
+```bash
+# inspect a schedule
+stellar contract invoke --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
+  --source padalock-admin --network testnet -- get_recurring --rec_id <N>
+
+# trigger the next due run (off-chain cron calls this)
+stellar contract invoke --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
+  --source <ANY_FUNDED_KEY> --network testnet -- execute_due --rec_id <N>
+```
+
+### SEP-24 off-ramp (FreeCash cash-out)
+FreeCash is claimed to the recipient's own wallet, then cashed out via real
+SEP-24 against `testanchor.stellar.org` (SEP-1 toml → SEP-10 auth → interactive
+withdraw → poll). Anchor asset ≠ PadaLock USDC, so the protocol is wired
+end-to-end for the demo; mainnet swaps PadaLock USDC → a PH partner anchor's PHP.
 
 ### Redeploy (after contract change)
 ```bash
