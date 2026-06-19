@@ -20,6 +20,7 @@ import {
   StatusBadge,
   TopAppBar,
 } from "@/components/ui";
+import { Sep24CashOut } from "@/components/sep24-cashout";
 
 const CATEGORY_UI: Record<
   string,
@@ -304,7 +305,9 @@ function BucketCard({
   const restricted = bucket.category !== "FreeCash";
   const [merchants, setMerchants] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
-  const [freeCashAddr, setFreeCashAddr] = useState("");
+  // FreeCash defaults to the recipient's own wallet, then off-ramps via SEP-24.
+  const [freeCashAddr, setFreeCashAddr] = useState(callerPub);
+  const [otherAddr, setOtherAddr] = useState(false);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<{ hash: string; merchant: string } | null>(
@@ -417,14 +420,19 @@ function BucketCard({
         </p>
       </div>
 
-      {receipt ? (
-        <Receipt
-          hash={receipt.hash}
-          merchant={receipt.merchant}
-          amountUsdc={fmtStroops(bucket.amount)}
-        />
-      ) : bucket.claimed ? (
-        <Receipt merchant={bucket.claimedBy ?? ""} amountUsdc={fmtStroops(bucket.amount)} />
+      {receipt || bucket.claimed ? (
+        <div className="space-y-3">
+          <Receipt
+            hash={receipt?.hash}
+            merchant={receipt?.merchant ?? bucket.claimedBy ?? ""}
+            amountUsdc={fmtStroops(bucket.amount)}
+          />
+          {/* FreeCash claimed to own wallet → real SEP-24 off-ramp */}
+          {!restricted &&
+            (receipt?.merchant ?? bucket.claimedBy) === callerPub && (
+              <Sep24CashOut account={callerPub} signTxXdr={signTxXdr} />
+            )}
+        </div>
       ) : restricted ? (
         <div className="space-y-3">
           <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
@@ -466,18 +474,46 @@ function BucketCard({
         </div>
       ) : (
         <div className="space-y-3">
-          <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
-            {ui.pickLabel}
-          </label>
-          <input
-            placeholder="G…"
-            value={freeCashAddr}
-            onChange={(e) => setFreeCashAddr(e.target.value)}
-            className="h-12 w-full rounded-lg border border-outline-variant bg-surface px-md font-currency-md text-[14px] text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
-          />
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            Naka-claim ito sa iyong wallet, tapos pwede mong i-cash out sa GCash /
+            bank gamit ang anchor (SEP-24).
+          </p>
+          {otherAddr ? (
+            <>
+              <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
+                Send to another address
+              </label>
+              <input
+                placeholder="G…"
+                value={freeCashAddr}
+                onChange={(e) => setFreeCashAddr(e.target.value)}
+                className="h-12 w-full rounded-lg border border-outline-variant bg-surface px-md font-currency-md text-[14px] text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+            </>
+          ) : (
+            <div className="flex items-center gap-2 rounded-lg bg-surface-container-low px-md py-2">
+              <span className="material-symbols-outlined text-outline text-[18px]">
+                account_balance_wallet
+              </span>
+              <span className="font-currency-md text-[12px] text-on-surface-variant">
+                Your wallet · {shorten(callerPub)}
+              </span>
+            </div>
+          )}
           <Button onClick={claim} disabled={busy || !freeCashAddr}>
-            {busy ? "Working…" : "Claim Now"}
+            {busy ? "Working…" : otherAddr ? "Claim Now" : "Claim to my wallet"}
           </Button>
+          <button
+            type="button"
+            onClick={() => {
+              const next = !otherAddr;
+              setOtherAddr(next);
+              setFreeCashAddr(next ? "" : callerPub);
+            }}
+            className="font-label-caps text-label-caps uppercase text-primary underline"
+          >
+            {otherAddr ? "Use my wallet instead" : "Send to another address"}
+          </button>
         </div>
       )}
 
