@@ -13,6 +13,7 @@ import {
 } from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
+import { recordReceivedPadala } from "@/lib/history";
 import {
   Button,
   Card,
@@ -150,6 +151,11 @@ export default function ClaimPage({
     ? padala.buckets.filter((b) => b.recipient === publicKey)
     : [];
   const isRecipient = myBuckets.length > 0;
+
+  // Remember this padala for the recipient's "Received" history.
+  useEffect(() => {
+    if (isRecipient) recordReceivedPadala(publicKey, id);
+  }, [isRecipient, publicKey, id]);
 
   const totalUsdc = myBuckets
     .reduce((acc, b) => acc + BigInt(b.amount), 0n)
