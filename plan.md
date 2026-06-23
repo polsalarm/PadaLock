@@ -203,9 +203,14 @@ See `docs/testnet-state.md` for live IDs + ops.
 - **Phase 8 — Recurring padala:** ✅ prefunded schedule (`create_recurring` /
   permissionless `execute_due` / `cancel_recurring` refund). Send-page toggle +
   `/recurring/[id]` management page. Off-chain cron calls `execute_due` when due.
-- **Phase 8 — Reputation:** not built (out of scope for this pass).
+- **Phase 8 — Merchant reputation:** ✅ on-chain track record per merchant
+  (`claims`, `volume`, `last_claim_at`), accrued one claim at a time in `claim`.
+  `get_reputation(merchant)` read + SDK `getReputation`; claim UI shows each
+  whitelisted merchant's claim count in the picker and a trust line for the
+  selected merchant. **Not yet redeployed** — live contract still lacks
+  `get_reputation`; UI degrades to "new merchant" until redeploy + reseed.
 
-Contract tests: 15/15 `cargo test`. Verified on testnet: create_padala,
+Contract tests: 16/16 `cargo test`. Verified on testnet: create_padala,
 create_recurring → execute_due (mints padala with `recurring_id`).
 
 ---
