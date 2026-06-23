@@ -78,9 +78,9 @@ export default function FamilyPage() {
               type="button"
               disabled={!newName.trim()}
               onClick={createGroup}
-              className="flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40"
+              className="flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              <span className="material-symbols-outlined text-[16px]">group_add</span>
+              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">group_add</span>
               Create
             </button>
           </div>
@@ -173,7 +173,7 @@ function GroupCard({
     <Card className="flex flex-col gap-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-sm">
-          <span className="material-symbols-outlined text-tertiary-container" data-weight="fill">
+          <span className="material-symbols-outlined text-tertiary-container" data-weight="fill" aria-hidden="true">
             groups
           </span>
           <div>
@@ -192,9 +192,11 @@ function GroupCard({
             deleteGroup(ownerPub, group.id);
             onChanged();
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-on-surface-variant hover:bg-error/10 hover:text-error"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-on-surface-variant hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
         >
-          <span className="material-symbols-outlined text-[20px]">delete</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            delete
+          </span>
         </button>
       </div>
 
@@ -209,11 +211,13 @@ function GroupCard({
               {memberLabel(ownerPub, m)}
               <button
                 type="button"
-                aria-label="Remove member"
+                aria-label={`Remove ${memberLabel(ownerPub, m)}`}
                 onClick={() => removeMember(m)}
-                className="text-on-surface-variant hover:text-error"
+                className="flex h-6 w-6 items-center justify-center rounded-full text-on-surface-variant hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
               >
-                <span className="material-symbols-outlined text-[16px]">close</span>
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                  close
+                </span>
               </button>
             </span>
           ))}
@@ -226,7 +230,8 @@ function GroupCard({
           <select
             value={pick}
             onChange={(e) => setPick(e.target.value)}
-            className="h-10 flex-1 appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
+            aria-label={`Add a saved family member to ${group.name}`}
+            className="h-11 flex-1 appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
           >
             <option value="">Add a saved family member…</option>
             {available.map((c) => (
@@ -239,7 +244,7 @@ function GroupCard({
             type="button"
             disabled={!pick}
             onClick={addFromPick}
-            className="rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40"
+            className="rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Add
           </button>
@@ -269,7 +274,7 @@ function GroupCard({
               type="button"
               disabled={!validAddr(raw.trim())}
               onClick={addRaw}
-              className="rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40"
+              className="rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Add
             </button>
@@ -282,9 +287,9 @@ function GroupCard({
         type="button"
         disabled={group.members.length === 0}
         onClick={onUse}
-        className="mt-1 flex h-11 w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-label-caps text-label-caps uppercase text-on-secondary-container disabled:opacity-40"
+        className="mt-1 flex h-11 w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-label-caps text-label-caps uppercase text-on-secondary-container disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
-        <span className="material-symbols-outlined text-[18px]" data-weight="fill">
+        <span className="material-symbols-outlined text-[18px]" data-weight="fill" aria-hidden="true">
           send
         </span>
         Use in Send
