@@ -4,7 +4,7 @@
 > Update this file whenever you redeploy or rotate keys, then mirror into
 > `apps/web/.env.local`.
 
-**Last deployed:** 2026-06-20 (multi-recipient + recurring rebuild)
+**Last deployed:** 2026-06-24 (merchant reputation rebuild)
 **Network:** Stellar testnet
 **Network passphrase:** `Test SDF Network ; September 2015`
 **RPC URL:** `https://soroban-testnet.stellar.org`
@@ -15,24 +15,25 @@
 
 | Resource | Contract ID |
 |----------|-------------|
-| **PadaLock** | `CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` |
+| **PadaLock** | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
 | **USDC SAC** | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
 
 **Stellar Expert:**
-- PadaLock → https://stellar.expert/explorer/testnet/contract/CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443
+- PadaLock → https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
 - USDC SAC → https://stellar.expert/explorer/testnet/contract/CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 
-**Wasm hash:** `b0929ce9208e8626f4f0615f4aa0f8f4332711ed0c10cdfc7a420dc38861ebb0`
-**Wasm size:** 15036 bytes
-**Exported fns:** `__constructor add_merchant cancel_recurring claim create_padala create_recurring execute_due get_merchants get_padala get_recurring`
+**Wasm hash:** `6ac9fd2e373892244884bcce84dcba0e884f08300c88719c11fb2ed6dca650db`
+**Wasm size:** 16663 bytes
+**Exported fns:** `__constructor add_merchant cancel_recurring claim create_padala create_recurring execute_due get_merchants get_padala get_recurring get_reputation`
 
 **Deploy txs:**
 - SAC deploy: https://stellar.expert/explorer/testnet/tx/9b4a382a7f66bff017926ba8060c798daac034716e953e8f7619901d39f8cb2d
-- PadaLock wasm upload: https://stellar.expert/explorer/testnet/tx/ab8b3ed7468e832438df52f06e0a1d2f8fafbcb75e8b507832d2adfbcdb32ddb
-- PadaLock deploy (multi-recipient + recurring): https://stellar.expert/explorer/testnet/tx/071336227025b374f49b1e11092e52c0f3d8b548c58e11a47d34752cf4cd4407
+- PadaLock wasm upload (reputation): https://stellar.expert/explorer/testnet/tx/52c3ca46659abe5a37f996b95eb13dc9626b10daf1a15238515e8eb09ef51e15
+- PadaLock deploy (merchant reputation): https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4
 
-> **Prior contract (single-recipient, pre-2026-06-20):**
-> `CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X` — deprecated, do not use.
+> **Prior contracts (deprecated, do not use):**
+> - `CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` — multi-recipient + recurring (pre-2026-06-24), no `get_reputation`.
+> - `CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X` — single-recipient (pre-2026-06-20).
 
 ---
 
@@ -64,7 +65,7 @@ Keys live in `C:\Users\Admin\.config\stellar\identity\*.toml`.
 `apps/web/.env.local`:
 
 ```env
-NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443
+NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
 NEXT_PUBLIC_USDC_SAC_TESTNET=CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN=testanchor.stellar.org
 ```
@@ -94,7 +95,7 @@ stellar contract invoke \
 ### Read padala
 ```bash
 stellar contract invoke \
-  --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
+  --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
   --source padalock-admin --network testnet \
   -- get_padala --padala_id <N>
 ```
@@ -106,11 +107,11 @@ the family, or the sender). `cancel_recurring` refunds the unspent prefund to th
 sender. Each run mints a normal Padala (`recurring_id` = schedule id).
 ```bash
 # inspect a schedule
-stellar contract invoke --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
+stellar contract invoke --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
   --source padalock-admin --network testnet -- get_recurring --rec_id <N>
 
 # trigger the next due run (off-chain cron calls this)
-stellar contract invoke --id CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443 \
+stellar contract invoke --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
   --source <ANY_FUNDED_KEY> --network testnet -- execute_due --rec_id <N>
 ```
 
