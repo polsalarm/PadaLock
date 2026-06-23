@@ -469,6 +469,7 @@ function BucketCard({
               <select
                 value={selected}
                 onChange={(e) => setSelected(e.target.value)}
+                aria-label={ui.pickLabel}
                 className="h-12 w-full appearance-none rounded-lg border border-outline-variant bg-surface pl-10 pr-10 font-body-sm text-body-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               >
                 <option value="">Select…</option>
@@ -565,7 +566,11 @@ function BucketCard({
       )}
 
       {status && (
-        <p className="mt-3 font-body-sm text-body-sm text-on-surface-variant">
+        <p
+          role="status"
+          aria-live="polite"
+          className="mt-3 font-body-sm text-body-sm text-on-surface-variant"
+        >
           {status}
         </p>
       )}
