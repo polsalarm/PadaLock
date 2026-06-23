@@ -86,11 +86,13 @@ export default function Dashboard() {
       <TopAppBar
         trailing={
           <button
-            aria-label="Lock"
+            aria-label="Lock wallet"
             onClick={lock}
-            className="flex h-touch-target w-touch-target items-center justify-center text-primary"
+            className="flex h-touch-target w-touch-target items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
           >
-            <span className="material-symbols-outlined">logout</span>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              logout
+            </span>
           </button>
         }
       />
@@ -105,7 +107,7 @@ export default function Dashboard() {
             <button
               onClick={onFund}
               disabled={busy}
-              className="rounded-full border border-outline-variant/30 bg-primary-container px-sm py-1 font-label-caps text-label-caps uppercase text-on-primary"
+              className="rounded-full border border-outline-variant/30 bg-primary-container px-sm py-1 font-label-caps text-label-caps uppercase text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary disabled:opacity-50"
             >
               {busy ? "Funding…" : "Fund testnet"}
             </button>
@@ -133,10 +135,12 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="relative z-10 mt-xs flex items-center gap-xs opacity-75">
-            <span className="material-symbols-outlined text-[14px]">refresh</span>
+            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
+              refresh
+            </span>
             <button
               onClick={() => refresh(publicKey)}
-              className="font-label-caps text-label-caps"
+              className="rounded font-label-caps text-label-caps focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary"
             >
               Refresh balance
             </button>
@@ -145,9 +149,14 @@ export default function Dashboard() {
 
         {/* Assets — tap a token to send it (wallet-style list) */}
         <section className="flex flex-col gap-sm">
-          <h2 className="px-xs font-label-caps text-label-caps uppercase text-on-surface-variant">
-            My tokens
-          </h2>
+          <div className="flex items-baseline justify-between px-xs">
+            <h2 className="font-label-caps text-label-caps uppercase text-on-surface-variant">
+              My tokens
+            </h2>
+            <span className="font-body-sm text-[12px] text-on-surface-variant/80">
+              Tap a token to send
+            </span>
+          </div>
           {[
             {
               sym: "USDC",
@@ -171,7 +180,8 @@ export default function Dashboard() {
             <Link
               key={t.sym}
               href={t.href}
-              className="flex items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99]"
+              aria-label={`Send ${t.sym}`}
+              className="flex items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <div
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-headline-sm text-headline-sm ${t.tone}`}
@@ -194,8 +204,11 @@ export default function Dashboard() {
                   {t.sub}
                 </div>
               </div>
-              <span className="material-symbols-outlined text-outline">
-                chevron_right
+              <span className="ml-xs flex items-center gap-0.5 rounded-full bg-primary/10 px-sm py-0.5 font-label-caps text-label-caps uppercase text-primary">
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
+                  send
+                </span>
+                Send
               </span>
             </Link>
           ))}
@@ -236,6 +249,7 @@ export default function Dashboard() {
             <span
               className="material-symbols-outlined text-tertiary-container"
               data-weight="fill"
+              aria-hidden="true"
             >
               account_circle
             </span>
@@ -251,7 +265,7 @@ export default function Dashboard() {
         </Card>
 
         {msg && (
-          <Card className="border-outline-variant">
+          <Card className="border-outline-variant" role="status" aria-live="polite">
             <p className="font-body-sm text-body-sm text-on-surface">{msg}</p>
           </Card>
         )}
