@@ -6,7 +6,6 @@ import type {
   InputHTMLAttributes,
   ReactNode,
 } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,14 +26,12 @@ export function BrandLogo({
     size === "lg" ? "text-headline-md" : "text-headline-sm";
   return (
     <span className={`inline-flex items-center gap-xs ${className}`}>
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/mascot/full.png"
         alt={withText ? "" : "PadaLock"}
         aria-hidden={withText || undefined}
-        width={398}
-        height={715}
         style={{ height: h, width: "auto" }}
-        priority
         className="drop-shadow-sm"
       />
       {withText && (
@@ -90,13 +87,11 @@ export function TopAppBar({
             </span>
           </button>
         ) : (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src="/mascot/full.png"
             alt=""
             aria-hidden="true"
-            width={398}
-            height={715}
-            priority
             style={{ height: 40, width: "auto" }}
             className="drop-shadow-sm"
           />
