@@ -1,6 +1,11 @@
 "use client";
 
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
+import type {
+  ButtonHTMLAttributes,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -122,13 +127,18 @@ export function BottomNav() {
           <Link
             key={t.href}
             href={t.href}
-            className={`flex flex-col items-center justify-center rounded-full px-lg py-xs transition-colors ${
+            aria-current={active ? "page" : undefined}
+            className={`flex flex-col items-center justify-center rounded-full px-lg py-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               active
                 ? "bg-primary text-on-primary"
                 : "text-on-surface-variant"
             }`}
           >
-            <span className="material-symbols-outlined" data-weight={active ? "fill" : undefined}>
+            <span
+              className="material-symbols-outlined"
+              data-weight={active ? "fill" : undefined}
+              aria-hidden="true"
+            >
               {t.icon}
             </span>
             <span className="mt-1 font-label-caps text-label-caps">{t.label}</span>
@@ -144,12 +154,11 @@ export function BottomNav() {
 export function Card({
   children,
   className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      {...props}
       className={`rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)] ${className}`}
     >
       {children}
@@ -166,7 +175,7 @@ export function Button({
   variant?: "primary" | "golden" | "ghost";
 }) {
   const base =
-    "flex h-[56px] w-full items-center justify-center gap-sm rounded-full font-headline-sm text-headline-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50";
+    "flex h-[56px] w-full items-center justify-center gap-sm rounded-full font-headline-sm text-headline-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
   const styles = {
     primary: "bg-primary text-on-primary hover:opacity-90",
     golden:
@@ -188,7 +197,7 @@ export function PillButton({
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`rounded-full bg-primary-container/10 px-sm py-base font-label-caps text-label-caps uppercase text-primary hover:bg-primary-container/20 ${className}`}
+      className={`min-h-[36px] rounded-full bg-primary-container/10 px-sm py-base font-label-caps text-label-caps uppercase text-primary hover:bg-primary-container/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
       {...props}
     >
       {children}
