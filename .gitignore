@@ -31,3 +31,6 @@ yarn-debug.log*
 # Stellar
 .stellar/
 .soroban/
+
+# ChatGPT mascot source render (derived assets live in apps/web/public/mascot)
+ChatGPT Image*.png
