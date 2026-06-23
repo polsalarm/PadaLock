@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import {
@@ -540,12 +539,11 @@ export default function SendPage() {
             </span>
           </summary>
           <div className="mt-sm flex items-start gap-sm border-t border-outline-variant/30 pt-sm">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/mascot/protecting.png"
               alt=""
               aria-hidden="true"
-              width={188}
-              height={176}
               className="h-16 w-auto shrink-0 drop-shadow"
             />
             <p className="font-body-sm text-body-sm text-on-surface-variant">

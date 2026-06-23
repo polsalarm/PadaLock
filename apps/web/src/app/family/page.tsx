@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import { getContacts, saveContact, type Contact } from "@/lib/contacts";
@@ -88,12 +87,11 @@ export default function FamilyPage() {
 
         {groups.length === 0 ? (
           <Card className="flex flex-col items-center gap-sm py-lg">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/mascot/full.png"
               alt=""
               aria-hidden="true"
-              width={398}
-              height={715}
               className="h-28 w-auto opacity-90 drop-shadow"
             />
             <p className="text-center font-body-sm text-body-sm text-on-surface-variant/70">
