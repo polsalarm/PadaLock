@@ -204,6 +204,30 @@ fn add_merchant_appends() {
     assert_eq!(list.get(1).unwrap(), m2);
 }
 
+#[test]
+fn reputation_accrues_per_claim() {
+    let f = setup();
+    f.client.add_merchant(&TUITION, &f.school);
+
+    // Unknown merchant starts at zero.
+    let zero = f.client.get_reputation(&f.school);
+    assert_eq!(zero.claims, 0);
+    assert_eq!(zero.volume, 0);
+
+    let b1 = vec![&f.env, bucket(&f.env, TUITION, 100_0000000, &f.recipient)];
+    let id1 = f.client.create_padala(&f.sender, &b1);
+    f.client.claim(&id1, &0, &f.school);
+
+    let b2 = vec![&f.env, bucket(&f.env, TUITION, 50_0000000, &f.recipient)];
+    let id2 = f.client.create_padala(&f.sender, &b2);
+    f.client.claim(&id2, &0, &f.school);
+
+    let rep = f.client.get_reputation(&f.school);
+    assert_eq!(rep.claims, 2);
+    assert_eq!(rep.volume, 150_0000000);
+    assert!(rep.last_claim_at >= zero.last_claim_at);
+}
+
 /* ───────── Recurring ───────── */
 
 #[test]
