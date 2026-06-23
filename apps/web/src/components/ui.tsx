@@ -22,17 +22,17 @@ export function BrandLogo({
   withText?: boolean;
   className?: string;
 }) {
-  const h = size === "lg" ? 48 : size === "sm" ? 24 : 32;
+  const h = size === "lg" ? 56 : size === "sm" ? 32 : 44;
   const text =
     size === "lg" ? "text-headline-md" : "text-headline-sm";
   return (
     <span className={`inline-flex items-center gap-xs ${className}`}>
       <Image
-        src="/mascot/icon.png"
+        src="/mascot/full.png"
         alt={withText ? "" : "PadaLock"}
         aria-hidden={withText || undefined}
-        width={154}
-        height={236}
+        width={398}
+        height={715}
         style={{ height: h, width: "auto" }}
         priority
         className="drop-shadow-sm"
@@ -91,13 +91,13 @@ export function TopAppBar({
           </button>
         ) : (
           <Image
-            src="/mascot/icon.png"
+            src="/mascot/full.png"
             alt=""
             aria-hidden="true"
-            width={154}
-            height={236}
+            width={398}
+            height={715}
             priority
-            style={{ height: 32, width: "auto" }}
+            style={{ height: 40, width: "auto" }}
             className="drop-shadow-sm"
           />
         )}
