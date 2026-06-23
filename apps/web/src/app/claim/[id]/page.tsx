@@ -6,10 +6,12 @@ import {
   buildClaim,
   getMerchants,
   getPadala,
+  getReputation,
   pollFinality,
   submitSignedXdr,
   type BucketView,
   type PadalaView,
+  type ReputationView,
 } from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
@@ -312,6 +314,7 @@ function BucketCard({
   const ui = CATEGORY_UI[bucket.category] ?? CATEGORY_UI.FreeCash;
   const restricted = bucket.category !== "FreeCash";
   const [merchants, setMerchants] = useState<string[]>([]);
+  const [reps, setReps] = useState<Record<string, ReputationView>>({});
   const [selected, setSelected] = useState<string>("");
   // FreeCash defaults to the recipient's own wallet, then off-ramps via SEP-24.
   const [freeCashAddr, setFreeCashAddr] = useState(callerPub);
@@ -325,9 +328,20 @@ function BucketCard({
   useEffect(() => {
     if (!restricted) return;
     getMerchants(callerPub, bucket.category)
-      .then(setMerchants)
+      .then((list) => {
+        setMerchants(list);
+        // Pull each merchant's on-chain track record so the family can pick a
+        // trusted, proven merchant for a restricted bucket.
+        list.forEach((m) =>
+          getReputation(callerPub, m)
+            .then((r) => setReps((prev) => ({ ...prev, [m]: r })))
+            .catch(() => {})
+        );
+      })
       .catch(() => setMerchants([]));
   }, [restricted, callerPub, bucket.category]);
+
+  const selectedRep = selected ? reps[selected] : undefined;
 
   async function claim() {
     const merchant = restricted ? selected : freeCashAddr.trim();
@@ -458,11 +472,17 @@ function BucketCard({
                 className="h-12 w-full appearance-none rounded-lg border border-outline-variant bg-surface pl-10 pr-10 font-body-sm text-body-sm text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               >
                 <option value="">Select…</option>
-                {merchants.map((m) => (
-                  <option key={m} value={m}>
-                    {merchantLabel(m)}
-                  </option>
-                ))}
+                {merchants.map((m) => {
+                  const r = reps[m];
+                  const trust =
+                    r && r.claims > 0 ? `  ✓ ${r.claims} claims` : "";
+                  return (
+                    <option key={m} value={m}>
+                      {merchantLabel(m)}
+                      {trust}
+                    </option>
+                  );
+                })}
               </select>
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="material-symbols-outlined text-outline">
@@ -474,6 +494,25 @@ function BucketCard({
                   expand_more
                 </span>
               </div>
+            </div>
+          )}
+          {selected && (
+            <div className="flex items-center gap-2 rounded-lg bg-surface-container px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
+              <span
+                className="material-symbols-outlined text-[16px] text-primary"
+                data-weight="fill"
+              >
+                verified
+              </span>
+              {selectedRep && selectedRep.claims > 0 ? (
+                <span>
+                  Pinagkakatiwalaan — {selectedRep.claims} claim
+                  {selectedRep.claims === 1 ? "" : "s"} na (
+                  {fmtStroopsPhp(selectedRep.volume)} na-route)
+                </span>
+              ) : (
+                <span>Bagong merchant — wala pang claim history.</span>
+              )}
             </div>
           )}
           <Button onClick={claim} disabled={busy || !selected}>
