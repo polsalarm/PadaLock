@@ -14,6 +14,7 @@ import type {
   BucketCategory,
   BucketView,
   RecurringView,
+  ReputationView,
 } from './types';
 
 const CATEGORY_NAMES: BucketCategory[] = [
@@ -145,6 +146,30 @@ export async function getMerchants(
   )) as Address[] | string[] | null;
   if (!raw) return [];
   return (raw as unknown[]).map((a) => String(a));
+}
+
+interface RawReputation {
+  claims: number;
+  volume: bigint;
+  last_claim_at: bigint;
+}
+
+export async function getReputation(
+  callerPub: string,
+  merchant: string
+): Promise<ReputationView> {
+  const raw = (await simRead(
+    callerPub,
+    'get_reputation',
+    nativeToScVal(new Address(merchant), { type: 'address' })
+  )) as RawReputation;
+
+  return {
+    merchant,
+    claims: Number(raw.claims ?? 0),
+    volume: (raw.volume ?? 0n).toString(),
+    lastClaimAt: Number(raw.last_claim_at ?? 0),
+  };
 }
 
 export { DUMMY_PUB };
