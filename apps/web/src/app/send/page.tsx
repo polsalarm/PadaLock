@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import {
@@ -535,12 +536,22 @@ export default function SendPage() {
               expand_more
             </span>
           </summary>
-          <p className="mt-sm border-t border-outline-variant/30 pt-xs font-body-sm text-body-sm text-on-surface-variant">
-            Ang pera mo ay naka-lock sa layunin nito at protektado ng smart
-            contract. Restricted bucket ay para lamang sa whitelisted na
-            merchants — paaralan, klinika, biller. Free Cash ay walang
-            restriction.
-          </p>
+          <div className="mt-sm flex items-start gap-sm border-t border-outline-variant/30 pt-sm">
+            <Image
+              src="/mascot/protecting.png"
+              alt=""
+              aria-hidden="true"
+              width={188}
+              height={176}
+              className="h-16 w-auto shrink-0 drop-shadow"
+            />
+            <p className="font-body-sm text-body-sm text-on-surface-variant">
+              Ang pera mo ay naka-lock sa layunin nito at protektado ng smart
+              contract. Restricted bucket ay para lamang sa whitelisted na
+              merchants — paaralan, klinika, biller. Free Cash ay walang
+              restriction.
+            </p>
+          </div>
         </details>
 
         {status && (
