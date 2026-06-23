@@ -31,12 +31,12 @@ export default function LoginPage() {
       <TopAppBar title="Unlock" />
       <main className="flex flex-1 flex-col gap-lg px-margin-mobile py-lg">
         <div className="mt-md flex flex-col items-center text-center">
-          <span
-            className="material-symbols-outlined text-[64px] text-primary"
-            data-weight="fill"
-          >
-            lock
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/mascot/full.png"
+            alt="PadaLock mascot"
+            className="h-32 w-auto drop-shadow-xl"
+          />
           <h2 className="mt-sm font-headline-md text-headline-md text-on-surface">
             Welcome back
           </h2>
