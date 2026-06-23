@@ -184,10 +184,11 @@ Everything else is post-MVP.
 
 ---
 
-## 10. Build status (updated 2026-06-20)
+## 10. Build status (updated 2026-06-24)
 
-Phase 0–7 shipped. Contract redeployed with multi-recipient + recurring:
-`CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` (16 merchants reseeded).
+Phase 0–7 shipped. Contract redeployed with multi-recipient + recurring +
+merchant reputation:
+`CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` (16 merchants reseeded).
 See `docs/testnet-state.md` for live IDs + ops.
 
 - **Phase 5 / SEP-24:** ✅ real off-ramp. FreeCash claimed to recipient wallet,
@@ -207,8 +208,8 @@ See `docs/testnet-state.md` for live IDs + ops.
   (`claims`, `volume`, `last_claim_at`), accrued one claim at a time in `claim`.
   `get_reputation(merchant)` read + SDK `getReputation`; claim UI shows each
   whitelisted merchant's claim count in the picker and a trust line for the
-  selected merchant. **Not yet redeployed** — live contract still lacks
-  `get_reputation`; UI degrades to "new merchant" until redeploy + reseed.
+  selected merchant. ✅ redeployed + 16 merchants reseeded; `get_reputation`
+  live on testnet (verified returns zero struct for an unclaimed merchant).
 
 Contract tests: 16/16 `cargo test`. Verified on testnet: create_padala,
 create_recurring → execute_due (mints padala with `recurring_id`).
