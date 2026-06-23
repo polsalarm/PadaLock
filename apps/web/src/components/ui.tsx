@@ -1,8 +1,45 @@
 "use client";
 
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+/* ───────── Brand ───────── */
+
+/** PadaLock mascot head + wordmark. Reusable across headers/empty states. */
+export function BrandLogo({
+  size = "md",
+  withText = true,
+  className = "",
+}: {
+  size?: "sm" | "md" | "lg";
+  withText?: boolean;
+  className?: string;
+}) {
+  const h = size === "lg" ? 48 : size === "sm" ? 24 : 32;
+  const text =
+    size === "lg" ? "text-headline-md" : "text-headline-sm";
+  return (
+    <span className={`inline-flex items-center gap-xs ${className}`}>
+      <Image
+        src="/mascot/icon.png"
+        alt={withText ? "" : "PadaLock"}
+        aria-hidden={withText || undefined}
+        width={154}
+        height={236}
+        style={{ height: h, width: "auto" }}
+        priority
+        className="drop-shadow-sm"
+      />
+      {withText && (
+        <span className={`font-headline-md ${text} font-bold text-primary`}>
+          PadaLock
+        </span>
+      )}
+    </span>
+  );
+}
 
 /* ───────── Layout shells ───────── */
 
@@ -41,14 +78,23 @@ export function TopAppBar({
           <button
             aria-label="Back"
             onClick={back}
-            className="-ml-xs flex h-touch-target w-touch-target items-center justify-center text-primary hover:opacity-80 active:scale-95"
+            className="-ml-xs flex h-touch-target w-touch-target items-center justify-center text-primary hover:opacity-80 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              arrow_back
+            </span>
           </button>
         ) : (
-          <span className="material-symbols-outlined text-primary" data-weight="fill">
-            lock
-          </span>
+          <Image
+            src="/mascot/icon.png"
+            alt=""
+            aria-hidden="true"
+            width={154}
+            height={236}
+            priority
+            style={{ height: 32, width: "auto" }}
+            className="drop-shadow-sm"
+          />
         )}
         <h1 className="font-headline-md text-headline-md font-bold text-primary">
           {title ?? "PadaLock"}
