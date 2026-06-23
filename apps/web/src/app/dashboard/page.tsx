@@ -143,15 +143,6 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <Link href="/send">
-          <Button variant="golden">
-            <span className="material-symbols-outlined" data-weight="fill">
-              send
-            </span>
-            Send padala
-          </Button>
-        </Link>
-
         {/* Assets — tap a token to send it (wallet-style list) */}
         <section className="flex flex-col gap-sm">
           <h2 className="px-xs font-label-caps text-label-caps uppercase text-on-surface-variant">
