@@ -265,7 +265,8 @@ export default function SendPage() {
               <select
                 value={selectedGroupId}
                 onChange={(e) => onPickGroup(e.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-tertiary-container/50 bg-tertiary-container/10 pl-10 pr-10 font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
+                aria-label="Use a family group"
+                className="h-12 w-full appearance-none rounded-xl border border-tertiary-container/50 bg-tertiary-container/10 pl-10 pr-10 font-body-sm text-body-sm text-on-surface outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <option value="">Use a family group…</option>
                 {groups.map((g) => (
@@ -305,7 +306,8 @@ export default function SendPage() {
                   contacts.some((c) => c.address === recipient) ? recipient : ""
                 }
                 onChange={(e) => setRecipient(e.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-surface-variant bg-surface-container-lowest pl-10 pr-10 font-body-sm text-body-sm text-on-surface shadow-[0_4px_12px_rgba(0,0,0,0.04)] outline-none focus:border-primary"
+                aria-label="Pick a saved family member"
+                className="h-12 w-full appearance-none rounded-xl border border-surface-variant bg-surface-container-lowest pl-10 pr-10 font-body-sm text-body-sm text-on-surface shadow-[0_4px_12px_rgba(0,0,0,0.04)] outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <option value="">Pick a saved family member…</option>
                 {contacts.map((c) => (
@@ -441,7 +443,8 @@ export default function SendPage() {
                         onChange={(e) =>
                           setBucketRecip({ ...bucketRecip, [c.key]: e.target.value })
                         }
-                        className="h-11 w-full appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
+                        aria-label={`${c.en} bucket recipient`}
+                        className="h-11 w-full appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
                       >
                         <option value="">Same as main recipient</option>
                         {bucketOptions.map((ct) => (
@@ -555,7 +558,7 @@ export default function SendPage() {
         </details>
 
         {status && (
-          <Card>
+          <Card role="status" aria-live="polite">
             <p className="font-body-sm text-body-sm text-on-surface">{status}</p>
             {resultId && <ClaimShare padalaId={resultId} />}
             {recResultId && (
@@ -611,9 +614,9 @@ export default function SendPage() {
           <button
             onClick={submit}
             disabled={busy || totalPhp <= 0 || overspent}
-            className="flex h-[56px] w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-headline-md text-[18px] text-on-secondary-container transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-[56px] w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-headline-md text-[18px] text-on-secondary-container transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <span className="material-symbols-outlined" data-weight="fill">
+            <span className="material-symbols-outlined" data-weight="fill" aria-hidden="true">
               lock
             </span>
             {busy
