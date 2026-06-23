@@ -25,6 +25,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="icon" href="/mascot/app-icon.png" />
+        <link rel="apple-touch-icon" href="/mascot/app-icon.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#7A0C2E" />
       </head>
       <body className="min-h-screen bg-surface text-on-surface">
         <WalletProvider>{children}</WalletProvider>
