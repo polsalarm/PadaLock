@@ -20,6 +20,11 @@ import {
 import { recordSentPadala } from "@/lib/history";
 import { getContacts, saveContact, type Contact } from "@/lib/contacts";
 import {
+  getGroups,
+  takePendingGroup,
+  type FamilyGroup,
+} from "@/lib/groups";
+import {
   BottomNav,
   Card,
   PageShell,
@@ -57,6 +62,8 @@ export default function SendPage() {
   const [alloc, setAlloc] = useState<Allocations>(EMPTY);
   const [availUsdc, setAvailUsdc] = useState<string>("0");
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [groups, setGroups] = useState<FamilyGroup[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState("");
   const [saveName, setSaveName] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -80,7 +87,36 @@ export default function SendPage() {
       .then(setAvailUsdc)
       .catch(() => setAvailUsdc("0"));
     setContacts(getContacts(pub));
+    const gs = getGroups(pub);
+    setGroups(gs);
+    // Handoff from /family "Use in Send": auto-apply the chosen group.
+    const pending = takePendingGroup();
+    if (pending) {
+      const g = gs.find((x) => x.id === pending);
+      if (g && g.members.length > 0) assignGroup(g);
+    }
+    // assignGroup only touches stable setters; safe to omit from deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pub, router]);
+
+  // Picking a family group turns on multi-recipient and round-robins the group's
+  // members across the buckets, so one tap fills a whole multi-recipient padala.
+  function assignGroup(g: FamilyGroup) {
+    setSelectedGroupId(g.id);
+    setPerBucket(true);
+    setRecipient(g.members[0]);
+    const next: Allocations = { ...EMPTY };
+    CATEGORIES.forEach((c, i) => {
+      next[c.key] = g.members[i % g.members.length];
+    });
+    setBucketRecip(next);
+  }
+
+  function onPickGroup(id: string) {
+    setSelectedGroupId(id);
+    const g = groups.find((x) => x.id === id);
+    if (g && g.members.length > 0) assignGroup(g);
+  }
 
   if (state.status !== "unlocked") return null;
 
@@ -117,6 +153,15 @@ export default function SendPage() {
   function validAddr(a: string): boolean {
     return a.startsWith("G") && a.length === 56;
   }
+
+  const activeGroup = groups.find((g) => g.id === selectedGroupId) ?? null;
+  const labelFor = (addr: string) =>
+    contacts.find((c) => c.address === addr)?.name ??
+    `${addr.slice(0, 4)}…${addr.slice(-4)}`;
+  // Per-bucket picker draws from the active group's members, else all contacts.
+  const bucketOptions = activeGroup
+    ? activeGroup.members.map((a) => ({ address: a, name: labelFor(a) }))
+    : contacts.map((c) => ({ address: c.address, name: c.name }));
 
   async function submit() {
     if (state.status !== "unlocked") return;
@@ -212,6 +257,44 @@ export default function SendPage() {
           <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
             Send to
           </label>
+
+          {/* Family group (GC) — one tap fills every bucket */}
+          {groups.length > 0 && (
+            <div className="relative">
+              <select
+                value={selectedGroupId}
+                onChange={(e) => onPickGroup(e.target.value)}
+                className="h-12 w-full appearance-none rounded-xl border border-tertiary-container/50 bg-tertiary-container/10 pl-10 pr-10 font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
+              >
+                <option value="">Use a family group…</option>
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name} ({g.members.length})
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="material-symbols-outlined text-tertiary-container" data-weight="fill">
+                  groups
+                </span>
+              </div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="material-symbols-outlined text-outline">
+                  expand_more
+                </span>
+              </div>
+            </div>
+          )}
+          {activeGroup && (
+            <p className="font-body-sm text-[12px] text-on-surface-variant/70">
+              Multi-recipient naka-on — bawat bucket nakatalaga na sa miyembro ng{" "}
+              <span className="text-on-surface">{activeGroup.name}</span>. Pwede mo
+              pang baguhin sa baba.{" "}
+              <a href="/family" className="text-primary underline">
+                Edit groups
+              </a>
+            </p>
+          )}
 
           {/* Saved family members */}
           {contacts.length > 0 && (
@@ -351,7 +434,7 @@ export default function SendPage() {
                     <label className="mb-1 block font-label-caps text-label-caps uppercase text-on-surface-variant">
                       Goes to
                     </label>
-                    {contacts.length > 0 ? (
+                    {bucketOptions.length > 0 ? (
                       <select
                         value={bucketRecip[c.key]}
                         onChange={(e) =>
@@ -360,7 +443,7 @@ export default function SendPage() {
                         className="h-11 w-full appearance-none rounded-lg border border-outline-variant bg-surface px-md font-body-sm text-body-sm text-on-surface outline-none focus:border-primary"
                       >
                         <option value="">Same as main recipient</option>
-                        {contacts.map((ct) => (
+                        {bucketOptions.map((ct) => (
                           <option key={ct.address} value={ct.address}>
                             {ct.name} ({ct.address.slice(0, 4)}…{ct.address.slice(-4)})
                           </option>
