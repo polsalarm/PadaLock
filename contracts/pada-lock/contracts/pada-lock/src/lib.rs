@@ -62,6 +62,17 @@ pub struct Recurring {
     pub active: bool,
 }
 
+/// A merchant's on-chain track record, accrued one claim at a time. Lets the
+/// sender/family see that a whitelisted merchant (e.g. a school) has actually
+/// served real claims before trusting a restricted bucket to it.
+#[contracttype]
+#[derive(Clone)]
+pub struct Reputation {
+    pub claims: u32,
+    pub volume: i128,
+    pub last_claim_at: u64,
+}
+
 #[contracttype]
 pub enum DataKey {
     Admin,
@@ -71,6 +82,7 @@ pub enum DataKey {
     Merchants(u32),
     RecCounter,
     Recurring(u64),
+    Reputation(Address),
 }
 
 #[contracterror]
@@ -305,6 +317,8 @@ impl PadaLock {
         padala.buckets.set(bucket_id, bucket);
         env.storage().persistent().set(&key, &padala);
 
+        Self::bump_reputation(&env, &merchant, amount);
+
         env.events().publish(
             (Symbol::new(&env, "claim"), recipient, merchant),
             (padala_id, bucket_id, amount),
@@ -355,6 +369,19 @@ impl PadaLock {
             .persistent()
             .get(&DataKey::Merchants(category))
             .unwrap_or(Vec::new(&env))
+    }
+
+    /// A merchant's accrued claim track record. Defaults to zero for a merchant
+    /// that has never served a claim.
+    pub fn get_reputation(env: Env, merchant: Address) -> Reputation {
+        env.storage()
+            .persistent()
+            .get(&DataKey::Reputation(merchant))
+            .unwrap_or(Reputation {
+                claims: 0,
+                volume: 0,
+                last_claim_at: 0,
+            })
     }
 
     /// Validate buckets and return their total. Shared by one-off + recurring.
@@ -412,6 +439,20 @@ impl PadaLock {
         };
         env.storage().persistent().set(&DataKey::Padala(id), &padala);
         id
+    }
+
+    /// Accrue one claim into a merchant's reputation.
+    fn bump_reputation(env: &Env, merchant: &Address, amount: i128) {
+        let rkey = DataKey::Reputation(merchant.clone());
+        let mut rep: Reputation = env.storage().persistent().get(&rkey).unwrap_or(Reputation {
+            claims: 0,
+            volume: 0,
+            last_claim_at: 0,
+        });
+        rep.claims += 1;
+        rep.volume += amount;
+        rep.last_claim_at = env.ledger().timestamp();
+        env.storage().persistent().set(&rkey, &rep);
     }
 
     fn token(env: &Env) -> Address {
