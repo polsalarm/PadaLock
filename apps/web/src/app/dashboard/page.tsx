@@ -152,12 +152,63 @@ export default function Dashboard() {
           </Button>
         </Link>
 
-        <Link href="/send-xlm">
-          <Button variant="ghost">
-            <span className="material-symbols-outlined">payments</span>
-            Send XLM
-          </Button>
-        </Link>
+        {/* Assets — tap a token to send it (wallet-style list) */}
+        <section className="flex flex-col gap-sm">
+          <h2 className="px-xs font-label-caps text-label-caps uppercase text-on-surface-variant">
+            My tokens
+          </h2>
+          {[
+            {
+              sym: "USDC",
+              name: "USD Coin",
+              badge: "$",
+              tone: "bg-secondary-container text-on-secondary-container",
+              balance: usdcHuman,
+              sub: `≈ ₱${php}`,
+              href: "/send",
+            },
+            {
+              sym: "XLM",
+              name: "Stellar Lumens",
+              badge: "✦",
+              tone: "bg-tertiary-container text-on-tertiary-container",
+              balance: xlm,
+              sub: "Network fees",
+              href: "/send-xlm",
+            },
+          ].map((t) => (
+            <Link
+              key={t.sym}
+              href={t.href}
+              className="flex items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99]"
+            >
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-headline-sm text-headline-sm ${t.tone}`}
+              >
+                {t.badge}
+              </div>
+              <div className="flex-1">
+                <div className="font-headline-sm text-headline-sm text-on-surface">
+                  {t.sym}
+                </div>
+                <div className="font-body-sm text-body-sm text-on-surface-variant">
+                  {t.name}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="font-currency-md text-currency-md text-on-surface">
+                  {t.balance}
+                </div>
+                <div className="font-body-sm text-[12px] text-on-surface-variant/70">
+                  {t.sub}
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-outline">
+                chevron_right
+              </span>
+            </Link>
+          ))}
+        </section>
 
         <Link href="/family">
           <Button variant="ghost">
