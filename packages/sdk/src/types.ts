@@ -41,6 +41,14 @@ export interface RecurringView {
   active: boolean;
 }
 
+export interface ReputationView {
+  merchant: string;
+  claims: number;
+  /** Total claimed volume routed to this merchant, in stroops (7 dp). */
+  volume: string;
+  lastClaimAt: number;
+}
+
 export const CATEGORY_TO_NUM: Record<BucketCategory, number> = {
   Tuition: 0,
   Utility: 1,
