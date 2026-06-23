@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import { getContacts, saveContact, type Contact } from "@/lib/contacts";
@@ -86,7 +87,15 @@ export default function FamilyPage() {
         </Card>
 
         {groups.length === 0 ? (
-          <Card>
+          <Card className="flex flex-col items-center gap-sm py-lg">
+            <Image
+              src="/mascot/full.png"
+              alt=""
+              aria-hidden="true"
+              width={398}
+              height={715}
+              className="h-28 w-auto opacity-90 drop-shadow"
+            />
             <p className="text-center font-body-sm text-body-sm text-on-surface-variant/70">
               Wala pang grupo. Gumawa ng isa sa itaas.
             </p>
