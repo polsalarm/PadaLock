@@ -34,3 +34,7 @@ yarn-debug.log*
 
 # ChatGPT mascot source render (derived assets live in apps/web/public/mascot)
 ChatGPT Image*.png
+
+# Ad-hoc screenshots dropped at repo root
+/image.png
+/[0-9].png
