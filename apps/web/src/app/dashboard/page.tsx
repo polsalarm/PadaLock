@@ -159,6 +159,13 @@ export default function Dashboard() {
           </Button>
         </Link>
 
+        <Link href="/family">
+          <Button variant="ghost">
+            <span className="material-symbols-outlined">groups</span>
+            Family groups
+          </Button>
+        </Link>
+
         {/* Quick stats */}
         <section
           className="no-scrollbar flex gap-sm overflow-x-auto pb-2"
