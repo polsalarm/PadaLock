@@ -36,5 +36,4 @@ yarn-debug.log*
 ChatGPT Image*.png
 
 # Ad-hoc screenshots dropped at repo root
-/image.png
 /[0-9].png
