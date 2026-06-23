@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 
@@ -27,20 +28,16 @@ export default function Splash() {
         }}
       />
       <main className="relative z-10 flex flex-col items-center px-margin-mobile text-center">
-        <div className="relative mb-lg flex h-32 w-32 flex-col items-center justify-center">
-          <div className="absolute inset-0 rounded-full bg-secondary-container opacity-20 blur-xl" />
-          <span
-            className="material-symbols-outlined absolute z-10 text-[80px] text-surface"
-            data-weight="fill"
-          >
-            favorite
-          </span>
-          <span
-            className="material-symbols-outlined absolute z-20 mt-4 text-[40px] text-secondary-container"
-            data-weight="fill"
-          >
-            lock
-          </span>
+        <div className="relative mb-lg flex h-44 w-44 items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-secondary-container opacity-20 blur-2xl" />
+          <Image
+            src="/mascot/full.png"
+            alt="PadaLock mascot — a friendly padlock with a heart"
+            width={398}
+            height={715}
+            priority
+            className="relative z-10 h-44 w-auto animate-[bounce_3s_ease-in-out_infinite] drop-shadow-2xl"
+          />
         </div>
         <h1 className="font-display-lg text-display-lg tracking-tight text-surface">
           PadaLock
