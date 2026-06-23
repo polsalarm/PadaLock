@@ -1,0 +1,17 @@
+{
+  "name": "PadaLock — Padala na may pangako",
+  "short_name": "PadaLock",
+  "description": "Purpose-locked OFW remittance on Stellar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#7A0C2E",
+  "theme_color": "#7A0C2E",
+  "icons": [
+    {
+      "src": "/mascot/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
