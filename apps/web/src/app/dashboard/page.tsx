@@ -49,6 +49,9 @@ export default function Dashboard() {
   const publicKey: string = state.publicKey;
   const usdcHuman = fmtStroops(balance);
   const php = usdcToPhp(usdcHuman);
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Magandang umaga" : hour < 18 ? "Magandang hapon" : "Magandang gabi";
 
   async function onFund() {
     setBusy(true);
@@ -97,6 +100,27 @@ export default function Dashboard() {
         }
       />
       <main className="relative z-10 mt-md flex flex-col gap-lg px-margin-mobile pb-[100px]">
+        {/* Greeting + mascot avatar */}
+        <div className="flex items-center gap-sm">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-container shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/mascot/icon.png"
+              alt=""
+              aria-hidden="true"
+              className="h-12 w-auto translate-y-0.5"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-body-sm text-body-sm text-on-surface-variant">
+              {greeting} 👋
+            </span>
+            <span className="font-headline-sm text-headline-sm text-on-surface">
+              Welcome back
+            </span>
+          </div>
+        </div>
+
         {/* Hero balance */}
         <section className="relative flex flex-col gap-sm overflow-hidden rounded-xl bg-primary p-lg text-on-primary shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
           <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/4 rounded-full bg-primary-container opacity-50 blur-2xl" />
