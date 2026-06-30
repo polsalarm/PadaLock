@@ -46,9 +46,13 @@ Beyond Level 1, PadaLock adds the purpose-locked remittance escrow described bel
 
 ### Screenshots
 
-| Mobile responsive UI | CI/CD pipeline | Tests passing |
-|---|---|---|
-| ![Mobile responsive UI](./docs/screenshots/mobile-responsive.png) | ![CI pipeline](./docs/screenshots/ci-pipeline.png) | ![Tests passing](./docs/screenshots/tests-passing.png) |
+| Mobile responsive UI | CI/CD pipeline (both jobs green) |
+|---|---|
+| ![Mobile responsive UI](./docs/screenshots/mobile-responsive.png) | ![CI pipeline](./docs/screenshots/ci-pipeline.png) |
+
+| Contract tests — `cargo test` (16 passed) | Frontend + SDK — `vitest` (18 passed) |
+|---|---|
+| ![cargo test 16 passed](./docs/screenshots/tests-cargo.png) | ![vitest 18 passed](./docs/screenshots/tests-vitest.png) |
 
 _Capture instructions: [`docs/screenshots/README.md`](./docs/screenshots/README.md)._
 
