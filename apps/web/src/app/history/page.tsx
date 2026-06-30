@@ -124,16 +124,6 @@ export default function HistoryPage() {
           ))}
         </div>
 
-        {/* Always-visible send action — this tab is the "Padala" nav destination */}
-        <Link href="/send" className="w-full">
-          <Button variant="golden">
-            <span className="material-symbols-outlined" data-weight="fill">
-              send
-            </span>
-            Send padala
-          </Button>
-        </Link>
-
         {/* Summary strip */}
         <div className="flex gap-sm">
           <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
