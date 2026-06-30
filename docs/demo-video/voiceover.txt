@@ -1,0 +1,10 @@
+0.0s - PadaLock is purpose locked remittance for overseas Filipino workers and their families.
+5.4s - Families create or connect a Stellar wallet, with signing kept close to the user.
+11.0s - The sender sees USDC and XLM balances in one simple dashboard before sending funds home.
+17.0s - Instead of one lump sum, the sender splits the padala into buckets like tuition, utilities, and free cash.
+24.2s - On the claim side, the family sees each bucket clearly and releases only the funds that are available.
+30.2s - Restricted buckets are enforced by Soroban escrow. Tuition can go to a whitelisted school, not a random merchant.
+36.4s - The sender can review what was claimed, how much was released, and which merchant received it.
+42.2s - History gives both sides a clean trail for repeat family support.
+47.2s - Helpful empty and error states keep the flow understandable when testnet is slow.
+52.0s - PadaLock helps send support home with clarity, control, and transparent claims. Padala na may pangako.

@@ -112,6 +112,7 @@ export function BottomNav() {
   const tabs = [
     { href: "/dashboard", icon: "home", label: "Home" },
     { href: "/history", icon: "account_balance_wallet", label: "Padala" },
+    { href: "/codex", icon: "terminal", label: "Codex" },
     { href: "/settings", icon: "settings", label: "Settings" },
   ];
   return (
@@ -274,3 +275,4 @@ export function StatusBadge({
     </span>
   );
 }
+

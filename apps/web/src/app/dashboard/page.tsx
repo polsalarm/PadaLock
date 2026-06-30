@@ -205,35 +205,35 @@ export default function Dashboard() {
               key={t.sym}
               href={t.href}
               aria-label={`Send ${t.sym}`}
-              className="flex items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="grid min-h-[82px] grid-cols-[44px_minmax(0,1fr)_112px] items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <div
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-headline-sm text-headline-sm ${t.tone}`}
               >
                 {t.badge}
               </div>
-              <div className="flex-1">
-                <div className="font-headline-sm text-headline-sm text-on-surface">
+              <div className="min-w-0">
+                <div className="truncate font-headline-sm text-headline-sm text-on-surface">
                   {t.sym}
                 </div>
-                <div className="font-body-sm text-body-sm text-on-surface-variant">
+                <div className="mt-0.5 truncate font-body-sm text-[13px] leading-4 text-on-surface-variant">
                   {t.name}
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-currency-md text-currency-md text-on-surface">
+              <div className="flex min-w-0 flex-col items-end gap-xs text-right">
+                <div className="max-w-full truncate font-currency-md text-[13px] leading-5 text-on-surface">
                   {t.balance}
                 </div>
-                <div className="font-body-sm text-[12px] text-on-surface-variant/70">
+                <div className="max-w-full truncate font-body-sm text-[11px] leading-4 text-on-surface-variant/70">
                   {t.sub}
                 </div>
-              </div>
-              <span className="ml-xs flex items-center gap-0.5 rounded-full bg-primary/10 px-sm py-0.5 font-label-caps text-label-caps uppercase text-primary">
-                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">
-                  send
+                <span className="inline-flex h-7 items-center gap-0.5 rounded-full bg-primary/10 px-sm font-label-caps text-label-caps uppercase text-primary">
+                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">
+                    send
+                  </span>
+                  Send
                 </span>
-                Send
-              </span>
+              </div>
             </Link>
           ))}
         </section>
@@ -298,3 +298,4 @@ export default function Dashboard() {
     </PageShell>
   );
 }
+
