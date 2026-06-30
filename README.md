@@ -4,6 +4,16 @@ Purpose-Locked OFW Remittance on Stellar.
 
 > StellarX Philippines — Track 1 (Remittance & Cross-Border)
 
+[![CI](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml/badge.svg)](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml)
+
+| | |
+|---|---|
+| **Live demo** | _TODO: paste Vercel URL_ |
+| **Demo video (1–2 min)** | _TODO: paste link_ |
+| **Network** | Stellar **testnet** |
+| **Contract address** | [`CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
+| **Sample interaction tx** | [`8214e348…158d4f4`](https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4) (contract deploy); more in [`docs/testnet-state.md`](./docs/testnet-state.md) |
+
 ## Risein White Belt (Level 1) compliance
 
 PadaLock satisfies every Level-1 requirement on Stellar **testnet**:
@@ -18,6 +28,29 @@ PadaLock satisfies every Level-1 requirement on Stellar **testnet**:
 | Transaction feedback (success/fail + hash) | `/send-xlm` shows a success/failure badge, the **transaction hash**, and a Stellar Expert link; or the error message on failure. |
 
 Beyond Level 1, PadaLock adds the purpose-locked remittance escrow described below.
+
+## Risein Orange Belt (Level 3) compliance
+
+| Requirement | Where in PadaLock |
+|---|---|
+| Advanced smart contract | `create_padala` / `claim` / `create_recurring` / `execute_due` / `cancel_recurring` / `get_reputation` — escrow, multi-recipient, recurring, on-chain merchant reputation. |
+| Inter-contract communication | Contract performs cross-contract calls to the **USDC SAC** (`transfer`/`balance`) to move escrowed funds to whitelisted merchants. |
+| Event streaming & real-time updates | Contract emits an event per bucket on create/claim; the SDK reads them via RPC `getEvents` (`packages/sdk/src/read.ts`), and the transparency view (`/padala/[id]`) renders the live claim ledger. |
+| CI/CD pipeline | [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) — `cargo test` + Vitest + `next build` on every push/PR. See badge above. |
+| Smart contract deployment workflow | [`docs/deploy.md`](./docs/deploy.md) — build, deploy, seed merchants, capture IDs (in [`docs/testnet-state.md`](./docs/testnet-state.md)). |
+| Mobile responsive frontend | Mobile-first PWA (Tailwind), bottom nav, install prompt. See screenshot below. |
+| Error handling & loading states | Simulation guards, `pollFinality` (never trusts `sendTransaction`), tx pending spinners, success/error badges across send/claim/cashout. |
+| Tests (contract + frontend) | 16 `cargo test` (contract) + 18 Vitest (SDK + web) = **34 passing**. See [Testing](#testing--ci). |
+| Production architecture | npm-workspace monorepo (contract / shared SDK / PWA), typed SDK boundary, env-driven config, simulate-before-sign, finality polling. |
+| Documentation & demo | This README + [`docs/`](./docs) (deploy, demo script, testnet state, exact flow). |
+
+### Screenshots
+
+| Mobile responsive UI | CI/CD pipeline | Tests passing |
+|---|---|---|
+| ![Mobile responsive UI](./docs/screenshots/mobile-responsive.png) | ![CI pipeline](./docs/screenshots/ci-pipeline.png) | ![Tests passing](./docs/screenshots/tests-passing.png) |
+
+_Capture instructions: [`docs/screenshots/README.md`](./docs/screenshots/README.md)._
 
 ## Problem
 ~$36B/yr in OFW remittances flow into the Philippines. Senders have no spending control once funds land — common failure: lump sum spent in days, kids miss tuition, electricity gets cut.
@@ -53,6 +86,31 @@ Open http://localhost:3000.
 1. Deploy contract (see [`docs/deploy.md`](./docs/deploy.md))
 2. Copy `.env.example` → `apps/web/.env.local`, fill contract IDs
 3. Follow [`docs/demo-script.md`](./docs/demo-script.md) for the 3-min walkthrough
+
+## Testing & CI
+
+```bash
+npm run contract:test                  # 16 Soroban unit tests (cargo)
+npm test                               # SDK + web Vitest (18)
+cd packages/sdk && npx vitest run      # SDK only (4)
+```
+
+Every push and PR to `main` runs [`.github/workflows/ci.yml`](./.github/workflows/ci.yml):
+two jobs — **contract** (`cargo test`) and **web** (Vitest across workspaces +
+`next build`). Status badge is at the top of this README.
+
+## Deployment
+
+- **Contract:** see [`docs/deploy.md`](./docs/deploy.md). Live IDs in [`docs/testnet-state.md`](./docs/testnet-state.md).
+- **Frontend (Vercel):** [`vercel.json`](./vercel.json) builds the SDK then the web
+  app from the monorepo root. Set these env vars in the Vercel project:
+
+  | Variable | Value (testnet) |
+  |---|---|
+  | `NEXT_PUBLIC_PADALOCK_CONTRACT_ID` | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
+  | `NEXT_PUBLIC_USDC_SAC_TESTNET` | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
+  | `NEXT_PUBLIC_USDC_ISSUER_TESTNET` | `GAZ5YSMH4Z2VXLLVR7FE7RENVBSDLU5U4PCJZYHRFZSBANA765TZEUQE` |
+  | `NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN` | `testanchor.stellar.org` |
 
 ## Routes
 | Route | Purpose |
