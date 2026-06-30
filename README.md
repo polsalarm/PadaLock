@@ -74,17 +74,27 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 ## 🖼️ Screenshots
 
-| Mobile-responsive UI | CI/CD pipeline (both jobs green) |
-|:---:|:---:|
-| <img src="./docs/screenshots/mobile-responsive.png" alt="Mobile responsive UI" width="320" /> | <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline" width="420" /> |
+### 📱 Mobile-first UI
 
-| Contract tests — `cargo test` · 16 passed | Frontend + SDK — `vitest` · 18 passed |
-|:---:|:---:|
-| <img src="./docs/screenshots/tests-cargo.png" alt="cargo test 16 passed" width="420" /> | <img src="./docs/screenshots/tests-vitest.png" alt="vitest 18 passed" width="420" /> |
+<div align="center">
 
-| On-chain proof — contract & tx history on Stellar Expert |
-|:---:|
-| <img src="./docs/screenshots/stellar-contract.png" alt="PadaLock contract on Stellar Expert" width="640" /> |
+| Dashboard | Send / split | Family groups | Connect wallet | Settings |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="160" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send" width="160" /> | <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="160" /> | <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="160" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="160" /> |
+
+</div>
+
+### ⚙️ CI/CD · 🔗 on-chain proof
+
+| CI/CD — all checks passing | Contract & tx history (Stellar Expert) |
+|:---:|:---:|
+| <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline — all checks passed" width="440" /> | <img src="./docs/screenshots/stellar-contract.png" alt="PadaLock contract on Stellar Expert" width="360" /> |
+
+### ✅ Tests
+
+| Contract — `cargo test` · 16 passed | Frontend + SDK — `vitest` · 18 passed |
+|:---:|:---:|
+| <img src="./docs/screenshots/tests-cargo.png" alt="cargo test 16 passed" width="440" /> | <img src="./docs/screenshots/tests-vitest.png" alt="vitest 18 passed" width="440" /> |
 
 ---
 
