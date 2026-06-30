@@ -1,0 +1,28 @@
+# Vercel uploads the working dir verbatim (it does NOT read .gitignore).
+# Exclude everything Vercel rebuilds or doesn't need — keeps upload small.
+
+# Dependencies (Vercel runs installCommand itself)
+node_modules
+
+# Build output
+.next
+out
+dist
+build
+*.tsbuildinfo
+
+# Rust / Soroban build artifacts (huge — wasm + debug builds)
+target
+contracts/**/target
+
+# VCS + local
+.git
+.vercel
+*.log
+
+# Loose root art / scratch
+image.png
+tarsi.jpg
+
+# Docs not needed by the build
+docs/screenshots
