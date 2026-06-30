@@ -44,6 +44,24 @@
 
 ---
 
+## 📖 Contents
+
+[What is PadaLock?](#-what-is-padalock) ·
+[Demo](#-demo) ·
+[Screenshots](#️-screenshots) ·
+[How it works](#-how-it-works) ·
+[Features](#-features) ·
+[Repo layout](#️-repo-layout) ·
+[Tech stack](#️-tech-stack) ·
+[Quick start](#-quick-start) ·
+[Testing & CI](#-testing--ci) ·
+[Deployment](#️-deployment) ·
+[Routes](#-routes) ·
+[Compliance](#-risein-compliance) ·
+[Roadmap](#️-mainnet-roadmap)
+
+---
+
 ## 💡 What is PadaLock?
 
 Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no control** over how the money is spent — a lump sum vanishes in days, tuition goes unpaid, the electricity gets cut.
@@ -78,9 +96,11 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 <div align="center">
 
-| Dashboard | Send / split | Family groups | Connect wallet | Settings |
-|:---:|:---:|:---:|:---:|:---:|
-| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="160" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send" width="160" /> | <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="160" /> | <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="160" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="160" /> |
+| Dashboard | Send / split | Claim |
+|:---:|:---:|:---:|
+| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="210" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send / split" width="210" /> | <img src="./docs/screenshots/mobile-claim.png" alt="Claim a bucket" width="210" /> |
+| **Family groups** | **Connect wallet** | **Settings** |
+| <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="210" /> | <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="210" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="210" /> |
 
 </div>
 
