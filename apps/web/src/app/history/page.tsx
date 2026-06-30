@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getPadala } from "@padalock/sdk";
+import { contractIdFor, getPadala, type PadalaAsset } from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
-import { getReceivedPadalaIds, getSentPadalaIds } from "@/lib/history";
+import { getReceivedPadalas, getSentPadalas } from "@/lib/history";
 import { contactName } from "@/lib/contacts";
 import {
   BottomNav,
@@ -21,6 +21,7 @@ type Tab = "sent" | "received";
 
 interface Row {
   id: string;
+  asset: PadalaAsset;
   totalUsdc: string; // tab-relevant total (sent: whole padala; received: my buckets)
   claimedCount: number;
   bucketCount: number;
@@ -41,16 +42,18 @@ export default function HistoryPage() {
 
   const load = useCallback(async (pub: string, which: Tab) => {
     setLoading(true);
-    const ids =
-      which === "sent" ? getSentPadalaIds(pub) : getReceivedPadalaIds(pub);
+    const refs =
+      which === "sent" ? getSentPadalas(pub) : getReceivedPadalas(pub);
     const out: Row[] = [];
-    for (const id of ids) {
+    for (const ref of refs) {
       try {
-        const view = await getPadala(pub, String(id));
+        // Read from the asset's own contract (USDC and XLM are separate).
+        const view = await getPadala(pub, String(ref.id), contractIdFor(ref.asset));
         if (which === "sent") {
           const recipients = [...new Set(view.buckets.map((b) => b.recipient))];
           out.push({
-            id: String(id),
+            id: String(ref.id),
+            asset: ref.asset,
             totalUsdc: view.buckets
               .reduce((acc, b) => acc + BigInt(b.amount), 0n)
               .toString(),
@@ -65,7 +68,8 @@ export default function HistoryPage() {
           const mine = view.buckets.filter((b) => b.recipient === pub);
           if (mine.length === 0) continue;
           out.push({
-            id: String(id),
+            id: String(ref.id),
+            asset: ref.asset,
             totalUsdc: mine
               .reduce((acc, b) => acc + BigInt(b.amount), 0n)
               .toString(),
@@ -93,9 +97,9 @@ export default function HistoryPage() {
 
   if (state.status !== "unlocked") return null;
 
-  const totalUsdc = rows
-    .reduce((acc, r) => acc + BigInt(r.totalUsdc), 0n)
-    .toString();
+  // Padalas can be USDC or XLM, so a single money total would mix currencies —
+  // show the padala count instead.
+  const padalaCount = rows.length;
   const activeCount = rows.filter((r) => r.claimedCount < r.bucketCount).length;
   const sent = tab === "sent";
 
@@ -124,10 +128,10 @@ export default function HistoryPage() {
         <div className="flex gap-sm">
           <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
             <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-              {sent ? "Total sent" : "Total received"}
+              {sent ? "Padala sent" : "Padala received"}
             </div>
             <div className="mt-1 font-currency-md text-currency-md text-primary">
-              ₱{fmtStroopsPhp(totalUsdc)}
+              {padalaCount}
             </div>
           </div>
           <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
@@ -189,7 +193,8 @@ export default function HistoryPage() {
                 : r.claimedCount === r.bucketCount
                   ? { label: "Fully claimed", variant: "claimed" as const }
                   : { label: "Partly claimed", variant: "ready" as const };
-            const href = sent ? `/padala/${r.id}` : `/claim/${r.id}`;
+            const q = r.asset === "XLM" ? "?asset=xlm" : "";
+            const href = (sent ? `/padala/${r.id}` : `/claim/${r.id}`) + q;
             return (
               <Link key={r.id} href={href}>
                 <Card>
@@ -211,10 +216,14 @@ export default function HistoryPage() {
                     </div>
                     <div className="text-right">
                       <div className="font-currency-md text-currency-md font-semibold text-primary">
-                        ₱{fmtStroopsPhp(r.totalUsdc)}
+                        {r.asset === "XLM"
+                          ? `${fmtStroops(r.totalUsdc)} XLM`
+                          : `₱${fmtStroopsPhp(r.totalUsdc)}`}
                       </div>
                       <div className="font-currency-md text-[11px] text-on-surface-variant/60">
-                        {fmtStroops(r.totalUsdc)} USDC
+                        {r.asset === "XLM"
+                          ? "XLM"
+                          : `${fmtStroops(r.totalUsdc)} USDC`}
                       </div>
                     </div>
                   </div>
