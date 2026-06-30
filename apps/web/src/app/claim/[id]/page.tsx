@@ -1,12 +1,14 @@
 "use client";
 
 import { use, useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildClaim,
+  contractIdFor,
   getMerchants,
   getPadala,
   getReputation,
+  parseAsset,
   pollFinality,
   submitSignedXdr,
   type BucketView,
@@ -112,6 +114,11 @@ export default function ClaimPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // XLM padalas live in a separate contract — the link carries ?asset=xlm.
+  const asset = parseAsset(searchParams.get("asset"));
+  const contractId = contractIdFor(asset);
+  const assetQ = asset === "XLM" ? "?asset=xlm" : "";
   const { state, signTxXdr } = useWallet();
   const [padala, setPadala] = useState<PadalaView | null>(null);
   const [loading, setLoading] = useState(true);
@@ -122,23 +129,23 @@ export default function ClaimPage({
       setLoading(true);
       setError(null);
       try {
-        setPadala(await getPadala(caller, id));
+        setPadala(await getPadala(caller, id, contractId));
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load padala.");
       } finally {
         setLoading(false);
       }
     },
-    [id]
+    [id, contractId]
   );
 
   useEffect(() => {
     if (state.status === "no-wallet") {
-      router.replace(`/onboard?next=/claim/${id}`);
+      router.replace(`/onboard?next=${encodeURIComponent(`/claim/${id}${assetQ}`)}`);
       return;
     }
     if (state.status === "locked") {
-      router.replace(`/login?next=/claim/${id}`);
+      router.replace(`/login?next=${encodeURIComponent(`/claim/${id}${assetQ}`)}`);
       return;
     }
     if (state.status === "unlocked") {
@@ -166,8 +173,10 @@ export default function ClaimPage({
     .filter((b) => b.claimed)
     .reduce((acc, b) => acc + BigInt(b.amount), 0n)
     .toString();
-  const totalPhp = padala ? fmtStroopsPhp(totalUsdc) : "0.00";
-  const claimedPhp = padala ? fmtStroopsPhp(claimedUsdc) : "0.00";
+  const isXlm = asset === "XLM";
+  // Primary amount label: PHP for USDC padalas, native XLM for XLM padalas.
+  const showAmt = (stroops: string) =>
+    isXlm ? `${fmtStroops(stroops)} XLM` : `₱${fmtStroopsPhp(stroops)}`;
   const claimedPct =
     BigInt(totalUsdc) > 0n
       ? Number((BigInt(claimedUsdc) * 1000n) / BigInt(totalUsdc)) / 10
@@ -230,16 +239,15 @@ export default function ClaimPage({
                 </span>
               </h2>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="font-currency-md text-currency-md text-on-surface">
-                  ₱
-                </span>
                 <span className="font-currency-lg text-[40px] font-bold leading-[48px] tracking-tight text-on-surface">
-                  {totalPhp}
+                  {showAmt(totalUsdc)}
                 </span>
               </div>
-              <p className="mt-1 font-currency-md text-[12px] text-on-surface-variant/60">
-                ~ {fmtStroops(totalUsdc)} USDC
-              </p>
+              {!isXlm && (
+                <p className="mt-1 font-currency-md text-[12px] text-on-surface-variant/60">
+                  ~ {fmtStroops(totalUsdc)} USDC
+                </p>
+              )}
             </section>
 
             <div className="flex flex-col gap-gutter">
@@ -249,6 +257,8 @@ export default function ClaimPage({
                   padalaId={padala.id}
                   bucket={b}
                   callerPub={publicKey}
+                  contractId={contractId}
+                  isXlm={isXlm}
                   signTxXdr={signTxXdr}
                   onClaimed={() => load(publicKey)}
                 />
@@ -268,11 +278,8 @@ export default function ClaimPage({
                   Claimed
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className="font-currency-md text-sm text-tertiary-container">
-                    ₱
-                  </span>
                   <span className="font-currency-lg text-xl text-tertiary-container">
-                    {claimedPhp}
+                    {showAmt(claimedUsdc)}
                   </span>
                 </div>
               </div>
@@ -281,7 +288,7 @@ export default function ClaimPage({
                   Total Padala
                 </p>
                 <p className="font-currency-md text-sm text-on-surface-variant">
-                  ₱{totalPhp}
+                  {showAmt(totalUsdc)}
                 </p>
               </div>
             </div>
@@ -302,12 +309,16 @@ function BucketCard({
   padalaId,
   bucket,
   callerPub,
+  contractId,
+  isXlm,
   signTxXdr,
   onClaimed,
 }: {
   padalaId: string;
   bucket: BucketView;
   callerPub: string;
+  contractId: string;
+  isXlm: boolean;
   signTxXdr: (xdr: string) => Promise<string>;
   onClaimed: () => void;
 }) {
@@ -327,19 +338,19 @@ function BucketCard({
 
   useEffect(() => {
     if (!restricted) return;
-    getMerchants(callerPub, bucket.category)
+    getMerchants(callerPub, bucket.category, contractId)
       .then((list) => {
         setMerchants(list);
         // Pull each merchant's on-chain track record so the family can pick a
         // trusted, proven merchant for a restricted bucket.
         list.forEach((m) =>
-          getReputation(callerPub, m)
+          getReputation(callerPub, m, contractId)
             .then((r) => setReps((prev) => ({ ...prev, [m]: r })))
             .catch(() => {})
         );
       })
       .catch(() => setMerchants([]));
-  }, [restricted, callerPub, bucket.category]);
+  }, [restricted, callerPub, bucket.category, contractId]);
 
   const selectedRep = selected ? reps[selected] : undefined;
 
@@ -357,6 +368,7 @@ function BucketCard({
         padalaId,
         bucketId: bucket.id,
         merchantPub: merchant,
+        contractId,
       });
       setStatus("Signing with your wallet…");
       const signedXdr = await signTxXdr(tx.toXDR());
@@ -430,16 +442,17 @@ function BucketCard({
 
       <div className="mb-5">
         <div className="flex items-baseline gap-1">
-          <span className="font-currency-md text-currency-md text-on-surface">
-            ₱
-          </span>
           <span className="font-currency-lg text-currency-lg text-on-surface">
-            {fmtStroopsPhp(bucket.amount)}
+            {isXlm
+              ? `${fmtStroops(bucket.amount)} XLM`
+              : `₱${fmtStroopsPhp(bucket.amount)}`}
           </span>
         </div>
-        <p className="font-currency-md text-[12px] text-on-surface-variant/60">
-          {fmtStroops(bucket.amount)} USDC
-        </p>
+        {!isXlm && (
+          <p className="font-currency-md text-[12px] text-on-surface-variant/60">
+            {fmtStroops(bucket.amount)} USDC
+          </p>
+        )}
       </div>
 
       {receipt || bucket.claimed ? (
@@ -447,10 +460,11 @@ function BucketCard({
           <Receipt
             hash={receipt?.hash}
             merchant={receipt?.merchant ?? bucket.claimedBy ?? ""}
-            amountUsdc={fmtStroops(bucket.amount)}
+            amount={`${fmtStroops(bucket.amount)} ${isXlm ? "XLM" : "USDC"}`}
           />
-          {/* FreeCash claimed to own wallet → real SEP-24 off-ramp */}
+          {/* FreeCash claimed to own wallet → SEP-24 off-ramp (USDC only) */}
           {!restricted &&
+            !isXlm &&
             (receipt?.merchant ?? bucket.claimedBy) === callerPub && (
               <Sep24CashOut account={callerPub} signTxXdr={signTxXdr} />
             )}
@@ -509,7 +523,10 @@ function BucketCard({
                 <span>
                   Pinagkakatiwalaan — {selectedRep.claims} claim
                   {selectedRep.claims === 1 ? "" : "s"} na (
-                  {fmtStroopsPhp(selectedRep.volume)} na-route)
+                  {isXlm
+                    ? `${fmtStroops(selectedRep.volume)} XLM`
+                    : `₱${fmtStroopsPhp(selectedRep.volume)}`}{" "}
+                  na-route)
                 </span>
               ) : (
                 <span>Bagong merchant — wala pang claim history.</span>
@@ -581,11 +598,11 @@ function BucketCard({
 function Receipt({
   hash,
   merchant,
-  amountUsdc,
+  amount,
 }: {
   hash?: string;
   merchant: string;
-  amountUsdc: string;
+  amount: string;
 }) {
   const txUrl = hash
     ? `https://stellar.expert/explorer/testnet/tx/${hash}`
@@ -601,7 +618,7 @@ function Receipt({
       </div>
       <div className="flex justify-between font-body-sm text-body-sm">
         <span className="text-on-surface-variant">Amount</span>
-        <span className="font-currency-md text-on-surface">{amountUsdc} USDC</span>
+        <span className="font-currency-md text-on-surface">{amount}</span>
       </div>
       <div className="flex justify-between font-body-sm text-body-sm">
         <span className="text-on-surface-variant">To merchant</span>
