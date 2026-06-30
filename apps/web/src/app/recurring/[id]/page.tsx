@@ -1,11 +1,13 @@
 "use client";
 
 import { use, useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildCancelRecurring,
   buildExecuteDue,
+  contractIdFor,
   getRecurring,
+  parseAsset,
   pollFinality,
   submitSignedXdr,
   type RecurringView,
@@ -33,6 +35,10 @@ export default function RecurringPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const asset = parseAsset(searchParams.get("asset"));
+  const contractId = contractIdFor(asset);
+  const isXlm = asset === "XLM";
   const { state, signTxXdr } = useWallet();
   const [rec, setRec] = useState<RecurringView | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,14 +51,14 @@ export default function RecurringPage({
       setLoading(true);
       setError(null);
       try {
-        setRec(await getRecurring(caller, id));
+        setRec(await getRecurring(caller, id, contractId));
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load schedule.");
       } finally {
         setLoading(false);
       }
     },
-    [id]
+    [id, contractId]
   );
 
   useEffect(() => {
@@ -134,15 +140,18 @@ export default function RecurringPage({
                 </span>
               </div>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="font-currency-md text-currency-md text-on-surface">₱</span>
                 <span className="font-currency-lg text-[40px] font-bold leading-[48px] tracking-tight text-on-surface">
-                  {fmtStroopsPhp(rec.perRunTotal)}
+                  {isXlm
+                    ? `${fmtStroops(rec.perRunTotal)} XLM`
+                    : `₱${fmtStroopsPhp(rec.perRunTotal)}`}
                 </span>
                 <span className="ml-1 font-body-md text-body-md text-on-surface-variant">/mo</span>
               </div>
-              <p className="mt-1 font-currency-md text-[12px] text-on-surface-variant/60">
-                {fmtStroops(rec.perRunTotal)} USDC each run
-              </p>
+              {!isXlm && (
+                <p className="mt-1 font-currency-md text-[12px] text-on-surface-variant/60">
+                  {fmtStroops(rec.perRunTotal)} USDC each run
+                </p>
+              )}
             </section>
 
             <Card className="space-y-3">
@@ -157,7 +166,14 @@ export default function RecurringPage({
                 )}
               </div>
               <Row label="Runs left" value={String(rec.remaining)} />
-              <Row label="Still escrowed" value={`₱ ${fmtStroopsPhp(rec.prefunded)}`} />
+              <Row
+                label="Still escrowed"
+                value={
+                  isXlm
+                    ? `${fmtStroops(rec.prefunded)} XLM`
+                    : `₱ ${fmtStroopsPhp(rec.prefunded)}`
+                }
+              />
               <Row
                 label="Next run"
                 value={
@@ -183,7 +199,7 @@ export default function RecurringPage({
                     <span className="text-on-surface-variant/60">→ {shorten(t.recipient)}</span>
                   </span>
                   <span className="font-currency-md text-[13px] text-on-surface">
-                    ₱ {fmtStroopsPhp(t.amount)}
+                    {isXlm ? `${fmtStroops(t.amount)} XLM` : `₱ ${fmtStroopsPhp(t.amount)}`}
                   </span>
                 </div>
               ))}
@@ -202,7 +218,7 @@ export default function RecurringPage({
                   disabled={busy || !due}
                   onClick={() =>
                     run(
-                      () => buildExecuteDue({ callerPub: publicKey, recId: rec.id }),
+                      () => buildExecuteDue({ callerPub: publicKey, recId: rec.id, contractId }),
                       "Releasing this month's run…",
                       "Released. A new padala was minted for the family."
                     )
@@ -220,7 +236,7 @@ export default function RecurringPage({
                     disabled={busy}
                     onClick={() =>
                       run(
-                        () => buildCancelRecurring({ senderPub: publicKey, recId: rec.id }),
+                        () => buildCancelRecurring({ senderPub: publicKey, recId: rec.id, contractId }),
                         "Cancelling and refunding…",
                         "Cancelled. Unspent prefund refunded to your wallet."
                       )
