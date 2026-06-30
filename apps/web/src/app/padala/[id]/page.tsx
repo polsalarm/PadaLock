@@ -1,8 +1,13 @@
 "use client";
 
 import { use, useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getPadala, type PadalaView } from "@padalock/sdk";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  contractIdFor,
+  getPadala,
+  parseAsset,
+  type PadalaView,
+} from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
 import {
@@ -31,6 +36,10 @@ export default function PadalaDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const asset = parseAsset(searchParams.get("asset"));
+  const contractId = contractIdFor(asset);
+  const isXlm = asset === "XLM";
   const { state } = useWallet();
   const [padala, setPadala] = useState<PadalaView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,12 +48,12 @@ export default function PadalaDetailPage({
     async (caller: string) => {
       setError(null);
       try {
-        setPadala(await getPadala(caller, id));
+        setPadala(await getPadala(caller, id, contractId));
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load.");
       }
     },
-    [id]
+    [id, contractId]
   );
 
   useEffect(() => {
@@ -66,8 +75,8 @@ export default function PadalaDetailPage({
         .reduce((acc, b) => acc + BigInt(b.amount), 0n)
         .toString()
     : "0";
-  const totalPhp = padala ? fmtStroopsPhp(totalUsdc) : "0";
-  const claimedPhp = padala ? fmtStroopsPhp(claimedUsdc) : "0";
+  const showAmt = (stroops: string) =>
+    isXlm ? `${fmtStroops(stroops)} XLM` : `₱${fmtStroopsPhp(stroops)}`;
   const pct =
     BigInt(totalUsdc) > 0n
       ? Number((BigInt(claimedUsdc) * 1000n) / BigInt(totalUsdc)) / 10
@@ -129,7 +138,7 @@ export default function PadalaDetailPage({
                     Sent
                   </div>
                   <div className="font-currency-lg text-currency-lg text-on-surface">
-                    ₱{totalPhp}
+                    {showAmt(totalUsdc)}
                   </div>
                 </div>
                 <div className="text-right">
@@ -137,7 +146,7 @@ export default function PadalaDetailPage({
                     Claimed
                   </div>
                   <div className="font-currency-lg text-currency-lg text-tertiary-container">
-                    ₱{claimedPhp}
+                    {showAmt(claimedUsdc)}
                   </div>
                 </div>
               </div>
@@ -193,15 +202,14 @@ export default function PadalaDetailPage({
                     )}
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="font-currency-md text-currency-md text-on-surface-variant">
-                      ₱
-                    </span>
                     <span className="font-currency-lg text-currency-lg text-on-surface">
-                      {fmtStroopsPhp(b.amount)}
+                      {showAmt(b.amount)}
                     </span>
-                    <span className="ml-2 font-currency-md text-[12px] text-on-surface-variant/60">
-                      {fmtStroops(b.amount)} USDC
-                    </span>
+                    {!isXlm && (
+                      <span className="ml-2 font-currency-md text-[12px] text-on-surface-variant/60">
+                        {fmtStroops(b.amount)} USDC
+                      </span>
+                    )}
                   </div>
                   {b.claimed && (
                     <p className="mt-2 font-currency-md text-[12px] text-tertiary-container">
