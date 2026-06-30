@@ -102,8 +102,11 @@ two jobs — **contract** (`cargo test`) and **web** (Vitest across workspaces +
 ## Deployment
 
 - **Contract:** see [`docs/deploy.md`](./docs/deploy.md). Live IDs in [`docs/testnet-state.md`](./docs/testnet-state.md).
-- **Frontend (Vercel):** [`vercel.json`](./vercel.json) builds the SDK then the web
-  app from the monorepo root. Set these env vars in the Vercel project:
+- **Frontend (Vercel):** npm-workspace monorepo — set the project **Root Directory
+  to `apps/web`** (Settings → Build & Deployment). Vercel auto-detects Next.js and
+  installs from the monorepo root. [`.vercelignore`](./.vercelignore) keeps the
+  upload small (excludes `target/`, `node_modules`, `.next`). Set these env vars in
+  the Vercel project:
 
   | Variable | Value (testnet) |
   |---|---|
