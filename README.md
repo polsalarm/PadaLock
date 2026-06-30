@@ -9,7 +9,7 @@
 *Padala na may pangako — send money home that can only be spent the way it was meant to.*
 
 [![CI](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml/badge.svg)](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml)
-&nbsp;![Tests](https://img.shields.io/badge/tests-34%20passing-brightgreen)
+&nbsp;![Tests](https://img.shields.io/badge/tests-36%20passing-brightgreen)
 &nbsp;![Stellar](https://img.shields.io/badge/Stellar-testnet-7D00FF?logo=stellar&logoColor=white)
 &nbsp;![Soroban](https://img.shields.io/badge/Soroban-Rust-CE412B?logo=rust&logoColor=white)
 &nbsp;![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
@@ -97,11 +97,11 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 <div align="center">
 
-| Dashboard | Send / split | Claim |
+| Dashboard | Send / split | Family groups |
 |:---:|:---:|:---:|
-| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="210" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send / split" width="210" /> | <img src="./docs/screenshots/mobile-claim.png" alt="Claim a bucket" width="210" /> |
-| **Family groups** | **Connect wallet** | **Settings** |
-| <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="210" /> | <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="210" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="210" /> |
+| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="210" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send / split" width="210" /> | <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="210" /> |
+| **Connect wallet** | **Settings** | |
+| <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="210" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="210" /> | |
 
 </div>
 
@@ -113,9 +113,9 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 ### ✅ Tests
 
-| Contract — `cargo test` · 16 passed | Frontend + SDK — `vitest` · 18 passed |
+| Contract — `cargo test` · 16 passed | Frontend + SDK — `vitest` · 20 passed |
 |:---:|:---:|
-| <img src="./docs/screenshots/tests-cargo.png" alt="cargo test 16 passed" width="440" /> | <img src="./docs/screenshots/tests-vitest.png" alt="vitest 18 passed" width="440" /> |
+| <img src="./docs/screenshots/tests-cargo.png" alt="cargo test 16 passed" width="440" /> | <img src="./docs/screenshots/tests-vitest.png" alt="vitest 20 passed" width="440" /> |
 
 ---
 
@@ -201,11 +201,11 @@ contract IDs, then follow [`docs/demo-script.md`](./docs/demo-script.md).
 
 ```bash
 npm run contract:test                  # 16 Soroban unit tests (cargo)
-npm test                               # SDK + web Vitest (18)
-cd packages/sdk && npx vitest run      # SDK only (4)
+npm test                               # SDK + web Vitest (20)
+cd packages/sdk && npx vitest run      # SDK only (6)
 ```
 
-> **16 contract + 18 frontend/SDK = 34 passing.**
+> **16 contract + 20 frontend/SDK = 36 passing.**
 
 Every push and PR to `main` runs [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) —
 two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across workspaces +
@@ -258,7 +258,7 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 | Contract deployment workflow | [`docs/deploy.md`](./docs/deploy.md) — build, deploy, seed merchants, capture IDs. |
 | Mobile responsive frontend | Mobile-first PWA (Tailwind), bottom nav, install prompt. |
 | Error handling & loading states | Simulation guards, `pollFinality` (never trusts `sendTransaction`), pending spinners, success/error badges. |
-| Tests (contract + frontend) | 16 `cargo test` + 18 Vitest = **34 passing**. |
+| Tests (contract + frontend) | 16 `cargo test` + 20 Vitest = **36 passing**. |
 | Production architecture | npm-workspace monorepo, typed SDK boundary, env-driven config, simulate-before-sign, finality polling. |
 | Documentation & demo | This README + [`docs/`](./docs) + demo video. |
 
