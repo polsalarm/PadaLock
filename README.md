@@ -8,7 +8,7 @@ Purpose-Locked OFW Remittance on Stellar.
 
 | | |
 |---|---|
-| **Live demo** | _TODO: paste Vercel URL_ |
+| **Live demo** | **https://padalock.vercel.app** |
 | **Demo video (1–2 min)** | _TODO: paste link_ |
 | **Network** | Stellar **testnet** |
 | **Contract address** | [`CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
