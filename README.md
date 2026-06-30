@@ -29,7 +29,8 @@
 | **Live demo** | https://padalock.vercel.app |
 | **Demo video** | [`docs/demo-video/padalock-demo.mp4`](./docs/demo-video/padalock-demo.mp4) |
 | **Network** | Stellar **testnet** |
-| **Contract address** | [`CDTXH4OQ…RYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
+| **Contract — USDC** | [`CDTXH4OQ…RYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
+| **Contract — XLM** | [`CATT7GZM…ECI7GYQZU2HVY`](https://stellar.expert/explorer/testnet/contract/CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY) |
 | **Sample interaction tx** | [`8214e348…158d4f4`](https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4) · more in [`docs/testnet-state.md`](./docs/testnet-state.md) |
 
 <div align="center">
@@ -260,20 +261,6 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 | Tests (contract + frontend) | 16 `cargo test` + 18 Vitest = **34 passing**. |
 | Production architecture | npm-workspace monorepo, typed SDK boundary, env-driven config, simulate-before-sign, finality polling. |
 | Documentation & demo | This README + [`docs/`](./docs) + demo video. |
-
-</details>
-
-<details>
-<summary><strong>White Belt (Level 1) — Wallet + payments</strong></summary>
-
-| Requirement | Where in PadaLock |
-|---|---|
-| Wallet setup (testnet) | Hybrid — Stellar Wallets Kit (Freighter/xBull/Albedo/Lobstr) or built-in self-custodial. `Networks.TESTNET`. |
-| Wallet connect | `/onboard` & `/login` → **Connect external wallet**; built-in create/unlock too. |
-| Wallet disconnect | `/settings` → **Disconnect / Lock wallet**. |
-| Fetch + display XLM balance | Dashboard hero card (Horizon) — `getXlmBalance()` in `apps/web/src/lib/balance.ts`. |
-| Send XLM on testnet | `/send-xlm` — builds a classic `payment`, signs, submits to RPC. |
-| Transaction feedback | `/send-xlm` shows success/fail badge, tx hash, Stellar Expert link. |
 
 </details>
 
