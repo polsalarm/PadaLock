@@ -6,13 +6,16 @@ import { useWallet } from "@/lib/wallet-context";
 import {
   buildCreatePadala,
   buildCreateRecurring,
+  contractIdFor,
   pollFinality,
   submitSignedXdr,
   type BucketCategory,
+  type PadalaAsset,
 } from "@padalock/sdk";
 import {
   fmtStroops,
   getUsdcBalance,
+  getXlmBalance,
   phpToUsdcHuman,
   toStroops,
   usdcToPhp,
@@ -58,9 +61,11 @@ const EMPTY: Allocations = {
 export default function SendPage() {
   const router = useRouter();
   const { state, signTxXdr } = useWallet();
+  const [asset, setAsset] = useState<PadalaAsset>("USDC");
   const [recipient, setRecipient] = useState("");
   const [alloc, setAlloc] = useState<Allocations>(EMPTY);
   const [availUsdc, setAvailUsdc] = useState<string>("0");
+  const [availXlm, setAvailXlm] = useState<string>("0");
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [groups, setGroups] = useState<FamilyGroup[]>([]);
   const [selectedGroupId, setSelectedGroupId] = useState("");
@@ -86,6 +91,9 @@ export default function SendPage() {
     void getUsdcBalance(pub)
       .then(setAvailUsdc)
       .catch(() => setAvailUsdc("0"));
+    void getXlmBalance(pub)
+      .then((x) => setAvailXlm(toStroops(x)))
+      .catch(() => setAvailXlm("0"));
     setContacts(getContacts(pub));
     const gs = getGroups(pub);
     setGroups(gs);
@@ -120,20 +128,33 @@ export default function SendPage() {
 
   if (state.status !== "unlocked") return null;
 
-  // Available balance in human USDC + PHP.
+  // Asset-aware amounts. USDC mode: amounts entered in PHP (converted to USDC).
+  // XLM mode: amounts entered directly in XLM (no PHP conversion).
+  const isXlm = asset === "XLM";
+  const XLM_RESERVE = 1.5; // leave XLM for fees + min account balance
   const availUsdcHuman = fmtStroops(availUsdc);
-  const availablePhp = parseFloat(usdcToPhp(availUsdcHuman).replace(/,/g, ""));
+  const availXlmHuman = fmtStroops(availXlm);
+  // Available cap, in the current entry unit (PHP for USDC, XLM for XLM).
+  const available = isXlm
+    ? Math.max(parseFloat(availXlmHuman) - XLM_RESERVE, 0)
+    : parseFloat(usdcToPhp(availUsdcHuman).replace(/,/g, ""));
+  const unit = isXlm ? "XLM" : "₱";
+  // Format an entry-unit amount: "₱1,200.00" (USDC) or "12.50 XLM".
+  const fmtAmt = (n: number) =>
+    isXlm
+      ? `${n.toFixed(2)} XLM`
+      : `₱${n.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
 
-  const totalPhp = CATEGORIES.reduce((acc, c) => {
+  const total = CATEGORIES.reduce((acc, c) => {
     const n = parseFloat(alloc[c.key] || "0");
     return acc + (isNaN(n) ? 0 : n);
   }, 0);
   // Recurring escrows allocation × months up front, so the guard scales with it.
-  const escrowPhp = recurring
-    ? totalPhp * (parseInt(months || "0", 10) || 0)
-    : totalPhp;
-  const remainingPhp = Math.max(availablePhp - escrowPhp, 0);
-  const overspent = escrowPhp > availablePhp + 0.005;
+  const escrow = recurring
+    ? total * (parseInt(months || "0", 10) || 0)
+    : total;
+  const remaining = Math.max(available - escrow, 0);
+  const overspent = escrow > available + (isXlm ? 0.0000001 : 0.005);
 
   function setAmt(key: BucketCategory, v: string) {
     setAlloc({ ...alloc, [key]: v });
@@ -146,7 +167,7 @@ export default function SendPage() {
       const n = parseFloat(alloc[c.key] || "0");
       return acc + (isNaN(n) ? 0 : n);
     }, 0);
-    const give = Math.max(availablePhp - otherTotal, 0);
+    const give = Math.max(available - otherTotal, 0);
     setAlloc({ ...alloc, [key]: give.toFixed(2) });
   }
 
@@ -175,7 +196,10 @@ export default function SendPage() {
     // Resolve each bucket's recipient (per-bucket override falls back to main).
     const buckets = active.map((c) => ({
       category: c.key,
-      amount: toStroops(String(phpToUsdcHuman(alloc[c.key]))),
+      // USDC: PHP entry → USDC. XLM: amount entered directly in XLM.
+      amount: isXlm
+        ? toStroops(alloc[c.key])
+        : toStroops(String(phpToUsdcHuman(alloc[c.key]))),
       recipient: perBucket && bucketRecip[c.key] ? bucketRecip[c.key] : recipient,
     }));
     for (const b of buckets) {
@@ -196,16 +220,19 @@ export default function SendPage() {
     setResultId(null);
     setRecResultId(null);
     try {
+      const contractId = contractIdFor(asset);
       const { tx } = recurring
         ? await buildCreateRecurring({
             senderPub: state.publicKey,
             template: buckets,
             intervalSecs: 30 * 24 * 60 * 60, // ~monthly
             occurrences: occ,
+            contractId,
           })
         : await buildCreatePadala({
             senderPub: state.publicKey,
             buckets,
+            contractId,
           });
       setStatus("Signing with your wallet…");
       const signedXdr = await signTxXdr(tx.toXDR());
@@ -252,6 +279,41 @@ export default function SendPage() {
     <PageShell>
       <TopAppBar title="Send Padala" back={() => router.back()} />
       <main className="flex flex-1 flex-col gap-lg overflow-y-auto px-margin-mobile pb-[240px] pt-md">
+        {/* Asset choice — each asset is its own escrow contract */}
+        <section className="flex flex-col gap-sm">
+          <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
+            Asset
+          </label>
+          <div className="grid grid-cols-2 gap-sm rounded-xl border border-surface-variant bg-surface-container-lowest p-1">
+            {(["USDC", "XLM"] as PadalaAsset[]).map((a) => (
+              <button
+                key={a}
+                type="button"
+                onClick={() => {
+                  if (a !== asset) {
+                    setAsset(a);
+                    setAlloc(EMPTY); // amounts are in different units per asset
+                    setStatus(null);
+                  }
+                }}
+                className={`flex h-11 items-center justify-center gap-xs rounded-lg font-headline-sm text-[15px] transition-colors ${
+                  asset === a
+                    ? "bg-primary text-on-primary shadow-[0_2px_8px_rgba(93,5,24,0.18)]"
+                    : "text-on-surface-variant hover:bg-surface-container-low"
+                }`}
+              >
+                <span className="text-[18px] leading-none">{a === "XLM" ? "✦" : "$"}</span>
+                {a}
+              </button>
+            ))}
+          </div>
+          <p className="font-body-sm text-[12px] text-on-surface-variant/70">
+            {isXlm
+              ? "Amounts entered in XLM. Restricted buckets release native XLM to whitelisted merchants."
+              : "Amounts entered in ₱ (PHP), escrowed as USDC. Free cash off-ramps via SEP-24."}
+          </p>
+        </section>
+
         {/* Recipient */}
         <section className="flex flex-col gap-sm">
           <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
@@ -383,7 +445,7 @@ export default function SendPage() {
               Available
             </span>
             <span className="font-currency-md text-currency-md text-primary-container">
-              ₱{availablePhp.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+              {fmtAmt(available)}
             </span>
           </div>
         </div>
@@ -408,7 +470,7 @@ export default function SendPage() {
                   <button
                     type="button"
                     onClick={() => useRemaining(c.key)}
-                    disabled={availablePhp <= 0}
+                    disabled={available <= 0}
                     className="rounded-full bg-primary-container/10 px-sm py-base font-label-caps text-label-caps uppercase text-primary transition-colors hover:bg-primary-container/20 disabled:opacity-40"
                   >
                     Use all
@@ -416,7 +478,7 @@ export default function SendPage() {
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-surface-container-low p-sm focus-within:ring-2 focus-within:ring-primary/20">
                   <span className="pl-xs font-currency-md text-currency-md text-on-surface-variant">
-                    ₱
+                    {isXlm ? "✦" : "₱"}
                   </span>
                   <input
                     inputMode="decimal"
@@ -427,7 +489,7 @@ export default function SendPage() {
                   />
                 </div>
                 <div className="text-right font-currency-md text-[12px] text-on-surface-variant/70">
-                  ≈ {usdc} USDC
+                  {isXlm ? `${parseFloat(alloc[c.key] || "0").toFixed(2)} XLM` : `≈ ${usdc} USDC`}
                 </div>
 
                 {/* Per-bucket recipient (multi-recipient mode) */}
@@ -558,10 +620,10 @@ export default function SendPage() {
         {status && (
           <Card role="status" aria-live="polite">
             <p className="font-body-sm text-body-sm text-on-surface">{status}</p>
-            {resultId && <ClaimShare padalaId={resultId} />}
+            {resultId && <ClaimShare padalaId={resultId} asset={asset} />}
             {recResultId && (
               <a
-                href={`/recurring/${recResultId}`}
+                href={`/recurring/${recResultId}${isXlm ? "?asset=xlm" : ""}`}
                 className="mt-sm inline-flex items-center gap-1 rounded-full bg-primary px-md py-xs font-label-caps text-label-caps uppercase text-on-primary"
               >
                 <span className="material-symbols-outlined text-[16px]">event_repeat</span>
@@ -584,7 +646,7 @@ export default function SendPage() {
                 overspent ? "text-error" : "text-on-surface"
               }`}
             >
-              ₱ {totalPhp.toFixed(2)}
+              {fmtAmt(total)}
             </span>
           </div>
           {recurring && (
@@ -593,7 +655,7 @@ export default function SendPage() {
                 Escrow now (× {months || 0})
               </span>
               <span className="font-currency-md text-currency-md text-tertiary-container">
-                ₱ {(totalPhp * (parseInt(months || "0", 10) || 0)).toFixed(2)}
+                {fmtAmt(total * (parseInt(months || "0", 10) || 0))}
               </span>
             </div>
           )}
@@ -606,12 +668,12 @@ export default function SendPage() {
                 overspent ? "text-error" : "text-on-surface-variant"
               }`}
             >
-              ₱ {(overspent ? escrowPhp - availablePhp : remainingPhp).toFixed(2)}
+              {fmtAmt(overspent ? escrow - available : remaining)}
             </span>
           </div>
           <button
             onClick={submit}
-            disabled={busy || totalPhp <= 0 || overspent}
+            disabled={busy || total <= 0 || overspent}
             className="flex h-[56px] w-full items-center justify-center gap-xs rounded-full bg-secondary-container font-headline-md text-[18px] text-on-secondary-container transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             <span className="material-symbols-outlined" data-weight="fill" aria-hidden="true">
