@@ -32,6 +32,16 @@
 | **Contract address** | [`CDTXH4OQ…RYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
 | **Sample interaction tx** | [`8214e348…158d4f4`](https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4) · more in [`docs/testnet-state.md`](./docs/testnet-state.md) |
 
+<div align="center">
+
+### 👉 Try it now — no install, no extension needed
+
+**[▶︎ Open the live app](https://padalock.vercel.app)** &nbsp;·&nbsp; create a wallet &nbsp;·&nbsp; fund with one tap &nbsp;·&nbsp; send a purpose-locked padala in under a minute.
+
+*Runs on Stellar testnet — play with real on-chain money, zero risk.*
+
+</div>
+
 ---
 
 ## 💡 What is PadaLock?
@@ -246,5 +256,13 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 ---
 
 <div align="center">
-<sub>Built for the Filipino diaspora — <em> filipinos helping filipinos protect what they send home.</em></sub>
+
+## Ready to see it?
+
+**[🚀 Launch the live demo](https://padalock.vercel.app)** &nbsp;|&nbsp; **[🎬 Watch the video](./docs/demo-video/padalock-demo.mp4)** &nbsp;|&nbsp; **[⭐ Star the repo](https://github.com/polsalarm/PadaLock)**
+
+<br>
+
+<sub>Built for the Filipino diaspora — <em>filipinos helping filipinos protect what they send home.</em></sub>
+
 </div>
