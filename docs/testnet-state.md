@@ -15,11 +15,20 @@
 
 | Resource | Contract ID |
 |----------|-------------|
-| **PadaLock** | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
+| **PadaLock (USDC)** | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
+| **PadaLock (XLM)** | `CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY` |
 | **USDC SAC** | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
+| **XLM native SAC** | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
+
+> Each asset is its own PadaLock instance (the contract is bound to a single
+> token at construction). The XLM instance is the **same wasm** as USDC, just
+> constructed with the XLM native SAC as its token, and seeded with the same 16
+> merchants. Deploy tx:
+> https://stellar.expert/explorer/testnet/tx/191abdaa44f6b1d8956d905ea47cdde26f4b8585501d2ff1f66621c9c362bd9e
 
 **Stellar Expert:**
-- PadaLock → https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
+- PadaLock (USDC) → https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
+- PadaLock (XLM) → https://stellar.expert/explorer/testnet/contract/CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY
 - USDC SAC → https://stellar.expert/explorer/testnet/contract/CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 
 **Wasm hash:** `6ac9fd2e373892244884bcce84dcba0e884f08300c88719c11fb2ed6dca650db`
