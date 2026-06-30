@@ -247,7 +247,7 @@ export default function Dashboard() {
 
         {/* Quick stats */}
         <section
-          className="no-scrollbar flex gap-sm overflow-x-auto pb-2"
+          className="grid grid-cols-3 gap-sm"
         >
           {[
             { label: "This month", value: "—" },
@@ -256,7 +256,7 @@ export default function Dashboard() {
           ].map((s) => (
             <div
               key={s.label}
-              className="flex min-w-[140px] shrink-0 flex-col gap-xs rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+              className="flex min-w-0 flex-col gap-xs rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
             >
               <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
                 {s.label}
