@@ -6,24 +6,27 @@ export const NETWORK = {
   friendbotUrl: 'https://friendbot.stellar.org',
 } as const;
 
+// NOTE: must use static `process.env.NEXT_PUBLIC_*` access — Next only inlines
+// literal member access, not computed `process.env[name]`. `.trim()` strips any
+// stray whitespace/newline a value may have picked up (e.g. CLI stdin piping).
 export const USDC_SAC_TESTNET =
-  process.env.NEXT_PUBLIC_USDC_SAC_TESTNET ?? '';
+  (process.env.NEXT_PUBLIC_USDC_SAC_TESTNET ?? '').trim();
 
 export const USDC_ISSUER_TESTNET =
-  process.env.NEXT_PUBLIC_USDC_ISSUER_TESTNET ?? '';
+  (process.env.NEXT_PUBLIC_USDC_ISSUER_TESTNET ?? '').trim();
 
 export const USDC_CODE = 'USDC';
 
 export const PADALOCK_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_PADALOCK_CONTRACT_ID ?? '';
+  (process.env.NEXT_PUBLIC_PADALOCK_CONTRACT_ID ?? '').trim();
 
 /** XLM-bound PadaLock instance (native SAC token). Separate contract per asset. */
 export const PADALOCK_XLM_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_PADALOCK_XLM_CONTRACT_ID ?? '';
+  (process.env.NEXT_PUBLIC_PADALOCK_XLM_CONTRACT_ID ?? '').trim();
 
 /** XLM native Stellar Asset Contract id on testnet. */
 export const XLM_SAC_TESTNET =
-  process.env.NEXT_PUBLIC_XLM_SAC_TESTNET ?? '';
+  (process.env.NEXT_PUBLIC_XLM_SAC_TESTNET ?? '').trim();
 
 /** Asset a padala is denominated in. Each asset = its own PadaLock instance. */
 export type PadalaAsset = 'USDC' | 'XLM';
