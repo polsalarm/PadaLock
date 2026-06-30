@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-flight runs for the same ref — keep CI fast on rapid pushes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Soroban contract — cargo test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts/pada-lock
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            contracts/pada-lock/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('contracts/pada-lock/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: cargo test
+        run: cargo test
+
+  web:
+    name: Web + SDK — vitest & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build SDK
+        run: npm run sdk:build
+
+      - name: Test (all workspaces)
+        run: npm test
+
+      - name: Build web
+        run: npm run build
+        env:
+          # Public testnet values — safe to expose; CI build only needs them present.
+          NEXT_PUBLIC_PADALOCK_CONTRACT_ID: CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
