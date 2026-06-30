@@ -150,6 +150,7 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 ## ✨ Features
 
 - **🔒 Purpose-locked buckets** — restricted buckets release only to whitelisted merchants; free cash is unrestricted.
+- **💱 USDC or XLM** — choose the asset at send time. Each asset is its own escrow contract (USDC-bound + XLM-bound instances); restricted buckets release the chosen asset to whitelisted merchants.
 - **👨‍👩‍👧 Multi-recipient padala** — each bucket names its own recipient, so one padala fans out to several family members; each claims only their own buckets.
 - **🔁 Recurring padala** — sender prefunds N runs up front; `execute_due` is permissionless and mints a fresh padala each interval; cancel refunds the unspent prefund.
 - **💱 Real SEP-24 off-ramp** — free cash is claimed to the recipient's wallet, then cashed out via genuine SEP-10 auth + SEP-24 interactive withdraw against `testanchor.stellar.org`.
@@ -221,7 +222,9 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
   | Env var | Value (testnet) |
   |---|---|
   | `NEXT_PUBLIC_PADALOCK_CONTRACT_ID` | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
+  | `NEXT_PUBLIC_PADALOCK_XLM_CONTRACT_ID` | `CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY` |
   | `NEXT_PUBLIC_USDC_SAC_TESTNET` | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
+  | `NEXT_PUBLIC_XLM_SAC_TESTNET` | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
   | `NEXT_PUBLIC_USDC_ISSUER_TESTNET` | `GAZ5YSMH4Z2VXLLVR7FE7RENVBSDLU5U4PCJZYHRFZSBANA765TZEUQE` |
   | `NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN` | `testanchor.stellar.org` |
 
