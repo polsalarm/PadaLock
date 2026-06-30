@@ -44,6 +44,7 @@ interface WalletApi {
 }
 
 const EXTERNAL_KEY = "padalock.external.v1";
+const EXTERNAL_WALLET_KEY = "padalock.external.wallet.v1";
 
 const Ctx = createContext<WalletApi | null>(null);
 
@@ -78,8 +79,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const connectExternal = useCallback(async () => {
-    const address = await connectExternalWallet();
+    const { address, walletId } = await connectExternalWallet();
     window.localStorage.setItem(EXTERNAL_KEY, address);
+    // Persist the chosen wallet so signing can re-select it after a reload.
+    if (walletId) window.localStorage.setItem(EXTERNAL_WALLET_KEY, walletId);
     setKeypair(null);
     setState({ status: "unlocked", publicKey: address, mode: "external" });
   }, []);
@@ -88,7 +91,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     async (xdr: string): Promise<string> => {
       if (state.status !== "unlocked") throw new Error("Wallet not unlocked");
       if (state.mode === "external") {
-        return signWithExternalWallet(xdr, state.publicKey);
+        const walletId =
+          typeof window !== "undefined"
+            ? window.localStorage.getItem(EXTERNAL_WALLET_KEY) ?? undefined
+            : undefined;
+        return signWithExternalWallet(xdr, state.publicKey, walletId);
       }
       if (!keypair) throw new Error("Local key unavailable");
       const tx = TransactionBuilder.fromXDR(xdr, NETWORK.passphrase);
@@ -100,6 +107,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const lock = useCallback(() => {
     window.localStorage.removeItem(EXTERNAL_KEY);
+    window.localStorage.removeItem(EXTERNAL_WALLET_KEY);
     void disconnectExternalWallet();
     setKeypair(null);
     setState(hasWallet() ? { status: "locked" } : { status: "no-wallet" });
@@ -108,6 +116,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const destroy = useCallback(() => {
     wipeWallet();
     window.localStorage.removeItem(EXTERNAL_KEY);
+    window.localStorage.removeItem(EXTERNAL_WALLET_KEY);
     setKeypair(null);
     setState({ status: "no-wallet" });
   }, []);
