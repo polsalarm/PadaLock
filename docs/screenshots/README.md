@@ -3,11 +3,12 @@
 Drop the submission screenshots here, keeping these exact filenames so the
 root `README.md` references resolve:
 
-| File | Shows | How to capture |
+| File | Shows | Status / how to capture |
 |------|-------|----------------|
-| `mobile-responsive.png` | Mobile-responsive UI | Open the live site, Chrome DevTools → device toolbar (e.g. iPhone 14), screenshot dashboard or `/send`. |
-| `ci-pipeline.png` | CI/CD pipeline running/passing | GitHub → Actions → latest **CI** run, screenshot the two green jobs. |
-| `tests-passing.png` | 3+ passing tests | Terminal output of `npm test` (web 14) + `cd packages/sdk && npx vitest run` (4) + `npm run contract:test` (16). |
+| `tests-cargo.png` | Contract tests — `cargo test`, 16 passed | ✅ added |
+| `tests-vitest.png` | Frontend + SDK — `vitest`, 18 passed | ✅ added |
+| `mobile-responsive.png` | Mobile-responsive UI | ⬜ Open live site → Chrome DevTools device toolbar (`Ctrl+Shift+M`, iPhone) → `Win+Shift+S` → save here. |
+| `ci-pipeline.png` | CI/CD pipeline (both jobs green) | ⬜ GitHub → Actions → latest **CI** run → snip the two green jobs → save here. |
+| `stellar-contract.png` | Contract + tx history on Stellar Expert | ⬜ Open the [contract page](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) → snip summary + history → save here. |
 
-These are placeholders — replace with real PNGs. Until then the README image
-links will 404, which is expected.
+⬜ items 404 in the root README until the PNG is dropped in with the exact filename.
