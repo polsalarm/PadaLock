@@ -163,8 +163,8 @@ export default function ClaimPage({
 
   // Remember this padala for the recipient's "Received" history.
   useEffect(() => {
-    if (isRecipient) recordReceivedPadala(publicKey, id);
-  }, [isRecipient, publicKey, id]);
+    if (isRecipient) recordReceivedPadala(publicKey, id, asset);
+  }, [isRecipient, publicKey, id, asset]);
 
   const totalUsdc = myBuckets
     .reduce((acc, b) => acc + BigInt(b.amount), 0n)
