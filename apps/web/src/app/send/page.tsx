@@ -261,7 +261,7 @@ export default function SendPage() {
         } else if (id) {
           setStatus("Padala sent and locked in escrow.");
           setResultId(id);
-          recordSentPadala(state.publicKey, id);
+          recordSentPadala(state.publicKey, id, asset);
         } else {
           setStatus(`Sent (tx ${hash.slice(0, 8)}…) — open Track releases to find it.`);
         }
