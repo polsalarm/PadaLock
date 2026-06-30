@@ -30,13 +30,14 @@ const DUMMY_PUB = 'GAAAAAAAACGC6';
 
 async function simRead(
   callerPub: string,
+  contractId: string,
   fn: string,
   ...args: ReturnType<typeof nativeToScVal>[]
 ): Promise<unknown> {
   const server = getRpcServer();
   const acct = await server.getAccount(callerPub);
   const source = new Account(acct.accountId(), acct.sequenceNumber());
-  const contract = new Contract(PADALOCK_CONTRACT_ID);
+  const contract = new Contract(contractId || PADALOCK_CONTRACT_ID);
   const tx = new TransactionBuilder(source, {
     fee: BASE_FEE,
     networkPassphrase: NETWORK.passphrase,
@@ -70,9 +71,14 @@ interface RawPadala {
   recurring_id: bigint;
 }
 
-export async function getPadala(callerPub: string, padalaId: string): Promise<PadalaView> {
+export async function getPadala(
+  callerPub: string,
+  padalaId: string,
+  contractId = PADALOCK_CONTRACT_ID
+): Promise<PadalaView> {
   const raw = (await simRead(
     callerPub,
+    contractId,
     'get_padala',
     nativeToScVal(BigInt(padalaId), { type: 'u64' })
   )) as RawPadala;
@@ -108,10 +114,12 @@ interface RawRecurring {
 
 export async function getRecurring(
   callerPub: string,
-  recId: string
+  recId: string,
+  contractId = PADALOCK_CONTRACT_ID
 ): Promise<RecurringView> {
   const raw = (await simRead(
     callerPub,
+    contractId,
     'get_recurring',
     nativeToScVal(BigInt(recId), { type: 'u64' })
   )) as RawRecurring;
@@ -135,12 +143,14 @@ export async function getRecurring(
 
 export async function getMerchants(
   callerPub: string,
-  category: BucketCategory
+  category: BucketCategory,
+  contractId = PADALOCK_CONTRACT_ID
 ): Promise<string[]> {
   const idx = CATEGORY_NAMES.indexOf(category);
   if (idx < 0) return [];
   const raw = (await simRead(
     callerPub,
+    contractId,
     'get_merchants',
     nativeToScVal(idx, { type: 'u32' })
   )) as Address[] | string[] | null;
@@ -156,10 +166,12 @@ interface RawReputation {
 
 export async function getReputation(
   callerPub: string,
-  merchant: string
+  merchant: string,
+  contractId = PADALOCK_CONTRACT_ID
 ): Promise<ReputationView> {
   const raw = (await simRead(
     callerPub,
+    contractId,
     'get_reputation',
     nativeToScVal(new Address(merchant), { type: 'address' })
   )) as RawReputation;
