@@ -41,3 +41,6 @@ ChatGPT Image*.png
 # Loose mascot source art at repo root (shipped assets live in apps/web/public/mascot)
 /image.png
 /tarsi.jpg
+
+.vercel
+.env*
