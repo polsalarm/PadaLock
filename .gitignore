@@ -37,3 +37,7 @@ ChatGPT Image*.png
 
 # Ad-hoc screenshots dropped at repo root
 /[0-9].png
+
+# Loose mascot source art at repo root (shipped assets live in apps/web/public/mascot)
+/image.png
+/tarsi.jpg
