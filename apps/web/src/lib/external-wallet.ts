@@ -25,19 +25,34 @@ async function kit() {
   return StellarWalletsKit;
 }
 
-/** Opens the kit's auth modal; resolves with the connected address. */
-export async function connectExternalWallet(): Promise<string> {
+/**
+ * Opens the kit's auth modal; resolves with the connected address + the chosen
+ * wallet id. The id must be persisted: on a later page load the kit's in-memory
+ * wallet selection is gone, so `setWallet(id)` has to be called before signing
+ * or Freighter (et al.) never pops.
+ */
+export async function connectExternalWallet(): Promise<{
+  address: string;
+  walletId: string;
+}> {
   const k = await kit();
   const { address } = await k.authModal();
-  return address;
+  // selectedModule.productId is the id authModal just activated.
+  const walletId = k.selectedModule?.productId ?? "";
+  return { address, walletId };
 }
 
 /** Signs a tx XDR with the connected external wallet. Returns signed XDR. */
 export async function signWithExternalWallet(
   xdr: string,
-  address: string
+  address: string,
+  walletId?: string
 ): Promise<string> {
   const k = await kit();
+  // Restore the selected wallet — the kit loses it across reloads.
+  if (walletId) {
+    k.setWallet(walletId);
+  }
   const { signedTxXdr } = await k.signTransaction(xdr, {
     address,
     networkPassphrase: NETWORK.passphrase,
