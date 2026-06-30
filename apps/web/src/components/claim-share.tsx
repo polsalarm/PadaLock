@@ -14,15 +14,24 @@ import QRCode from "qrcode";
  * (scan on the family phone) and the native Share sheet (send via Messenger/SMS),
  * which is what actually gets a low-tech recipient into the flow.
  */
-export function ClaimShare({ padalaId }: { padalaId: string }) {
+export function ClaimShare({
+  padalaId,
+  asset = "USDC",
+}: {
+  padalaId: string;
+  asset?: "USDC" | "XLM";
+}) {
   const [copied, setCopied] = useState(false);
   const [qrSvg, setQrSvg] = useState<string | null>(null);
   const [canShare, setCanShare] = useState(false);
 
+  // XLM padalas live in a separate contract, so the claim link must say which.
+  const q = asset === "XLM" ? "?asset=xlm" : "";
+  const claimPath = `/claim/${padalaId}${q}`;
   const claimUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/claim/${padalaId}`
-      : `/claim/${padalaId}`;
+      ? `${window.location.origin}${claimPath}`
+      : claimPath;
 
   useEffect(() => {
     setCanShare(
@@ -100,7 +109,7 @@ export function ClaimShare({ padalaId }: { padalaId: string }) {
         )}
 
         <a
-          href={`/padala/${padalaId}`}
+          href={`/padala/${padalaId}${q}`}
           className="flex items-center gap-1 rounded-full border border-outline-variant px-md py-xs font-label-caps text-label-caps uppercase text-on-surface"
         >
           <span className="material-symbols-outlined text-[16px]">
