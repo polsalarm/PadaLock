@@ -153,8 +153,8 @@ export default function ClaimPage({
     }
   }, [state, id, router, load]);
 
-  if (state.status !== "unlocked") return null;
-  const publicKey = state.publicKey;
+  // Derived defensively so hooks below always run (no early-return before them).
+  const publicKey = state.status === "unlocked" ? state.publicKey : "";
   // Multi-recipient: a viewer sees only the buckets addressed to them.
   const myBuckets = padala
     ? padala.buckets.filter((b) => b.recipient === publicKey)
@@ -163,8 +163,10 @@ export default function ClaimPage({
 
   // Remember this padala for the recipient's "Received" history.
   useEffect(() => {
-    if (isRecipient) recordReceivedPadala(publicKey, id, asset);
+    if (isRecipient && publicKey) recordReceivedPadala(publicKey, id, asset);
   }, [isRecipient, publicKey, id, asset]);
+
+  if (state.status !== "unlocked") return null;
 
   const totalUsdc = myBuckets
     .reduce((acc, b) => acc + BigInt(b.amount), 0n)
