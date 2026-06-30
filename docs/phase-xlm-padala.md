@@ -189,8 +189,12 @@ restricted claim routes native XLM to the whitelisted merchant.
 
 ## Definition of done
 
-- [ ] XLM PadaLock deployed + 16 merchants seeded (Phase X1–X2)
-- [ ] SDK resolves contract by asset; builders/readers thread `contractId` (X3)
-- [ ] `/send` asset toggle creates real XLM padalas (X4)
-- [ ] Claim links carry `?asset=`; XLM claim routes native XLM to merchant (X5)
-- [ ] Docs + Vercel env updated, redeployed (X8)
+- [x] XLM PadaLock deployed (`CATT7GZM…2HVY`) + 16 merchants seeded (Phase X1–X2)
+- [x] SDK resolves contract by asset; builders/readers thread `contractId` (X3)
+- [x] `/send` asset toggle creates real XLM padalas (X4)
+- [x] Claim links carry `?asset=`; XLM claim routes native XLM to merchant (X5)
+- [x] Docs + Vercel env updated, redeployed (X8)
+
+> Shipped 2026-06-30. XLM instance, env, and live deploy all in place. Remaining
+> manual check: testnet golden path (X7 manual) — fund XLM, send XLM padala,
+> claim restricted + free-cash.
