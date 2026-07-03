@@ -28,6 +28,17 @@ export default function Dashboard() {
   const [xlm, setXlm] = useState<string>("0");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [heroAsset, setHeroAsset] = useState<"USDC" | "XLM">("USDC");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("padalock.heroAsset.v1");
+    if (saved === "XLM" || saved === "USDC") setHeroAsset(saved);
+  }, []);
+
+  function pickHero(asset: "USDC" | "XLM") {
+    setHeroAsset(asset);
+    localStorage.setItem("padalock.heroAsset.v1", asset);
+  }
 
   const refresh = useCallback(async (pub: string) => {
     const [usdc, native] = await Promise.all([
@@ -50,6 +61,11 @@ export default function Dashboard() {
   const publicKey: string = state.publicKey;
   const usdcHuman = fmtStroops(balance);
   const php = usdcToPhp(usdcHuman);
+  const heroIsXlm = heroAsset === "XLM";
+  const heroValue = heroIsXlm ? xlm : usdcHuman;
+  const heroSub = heroIsXlm ? "Native asset" : `≈ ₱${php}`;
+  const otherSym = heroIsXlm ? "USDC" : "XLM";
+  const otherValue = heroIsXlm ? usdcHuman : xlm;
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Magandang umaga" : hour < 18 ? "Magandang hapon" : "Magandang gabi";
@@ -138,26 +154,43 @@ export default function Dashboard() {
               {busy ? "Funding…" : "Fund testnet"}
             </button>
           </div>
+          {/* Asset toggle — choose which token headlines the balance */}
+          <div className="relative z-10 flex w-fit gap-1 rounded-full bg-on-primary/10 p-0.5">
+            {(["USDC", "XLM"] as const).map((a) => (
+              <button
+                key={a}
+                onClick={() => pickHero(a)}
+                aria-pressed={heroAsset === a}
+                className={`rounded-full px-sm py-1 font-label-caps text-label-caps uppercase transition-colors ${
+                  heroAsset === a
+                    ? "bg-on-primary text-primary"
+                    : "text-primary-fixed-dim"
+                }`}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
           <div className="relative z-10 flex flex-col">
             <div className="flex items-baseline gap-xs">
               <span className="font-currency-lg text-display-lg-mobile tracking-tight">
-                {usdcHuman}
+                {heroValue}
               </span>
               <span className="font-body-sm text-body-sm text-primary-fixed-dim">
-                USDC
+                {heroAsset}
               </span>
             </div>
             <span className="mt-1 font-body-sm text-body-sm text-inverse-primary">
-              ≈ ₱{php}
+              {heroSub}
             </span>
           </div>
-          {/* Native XLM balance (Level-1 requirement) */}
+          {/* The other token, shown compact below */}
           <div className="relative z-10 flex items-baseline justify-between border-t border-on-primary/15 pt-sm">
             <span className="font-label-caps text-label-caps uppercase text-primary-fixed-dim">
-              XLM
+              {otherSym}
             </span>
             <span className="font-currency-md text-currency-md text-on-primary">
-              {xlm}
+              {otherValue}
             </span>
           </div>
           <div className="relative z-10 mt-xs flex items-center gap-xs opacity-75">
