@@ -19,6 +19,7 @@ import {
   PageShell,
   TopAppBar,
 } from "@/components/ui";
+import { track } from "@/lib/analytics";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -76,6 +77,7 @@ export default function Dashboard() {
         throw new Error(data.error ?? "Faucet mint failed");
       }
       setMsg("Ready! 1000 test USDC minted to your wallet. 🎉");
+      track("wallet_funded");
       await refresh(publicKey);
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Setup error");
