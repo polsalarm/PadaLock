@@ -27,6 +27,8 @@ export interface PadalaView {
   createdAt: number;
   /** 0 for one-off; the recurring schedule id that minted it otherwise. */
   recurringId: number;
+  /** Ledger time (unix secs) after which the sender may reclaim unclaimed buckets. */
+  expiresAt: number;
 }
 
 export interface RecurringView {
