@@ -13,6 +13,17 @@ mod test;
 const FREE_CASH: u32 = 4;
 const MAX_CATEGORY: u32 = 4;
 
+/// A one-off padala becomes sender-reclaimable this long after creation if its
+/// buckets are still unclaimed — a safety net for a family no-show so funds are
+/// never locked in the contract forever. ~30 days.
+const DEFAULT_EXPIRY_SECS: u64 = 2_592_000;
+
+/// TTL bump params for persistent + instance storage (~5s ledgers). Whenever an
+/// entry gets within ~30 days of archival we push it back to ~90 days, so active
+/// padalas / merchants / reputation don't expire out from under users.
+const BUMP_THRESHOLD: u32 = 518_400; // ~30 days of ledgers
+const BUMP_TO: u32 = 1_555_200; // ~90 days of ledgers
+
 /// Each bucket carries its own recipient, so one padala can fan out to several
 /// family members (multi-recipient). Single-recipient is the common case where
 /// every bucket shares the same address.
@@ -43,6 +54,8 @@ pub struct Padala {
     pub created_at: u64,
     /// 0 for a one-off padala; the recurring schedule id that minted it otherwise.
     pub recurring_id: u64,
+    /// Ledger time after which the sender may `reclaim` still-unclaimed buckets.
+    pub expires_at: u64,
 }
 
 /// A prefunded recurring schedule. The sender deposits `occurrences` worth of the
@@ -103,6 +116,8 @@ pub enum Error {
     NotActive = 12,
     InvalidInterval = 13,
     InvalidOccurrences = 14,
+    NotExpired = 15,
+    NothingToReclaim = 16,
 }
 
 #[contract]
@@ -117,6 +132,7 @@ impl PadaLock {
         env.storage().instance().set(&DataKey::Token, &token);
         env.storage().instance().set(&DataKey::Counter, &0u64);
         env.storage().instance().set(&DataKey::RecCounter, &0u64);
+        Self::bump_instance(&env);
     }
 
     /// OFW creates a purpose-locked padala. Transfers total SAC from sender to
@@ -185,9 +201,10 @@ impl PadaLock {
             prefunded,
             active: true,
         };
-        env.storage()
-            .persistent()
-            .set(&DataKey::Recurring(rec_id), &rec);
+        let rkey = DataKey::Recurring(rec_id);
+        env.storage().persistent().set(&rkey, &rec);
+        Self::bump_persistent(&env, &rkey);
+        Self::bump_instance(&env);
 
         env.events().publish(
             (Symbol::new(&env, "rec_new"), sender),
@@ -223,6 +240,7 @@ impl PadaLock {
             rec.active = false;
         }
         env.storage().persistent().set(&key, &rec);
+        Self::bump_persistent(&env, &key);
 
         env.events().publish(
             (Symbol::new(&env, "rec_run"), rec.sender.clone()),
@@ -316,6 +334,7 @@ impl PadaLock {
         let recipient = bucket.recipient.clone();
         padala.buckets.set(bucket_id, bucket);
         env.storage().persistent().set(&key, &padala);
+        Self::bump_persistent(&env, &key);
 
         Self::bump_reputation(&env, &merchant, amount);
 
@@ -324,6 +343,57 @@ impl PadaLock {
             (padala_id, bucket_id, amount),
         );
         amount
+    }
+
+    /// Sender reclaims funds from a one-off padala whose buckets went unclaimed
+    /// past its expiry (family no-show). Transfers the sum of still-unclaimed
+    /// buckets back to the sender and marks them settled so they can't later be
+    /// claimed or reclaimed again. Reverts before expiry or if nothing is left.
+    pub fn reclaim(env: Env, padala_id: u64) -> i128 {
+        let key = DataKey::Padala(padala_id);
+        let mut padala: Padala = env
+            .storage()
+            .persistent()
+            .get(&key)
+            .unwrap_or_else(|| panic_with_error!(&env, Error::PadalaNotFound));
+
+        // Only the original sender can reclaim.
+        padala.sender.require_auth();
+
+        if env.ledger().timestamp() < padala.expires_at {
+            panic_with_error!(&env, Error::NotExpired);
+        }
+
+        let mut total: i128 = 0;
+        let len = padala.buckets.len();
+        for i in 0..len {
+            let mut b = padala.buckets.get(i).unwrap();
+            if !b.claimed {
+                total += b.amount;
+                b.claimed = true;
+                // claimed_by == sender flags a reclaim (vs a real merchant claim).
+                b.claimed_by = Some(padala.sender.clone());
+                padala.buckets.set(i, b);
+            }
+        }
+        if total == 0 {
+            panic_with_error!(&env, Error::NothingToReclaim);
+        }
+
+        let token = Self::token(&env);
+        token::Client::new(&env, &token).transfer(
+            &env.current_contract_address(),
+            &padala.sender,
+            &total,
+        );
+
+        let sender = padala.sender.clone();
+        env.storage().persistent().set(&key, &padala);
+        Self::bump_persistent(&env, &key);
+
+        env.events()
+            .publish((Symbol::new(&env, "reclaim"), sender), (padala_id, total));
+        total
     }
 
     /// Admin-only: whitelist a merchant under a restricted category.
@@ -345,16 +415,21 @@ impl PadaLock {
             .get(&DataKey::Merchants(category))
             .unwrap_or(Vec::new(&env));
         merchants.push_back(merchant);
-        env.storage()
-            .persistent()
-            .set(&DataKey::Merchants(category), &merchants);
+        let mkey = DataKey::Merchants(category);
+        env.storage().persistent().set(&mkey, &merchants);
+        Self::bump_persistent(&env, &mkey);
     }
 
     pub fn get_padala(env: Env, padala_id: u64) -> Padala {
-        env.storage()
+        let key = DataKey::Padala(padala_id);
+        let padala: Padala = env
+            .storage()
             .persistent()
-            .get(&DataKey::Padala(padala_id))
-            .unwrap_or_else(|| panic_with_error!(&env, Error::PadalaNotFound))
+            .get(&key)
+            .unwrap_or_else(|| panic_with_error!(&env, Error::PadalaNotFound));
+        // Reading an active padala keeps it alive.
+        Self::bump_persistent(&env, &key);
+        padala
     }
 
     pub fn get_recurring(env: Env, rec_id: u64) -> Recurring {
@@ -431,14 +506,31 @@ impl PadaLock {
             + 1;
         env.storage().instance().set(&DataKey::Counter, &id);
 
+        let now = env.ledger().timestamp();
         let padala = Padala {
             sender: sender.clone(),
             buckets: out,
-            created_at: env.ledger().timestamp(),
+            created_at: now,
             recurring_id,
+            expires_at: now + DEFAULT_EXPIRY_SECS,
         };
-        env.storage().persistent().set(&DataKey::Padala(id), &padala);
+        let key = DataKey::Padala(id);
+        env.storage().persistent().set(&key, &padala);
+        Self::bump_persistent(env, &key);
+        Self::bump_instance(env);
         id
+    }
+
+    /// Extend a persistent entry's TTL so active data doesn't archive.
+    fn bump_persistent(env: &Env, key: &DataKey) {
+        env.storage()
+            .persistent()
+            .extend_ttl(key, BUMP_THRESHOLD, BUMP_TO);
+    }
+
+    /// Extend the contract instance (admin/token/counters) TTL.
+    fn bump_instance(env: &Env) {
+        env.storage().instance().extend_ttl(BUMP_THRESHOLD, BUMP_TO);
     }
 
     /// Accrue one claim into a merchant's reputation.
@@ -453,6 +545,7 @@ impl PadaLock {
         rep.volume += amount;
         rep.last_claim_at = env.ledger().timestamp();
         env.storage().persistent().set(&rkey, &rep);
+        Self::bump_persistent(env, &rkey);
     }
 
     fn token(env: &Env) -> Address {
