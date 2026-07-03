@@ -144,6 +144,17 @@ export default function HistoryPage() {
           </div>
         </div>
 
+        {sent && !loading && rows.length > 0 && (
+          <Link href="/send" className="w-full">
+            <Button variant="golden">
+              <span className="material-symbols-outlined" data-weight="fill">
+                send
+              </span>
+              Send padala
+            </Button>
+          </Link>
+        )}
+
         {loading && (
           <Card>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
