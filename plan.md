@@ -184,12 +184,13 @@ Everything else is post-MVP.
 
 ---
 
-## 10. Build status (updated 2026-06-24)
+## 10. Build status (updated 2026-07-04)
 
 Phase 0–7 shipped. Contract redeployed with multi-recipient + recurring +
-merchant reputation:
-`CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` (16 merchants reseeded).
-See `docs/testnet-state.md` for live IDs + ops.
+merchant reputation + **sender reclaim on expiry + TTL bumping**:
+`CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE` (USDC) /
+`CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM` (XLM), 16 merchants
+reseeded on each. See `docs/testnet-state.md` for live IDs + ops.
 
 - **Phase 5 / SEP-24:** ✅ real off-ramp. FreeCash claimed to recipient wallet,
   then SEP-10 auth + SEP-24 interactive withdraw vs `testanchor.stellar.org`
@@ -211,8 +212,20 @@ See `docs/testnet-state.md` for live IDs + ops.
   selected merchant. ✅ redeployed + 16 merchants reseeded; `get_reputation`
   live on testnet (verified returns zero struct for an unclaimed merchant).
 
-Contract tests: 16/16 `cargo test`. Verified on testnet: create_padala,
-create_recurring → execute_due (mints padala with `recurring_id`).
+- **Sender reclaim (expiry safety net):** ✅ each one-off padala stores
+  `expires_at` (30-day default); `reclaim(padala_id)` returns still-unclaimed
+  buckets to the sender after expiry. Sender-only auth; reverts before expiry
+  (`NotExpired`) or when nothing is left (`NothingToReclaim`). SDK `buildReclaim`
+  + reclaim UI on `/padala/[id]`. Verified on testnet: reclaim-before-expiry
+  reverts with `Error #15`.
+- **TTL bumping (durable storage):** ✅ padala / recurring / merchant /
+  reputation entries `extend_ttl` on every write and on `get_padala` read, so
+  active data doesn't archive.
+- **Dashboard asset switcher:** ✅ headline balance in USDC or XLM (remembered).
+
+Contract tests: 21/21 `cargo test`. Verified on testnet (new deploy):
+create_padala (with `expires_at`), freecash + restricted claim to whitelisted
+merchant, reputation accrual, reclaim-before-expiry revert (#15).
 
 ---
 
