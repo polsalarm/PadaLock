@@ -15,6 +15,8 @@
     "@padalock/sdk": "*",
     "@scure/bip39": "^1.4.0",
     "@stellar/stellar-sdk": "^14.0.0",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "next": "16.2.9",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
