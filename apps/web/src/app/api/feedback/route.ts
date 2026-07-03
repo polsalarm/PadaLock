@@ -9,10 +9,24 @@ import { NextResponse } from "next/server";
  * No secrets, testnet-safe, never stores wallet keys.
  */
 
+const CATEGORY_LABELS: Record<string, string> = {
+  technical: "Technical complexity",
+  product: "Product quality",
+  architecture: "Architecture quality",
+  usefulness: "Real-world usefulness",
+  overall: "Overall",
+};
+
 interface FeedbackBody {
   rating?: number;
+  ratings?: Record<string, number>;
   message?: string;
   address?: string;
+}
+
+function star(n: number): string {
+  const v = Number.isInteger(n) && n >= 1 && n <= 5 ? n : 0;
+  return "★".repeat(v) + "☆".repeat(5 - v);
 }
 
 export async function POST(req: Request) {
@@ -33,11 +47,17 @@ export async function POST(req: Request) {
       ? body.address.slice(0, 56)
       : "";
 
+  const ratings =
+    body.ratings && typeof body.ratings === "object" ? body.ratings : {};
+
   const webhook = process.env.FEEDBACK_WEBHOOK_URL;
   if (webhook) {
-    const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+    const lines = Object.keys(CATEGORY_LABELS)
+      .filter((k) => k !== "overall" && Number(ratings[k]) >= 1)
+      .map((k) => `• ${CATEGORY_LABELS[k]}: ${star(Number(ratings[k]))}`);
     const content = [
-      `**PadaLock feedback** — ${stars} (${rating}/5)`,
+      `**PadaLock feedback** — Overall ${star(rating)} (${rating}/5)`,
+      ...lines,
       message ? `> ${message}` : "_(no message)_",
       address ? `wallet: \`${address}\`` : "",
     ]
