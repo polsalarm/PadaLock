@@ -13,7 +13,7 @@
 | Stable frontend + contract architecture | ✅ done | Next.js 16 PWA + Soroban Rust, hybrid wallet |
 | Mobile responsive UI | ✅ done | `docs/screenshots/mobile-*.png` |
 | Loading states + error handling | ✅ mostly | audit pass needed (see G6) |
-| Contract deployed on testnet | ✅ done | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
+| Contract deployed on testnet | ✅ done | `CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE` |
 | 15+ meaningful commits | ✅ done | 128 commits |
 | Public GitHub repo | ✅ done | polsalarm/PadaLock |
 | README documentation | ✅ done | `README.md` |
