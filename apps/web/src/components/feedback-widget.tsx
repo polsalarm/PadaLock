@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { useWallet } from "@/lib/wallet-context";
 
@@ -45,6 +46,11 @@ export function FeedbackWidget() {
 
   const { state } = useWallet();
   const address = state.status === "unlocked" ? state.publicKey : undefined;
+  const pathname = usePathname();
+  // "/" is the splash/loading screen (redirects to /dashboard once wallet
+  // state resolves). Never surface the launcher there or on auth screens.
+  const onAppScreen =
+    pathname !== "/" && pathname !== "/login" && pathname !== "/onboard";
 
   useEffect(() => {
     // Hide the launcher entirely once the user has given feedback.
@@ -91,7 +97,11 @@ export function FeedbackWidget() {
 
   // Only surface the launcher on the dashboard (unlocked). Keep off the
   // loading / onboarding screens. Stay mounted while the sheet is open.
-  if ((hidden || state.status !== "unlocked") && !open) return null;
+  if (
+    (hidden || state.status !== "unlocked" || !onAppScreen) &&
+    !open
+  )
+    return null;
 
   return (
     <>
