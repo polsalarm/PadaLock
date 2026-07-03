@@ -15,7 +15,10 @@ import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { useWallet } from "@/lib/wallet-context";
 
-const DONE_KEY = "padalock.feedback.done.v1";
+// Scoped per wallet address so each wallet is asked once (localStorage is
+// shared across wallets in the same browser, so a single flag would suppress
+// the widget for every other wallet too).
+const doneKey = (address: string) => `padalock.feedback.done.v1:${address}`;
 
 const CATEGORIES = [
   { key: "technical", label: "Technical complexity" },
@@ -53,9 +56,17 @@ export function FeedbackWidget() {
     pathname !== "/" && pathname !== "/login" && pathname !== "/onboard";
 
   useEffect(() => {
-    // Hide the launcher entirely once the user has given feedback.
-    setHidden(localStorage.getItem(DONE_KEY) === "1");
-  }, []);
+    // Re-evaluate per wallet: hide only if *this* address already submitted.
+    // Reset the transient form so a freshly-switched wallet gets a clean sheet.
+    if (!address) {
+      setHidden(true);
+      return;
+    }
+    setHidden(localStorage.getItem(doneKey(address)) === "1");
+    setDone(false);
+    setRatings(EMPTY_RATINGS);
+    setMessage("");
+  }, [address]);
 
   function setRating(key: CategoryKey, value: number) {
     setRatings((prev) => ({ ...prev, [key]: value }));
@@ -86,7 +97,7 @@ export function FeedbackWidget() {
       architecture: ratings.architecture,
       usefulness: ratings.usefulness,
     });
-    localStorage.setItem(DONE_KEY, "1");
+    if (address) localStorage.setItem(doneKey(address), "1");
     setBusy(false);
     setDone(true);
     setTimeout(() => {
