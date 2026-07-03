@@ -2,9 +2,12 @@
 
 /**
  * Floating feedback widget (Level 4 "basic user feedback collection").
- * Star rating + optional message. Submits to /api/feedback and fires the
- * `feedback_submitted` analytics event so ratings show up in Vercel Analytics.
- * App-wide; dismissible; localStorage remembers a submit so we don't nag.
+ * Rates four dimensions (technical complexity, product quality, architecture
+ * quality, real-world usefulness) plus an overall score, with an optional
+ * message. Submits to /api/feedback and fires the `feedback_submitted`
+ * analytics event so ratings show up in Vercel Analytics.
+ * App-wide but dashboard-only; dismissible; localStorage remembers a submit
+ * so we don't nag.
  */
 
 import { useEffect, useState } from "react";
@@ -13,9 +16,28 @@ import { useWallet } from "@/lib/wallet-context";
 
 const DONE_KEY = "padalock.feedback.done.v1";
 
+const CATEGORIES = [
+  { key: "technical", label: "Technical complexity" },
+  { key: "product", label: "Product quality" },
+  { key: "architecture", label: "Architecture quality" },
+  { key: "usefulness", label: "Real-world usefulness" },
+  { key: "overall", label: "Overall" },
+] as const;
+
+type CategoryKey = (typeof CATEGORIES)[number]["key"];
+type Ratings = Record<CategoryKey, number>;
+
+const EMPTY_RATINGS: Ratings = {
+  technical: 0,
+  product: 0,
+  architecture: 0,
+  usefulness: 0,
+  overall: 0,
+};
+
 export function FeedbackWidget() {
   const [open, setOpen] = useState(false);
-  const [rating, setRating] = useState(0);
+  const [ratings, setRatings] = useState<Ratings>(EMPTY_RATINGS);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -29,19 +51,35 @@ export function FeedbackWidget() {
     setHidden(localStorage.getItem(DONE_KEY) === "1");
   }, []);
 
+  function setRating(key: CategoryKey, value: number) {
+    setRatings((prev) => ({ ...prev, [key]: value }));
+  }
+
   async function submit() {
-    if (rating < 1) return;
+    if (ratings.overall < 1) return;
     setBusy(true);
     try {
       await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, message, address }),
+        // `rating` kept as overall for backward compatibility.
+        body: JSON.stringify({
+          rating: ratings.overall,
+          ratings,
+          message,
+          address,
+        }),
       });
     } catch {
       // best-effort; still record locally + in analytics
     }
-    track("feedback_submitted", { rating });
+    track("feedback_submitted", {
+      rating: ratings.overall,
+      technical: ratings.technical,
+      product: ratings.product,
+      architecture: ratings.architecture,
+      usefulness: ratings.usefulness,
+    });
     localStorage.setItem(DONE_KEY, "1");
     setBusy(false);
     setDone(true);
@@ -51,7 +89,9 @@ export function FeedbackWidget() {
     }, 1400);
   }
 
-  if (hidden && !open) return null;
+  // Only surface the launcher on the dashboard (unlocked). Keep off the
+  // loading / onboarding screens. Stay mounted while the sheet is open.
+  if ((hidden || state.status !== "unlocked") && !open) return null;
 
   return (
     <>
@@ -74,7 +114,7 @@ export function FeedbackWidget() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-surface-variant/50 bg-surface-container-lowest p-lg shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
+            className="max-h-[90vh] w-full max-w-[400px] overflow-y-auto rounded-2xl border border-surface-variant/50 bg-surface-container-lowest p-lg shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
           >
             {done ? (
               <div className="flex flex-col items-center gap-sm py-md text-center">
@@ -93,7 +133,7 @@ export function FeedbackWidget() {
               </div>
             ) : (
               <>
-                <div className="mb-sm flex items-center justify-between">
+                <div className="mb-md flex items-center justify-between">
                   <h2 className="font-headline-sm text-headline-sm text-on-surface">
                     How was it?
                   </h2>
@@ -106,26 +146,54 @@ export function FeedbackWidget() {
                   </button>
                 </div>
 
-                <div className="mb-md flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      aria-label={`${n} star${n > 1 ? "s" : ""}`}
-                      onClick={() => setRating(n)}
-                      className="transition-transform active:scale-90"
-                    >
-                      <span
-                        className={`material-symbols-outlined text-[32px] ${
-                          n <= rating
-                            ? "text-secondary"
-                            : "text-outline-variant"
+                <div className="mb-md flex flex-col gap-sm">
+                  {CATEGORIES.map(({ key, label }) => {
+                    const value = ratings[key];
+                    const isOverall = key === "overall";
+                    return (
+                      <div
+                        key={key}
+                        className={`flex items-center justify-between gap-sm ${
+                          isOverall
+                            ? "mt-xs border-t border-outline-variant/50 pt-sm"
+                            : ""
                         }`}
-                        data-weight={n <= rating ? "fill" : undefined}
                       >
-                        star
-                      </span>
-                    </button>
-                  ))}
+                        <span
+                          className={`font-body-sm text-body-sm ${
+                            isOverall
+                              ? "font-headline-sm text-on-surface"
+                              : "text-on-surface-variant"
+                          }`}
+                        >
+                          {label}
+                        </span>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <button
+                              key={n}
+                              aria-label={`${label}: ${n} star${
+                                n > 1 ? "s" : ""
+                              }`}
+                              onClick={() => setRating(key, n)}
+                              className="transition-transform active:scale-90"
+                            >
+                              <span
+                                className={`material-symbols-outlined text-[26px] ${
+                                  n <= value
+                                    ? "text-secondary"
+                                    : "text-outline-variant"
+                                }`}
+                                data-weight={n <= value ? "fill" : undefined}
+                              >
+                                star
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <textarea
@@ -138,7 +206,7 @@ export function FeedbackWidget() {
                 />
 
                 <button
-                  disabled={rating < 1 || busy}
+                  disabled={ratings.overall < 1 || busy}
                   onClick={submit}
                   className="flex h-[52px] w-full items-center justify-center gap-sm rounded-full bg-primary font-headline-sm text-headline-sm text-on-primary transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
