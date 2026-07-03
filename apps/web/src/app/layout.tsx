@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { WalletProvider } from "@/lib/wallet-context";
+import { FeedbackWidget } from "@/components/feedback-widget";
 
 export const metadata: Metadata = {
   title: "PadaLock — Padala na may pangako",
@@ -31,7 +34,12 @@ export default function RootLayout({
         <meta name="theme-color" content="#7A0C2E" />
       </head>
       <body className="min-h-screen bg-surface text-on-surface">
-        <WalletProvider>{children}</WalletProvider>
+        <WalletProvider>
+          {children}
+          <FeedbackWidget />
+        </WalletProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
