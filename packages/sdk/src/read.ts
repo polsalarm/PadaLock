@@ -69,6 +69,7 @@ interface RawPadala {
   buckets: RawBucket[];
   created_at: bigint;
   recurring_id: bigint;
+  expires_at?: bigint;
 }
 
 export async function getPadala(
@@ -98,6 +99,7 @@ export async function getPadala(
     buckets,
     createdAt: Number(raw.created_at),
     recurringId: Number(raw.recurring_id ?? 0),
+    expiresAt: Number(raw.expires_at ?? 0),
   };
 }
 
