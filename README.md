@@ -14,7 +14,7 @@
 &nbsp;![Soroban](https://img.shields.io/badge/Soroban-Rust-CE412B?logo=rust&logoColor=white)
 &nbsp;![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
 
-**[🚀 Live demo](https://padalock.vercel.app)** · **[🎬 Demo video](./docs/demo-video/padalock-demo.mp4)** · **[🔎 Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI)**
+**[🚀 Live demo](https://padalock.vercel.app)** · **[🎬 Demo video](./docs/demo-video/padalock-demo.mp4)** · **[🔎 Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE)**
 
 <sub>StellarX Philippines · Track 1 — Remittance & Cross-Border · Risein Orange Belt (Level 3)</sub>
 
@@ -29,8 +29,8 @@
 | **Live demo** | https://padalock.vercel.app |
 | **Demo video** | [`docs/demo-video/padalock-demo.mp4`](./docs/demo-video/padalock-demo.mp4) |
 | **Network** | Stellar **testnet** |
-| **Contract — USDC** | [`CDTXH4OQ…RYCEA6VLDI`](https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI) |
-| **Contract — XLM** | [`CATT7GZM…ECI7GYQZU2HVY`](https://stellar.expert/explorer/testnet/contract/CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY) |
+| **Contract — USDC** | [`CB62IOP5…TBG7RF5YE`](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE) |
+| **Contract — XLM** | [`CC6LNV5T…LV4PVTM4KVM`](https://stellar.expert/explorer/testnet/contract/CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM) |
 | **Sample interaction tx** | [`8214e348…158d4f4`](https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4) · more in [`docs/testnet-state.md`](./docs/testnet-state.md) |
 
 <div align="center">
@@ -138,6 +138,7 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
  │     • create_padala(buckets, recipients)                │
  │     • claim(padala_id, bucket_id, merchant)             │
  │     • create_recurring / execute_due / cancel_recurring │
+ │     • reclaim(padala_id) — sender refund after expiry   │
  │     • get_reputation(merchant)                          │
  │                                                         │
  │   cross-contract → USDC SAC (transfer / balance)        │
@@ -154,8 +155,11 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 - **💱 USDC or XLM** — choose the asset at send time. Each asset is its own escrow contract (USDC-bound + XLM-bound instances); restricted buckets release the chosen asset to whitelisted merchants.
 - **👨‍👩‍👧 Multi-recipient padala** — each bucket names its own recipient, so one padala fans out to several family members; each claims only their own buckets.
 - **🔁 Recurring padala** — sender prefunds N runs up front; `execute_due` is permissionless and mints a fresh padala each interval; cancel refunds the unspent prefund.
+- **↩️ Sender reclaim** — if the family never claims, a one-off padala becomes reclaimable by the sender after it expires (30-day default). `reclaim` returns the still-unclaimed buckets to the sender's wallet, so funds are never locked forever.
+- **♻️ Durable storage (TTL bumping)** — every padala / merchant / reputation entry extends its TTL on write and read (`extend_ttl`), so active data never archives out from under users.
 - **💱 Real SEP-24 off-ramp** — free cash is claimed to the recipient's wallet, then cashed out via genuine SEP-10 auth + SEP-24 interactive withdraw against `testanchor.stellar.org`.
 - **⭐ On-chain merchant reputation** — per-merchant claim count / volume accrued on every claim, surfaced in the claim picker.
+- **🪙 Dashboard asset switcher** — headline your balance in USDC or XLM; the choice is remembered.
 - **🔗 Deep-link + QR claim share** — send-success shows a shareable claim link, QR, and native Share sheet for low-tech family.
 - **👛 Hybrid wallet** — built-in self-custodial wallet (BIP-39 + Argon2 + AES-GCM) **or** external via Stellar Wallets Kit (Freighter, xBull, Albedo, Lobstr, Ledger).
 
@@ -222,8 +226,8 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 
   | Env var | Value (testnet) |
   |---|---|
-  | `NEXT_PUBLIC_PADALOCK_CONTRACT_ID` | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
-  | `NEXT_PUBLIC_PADALOCK_XLM_CONTRACT_ID` | `CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY` |
+  | `NEXT_PUBLIC_PADALOCK_CONTRACT_ID` | `CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE` |
+  | `NEXT_PUBLIC_PADALOCK_XLM_CONTRACT_ID` | `CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM` |
   | `NEXT_PUBLIC_USDC_SAC_TESTNET` | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
   | `NEXT_PUBLIC_XLM_SAC_TESTNET` | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
   | `NEXT_PUBLIC_USDC_ISSUER_TESTNET` | `GAZ5YSMH4Z2VXLLVR7FE7RENVBSDLU5U4PCJZYHRFZSBANA765TZEUQE` |
@@ -251,7 +255,7 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 
 | Requirement | Where in PadaLock |
 |---|---|
-| Advanced smart contract | `create_padala` / `claim` / `create_recurring` / `execute_due` / `cancel_recurring` / `get_reputation` — escrow, multi-recipient, recurring, on-chain reputation. |
+| Advanced smart contract | `create_padala` / `claim` / `create_recurring` / `execute_due` / `cancel_recurring` / `reclaim` / `get_reputation` — escrow, multi-recipient, recurring, sender reclaim on expiry, TTL-durable storage, on-chain reputation. |
 | Inter-contract communication | Cross-contract calls to the **USDC SAC** (`transfer` / `balance`) to move escrowed funds to merchants. |
 | Event streaming & real-time updates | Contract emits an event per bucket on create/claim; SDK reads via RPC `getEvents` (`packages/sdk/src/read.ts`); `/padala/[id]` renders the live claim ledger. |
 | CI/CD pipeline | [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) — `cargo test` + Vitest + `next build` on every push/PR. |
