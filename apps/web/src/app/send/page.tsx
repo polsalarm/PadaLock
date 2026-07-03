@@ -21,6 +21,7 @@ import {
   usdcToPhp,
 } from "@/lib/balance";
 import { recordSentPadala } from "@/lib/history";
+import { track } from "@/lib/analytics";
 import { getContacts, saveContact, type Contact } from "@/lib/contacts";
 import {
   getGroups,
@@ -241,6 +242,7 @@ export default function SendPage() {
       setStatus("Polling for finality…");
       const r = await pollFinality(hash);
       if (r.status === "SUCCESS") {
+        track("padala_created", { asset, recurring });
         // Contract returns the id (u64 -> bigint). Decode robustly.
         const native = r.returnNative;
         const id =
