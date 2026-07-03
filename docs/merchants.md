@@ -4,7 +4,7 @@
 > only release funds to an address in the matching category below. Free Cash
 > (category 4) has **no** whitelist — any Stellar address is allowed.
 
-- **Contract:** `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI`
+- **Contract:** `CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE`
 - **Network:** Stellar testnet
 - **Admin (can add merchants):** `padalock-admin` → `GDLAUXNTOX3PAILWZRAS25B5AIAWXAYFNUJHJV4B7SFQWNHZR2CTEFYV`
 - **Last updated:** 2026-06-16 — 4 merchants per restricted category
@@ -63,7 +63,7 @@ GCash-linked account). Used for unrestricted spending money.
 stellar keys generate <alias> --network testnet --fund
 ADDR=$(stellar keys address <alias>)
 stellar contract invoke \
-  --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
+  --id CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE \
   --source padalock-admin --network testnet \
   -- add_merchant --category <0|1|2|3> --merchant $ADDR
 ```
@@ -75,7 +75,7 @@ Then add the address → name pair to `MERCHANT_NAMES` in
 
 ```bash
 stellar contract invoke \
-  --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
+  --id CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE \
   --source padalock-admin --network testnet \
   -- get_merchants --category <0|1|2|3>
 ```
