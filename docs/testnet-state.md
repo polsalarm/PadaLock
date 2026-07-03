@@ -4,7 +4,7 @@
 > Update this file whenever you redeploy or rotate keys, then mirror into
 > `apps/web/.env.local`.
 
-**Last deployed:** 2026-06-24 (merchant reputation rebuild)
+**Last deployed:** 2026-07-04 (sender reclaim + TTL bumping)
 **Network:** Stellar testnet
 **Network passphrase:** `Test SDF Network ; September 2015`
 **RPC URL:** `https://soroban-testnet.stellar.org`
@@ -15,8 +15,8 @@
 
 | Resource | Contract ID |
 |----------|-------------|
-| **PadaLock (USDC)** | `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` |
-| **PadaLock (XLM)** | `CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY` |
+| **PadaLock (USDC)** | `CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE` |
+| **PadaLock (XLM)** | `CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM` |
 | **USDC SAC** | `CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ` |
 | **XLM native SAC** | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
 
@@ -27,13 +27,19 @@
 > https://stellar.expert/explorer/testnet/tx/191abdaa44f6b1d8956d905ea47cdde26f4b8585501d2ff1f66621c9c362bd9e
 
 **Stellar Expert:**
-- PadaLock (USDC) → https://stellar.expert/explorer/testnet/contract/CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
-- PadaLock (XLM) → https://stellar.expert/explorer/testnet/contract/CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY
+- PadaLock (USDC) → https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE
+- PadaLock (XLM) → https://stellar.expert/explorer/testnet/contract/CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM
 - USDC SAC → https://stellar.expert/explorer/testnet/contract/CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 
-**Wasm hash:** `6ac9fd2e373892244884bcce84dcba0e884f08300c88719c11fb2ed6dca650db`
-**Wasm size:** 16663 bytes
-**Exported fns:** `__constructor add_merchant cancel_recurring claim create_padala create_recurring execute_due get_merchants get_padala get_recurring get_reputation`
+**Wasm hash:** `f4bbed066190422c6bd07ab918ea20671b7c73a0b0b38bfbf95ba404c58e4a37`
+**Wasm size:** 18388 bytes
+**Exported fns:** `__constructor add_merchant cancel_recurring claim create_padala create_recurring execute_due get_merchants get_padala get_recurring get_reputation reclaim`
+
+> **New in this deploy:** `reclaim(padala_id)` lets the sender recover unclaimed
+> buckets from a one-off padala after it expires (`DEFAULT_EXPIRY_SECS` = 30 days;
+> `Padala.expires_at` stored per padala). All persistent + instance entries now
+> bump TTL (`extend_ttl`) on write/read so padalas/merchants/reputation don't
+> archive.
 
 **Deploy txs:**
 - SAC deploy: https://stellar.expert/explorer/testnet/tx/9b4a382a7f66bff017926ba8060c798daac034716e953e8f7619901d39f8cb2d
@@ -41,6 +47,8 @@
 - PadaLock deploy (merchant reputation): https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4
 
 > **Prior contracts (deprecated, do not use):**
+> - `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI` — USDC, merchant reputation (pre-2026-07-04), no `reclaim` / TTL bumping.
+> - `CATT7GZM5EW3YGLCM77NYDMIX7M4CKPZHTHU3B2I3EBECI7GYQZU2HVY` — XLM, merchant reputation (pre-2026-07-04), no `reclaim` / TTL bumping.
 > - `CBJB25C53BROIXL77U3Z33ZZ6LEZ3YHJQAMLAA5CZWQOK2MWCNXDO443` — multi-recipient + recurring (pre-2026-06-24), no `get_reputation`.
 > - `CDKTQSPVIVW4UZMKHMVLD4FNDVQ2NGYGCQHGVTIX7MEGIR5WOXSOZX4X` — single-recipient (pre-2026-06-20).
 
@@ -74,7 +82,7 @@ Keys live in `C:\Users\Admin\.config\stellar\identity\*.toml`.
 `apps/web/.env.local`:
 
 ```env
-NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI
+NEXT_PUBLIC_PADALOCK_CONTRACT_ID=CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE
 NEXT_PUBLIC_USDC_SAC_TESTNET=CCBUASQQH2CSNCMQCLW5I25LXO2V7DQQTIKZ34YGTBGTDU3JGBASIXYJ
 NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN=testanchor.stellar.org
 ```
@@ -104,7 +112,7 @@ stellar contract invoke \
 ### Read padala
 ```bash
 stellar contract invoke \
-  --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
+  --id CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE \
   --source padalock-admin --network testnet \
   -- get_padala --padala_id <N>
 ```
@@ -116,11 +124,11 @@ the family, or the sender). `cancel_recurring` refunds the unspent prefund to th
 sender. Each run mints a normal Padala (`recurring_id` = schedule id).
 ```bash
 # inspect a schedule
-stellar contract invoke --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
+stellar contract invoke --id CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE \
   --source padalock-admin --network testnet -- get_recurring --rec_id <N>
 
 # trigger the next due run (off-chain cron calls this)
-stellar contract invoke --id CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI \
+stellar contract invoke --id CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE \
   --source <ANY_FUNDED_KEY> --network testnet -- execute_due --rec_id <N>
 ```
 
