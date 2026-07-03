@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import { newMnemonic } from "@/lib/wallet";
+import { track } from "@/lib/analytics";
 import {
   Button,
   Card,
@@ -50,6 +51,7 @@ export default function OnboardPage() {
     setError(null);
     try {
       await create(mnemonic, password);
+      track("wallet_created");
       router.replace("/dashboard");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create wallet.");
@@ -98,6 +100,7 @@ export default function OnboardPage() {
                 setError(null);
                 try {
                   await connectExternal();
+                  track("wallet_connected");
                   router.replace("/dashboard");
                 } catch (e) {
                   setError(
