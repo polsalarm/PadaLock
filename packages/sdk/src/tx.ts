@@ -139,6 +139,20 @@ export async function buildClaim(args: {
 }
 
 /**
+ * Sender reclaims unclaimed buckets from an expired one-off padala.
+ * Reverts on-chain before `expiresAt` (Error #15) or if nothing is unclaimed (#16).
+ */
+export async function buildReclaim(args: {
+  senderPub: string;
+  padalaId: string;
+  contractId?: string;
+}): Promise<Built> {
+  return buildInvoke(args.senderPub, args.contractId, 'reclaim', [
+    nativeToScVal(BigInt(args.padalaId), { type: 'u64' }),
+  ]);
+}
+
+/**
  * Signs + submits to Soroban RPC. Returns send hash; caller must poll for finality.
  */
 export async function signAndSubmit(
