@@ -3,14 +3,18 @@
 import { use, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  buildReclaim,
   contractIdFor,
   getPadala,
   parseAsset,
+  pollFinality,
+  submitSignedXdr,
   type PadalaView,
 } from "@padalock/sdk";
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
 import {
+  Button,
   Card,
   PageShell,
   StatusBadge,
@@ -40,9 +44,11 @@ export default function PadalaDetailPage({
   const asset = parseAsset(searchParams.get("asset"));
   const contractId = contractIdFor(asset);
   const isXlm = asset === "XLM";
-  const { state } = useWallet();
+  const { state, signTxXdr } = useWallet();
   const [padala, setPadala] = useState<PadalaView | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [reclaiming, setReclaiming] = useState(false);
+  const [reclaimMsg, setReclaimMsg] = useState<string | null>(null);
 
   const load = useCallback(
     async (caller: string) => {
@@ -64,6 +70,35 @@ export default function PadalaDetailPage({
     void load(state.publicKey);
   }, [state, router, load]);
 
+  async function reclaim() {
+    if (state.status !== "unlocked" || !padala) return;
+    setReclaiming(true);
+    setReclaimMsg("Simulating…");
+    try {
+      const { tx } = await buildReclaim({
+        senderPub: state.publicKey,
+        padalaId: id,
+        contractId,
+      });
+      setReclaimMsg("Signing with your wallet…");
+      const signedXdr = await signTxXdr(tx.toXDR());
+      setReclaimMsg("Submitting…");
+      const hash = await submitSignedXdr(signedXdr);
+      setReclaimMsg("Polling for finality…");
+      const r = await pollFinality(hash);
+      if (r.status === "SUCCESS") {
+        setReclaimMsg("Reclaimed. Unclaimed funds returned to your wallet.");
+        await load(state.publicKey);
+      } else {
+        setReclaimMsg(`Failed: ${r.status}`);
+      }
+    } catch (e) {
+      setReclaimMsg(e instanceof Error ? e.message : "Reclaim failed.");
+    } finally {
+      setReclaiming(false);
+    }
+  }
+
   if (state.status !== "unlocked") return null;
 
   const totalUsdc = padala
@@ -83,6 +118,22 @@ export default function PadalaDetailPage({
       : 0;
   const circumference = 2 * Math.PI * 60;
   const dashOffset = circumference * (1 - pct / 100);
+
+  // Reclaim: sender can pull back still-unclaimed buckets once the padala expires.
+  const unclaimedStroops = padala
+    ? padala.buckets
+        .filter((b) => !b.claimed)
+        .reduce((acc, b) => acc + BigInt(b.amount), 0n)
+        .toString()
+    : "0";
+  const isSender = !!padala && padala.sender === state.publicKey;
+  const hasUnclaimed = BigInt(unclaimedStroops) > 0n;
+  const nowSecs = Math.floor(Date.now() / 1000);
+  const isExpired = !!padala && padala.expiresAt > 0 && nowSecs >= padala.expiresAt;
+  const daysToExpiry = padala
+    ? Math.max(0, Math.ceil((padala.expiresAt - nowSecs) / 86400))
+    : 0;
+  const showReclaim = isSender && hasUnclaimed;
 
   return (
     <PageShell>
@@ -219,6 +270,46 @@ export default function PadalaDetailPage({
                 </Card>
               ))}
             </div>
+
+            {showReclaim && (
+              <Card className="flex flex-col gap-sm">
+                <div className="flex items-center gap-sm">
+                  <span
+                    className="material-symbols-outlined text-[20px] text-primary"
+                    data-weight="fill"
+                  >
+                    undo
+                  </span>
+                  <span className="font-headline-sm text-[15px] text-on-surface">
+                    Reclaim unclaimed funds
+                  </span>
+                </div>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">
+                  {showAmt(unclaimedStroops)} still unclaimed.{" "}
+                  {isExpired
+                    ? "This padala has expired — you can return it to your wallet."
+                    : `Reclaimable in ${daysToExpiry} day${
+                        daysToExpiry === 1 ? "" : "s"
+                      } if still unclaimed.`}
+                </p>
+                <Button
+                  variant="golden"
+                  disabled={!isExpired || reclaiming}
+                  onClick={reclaim}
+                >
+                  {reclaiming
+                    ? "Reclaiming…"
+                    : isExpired
+                      ? `Reclaim ${showAmt(unclaimedStroops)}`
+                      : `Locked until expiry`}
+                </Button>
+                {reclaimMsg && (
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    {reclaimMsg}
+                  </p>
+                )}
+              </Card>
+            )}
 
             <button
               onClick={() => load(state.publicKey)}
