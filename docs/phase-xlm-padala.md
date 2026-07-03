@@ -33,7 +33,7 @@ The UI picks the contract by selected asset.
   and the 16 merchants (`pl-school-*`, `pl-util-*`, `pl-med-*`, `pl-groc-*`).
 - Existing uploaded wasm hash: `6ac9fd2e373892244884bcce84dcba0e884f08300c88719c11fb2ed6dca650db`
   (deploy a new instance from this hash — no re-upload needed).
-- USDC contract (unchanged): `CDTXH4OQR2F2ZWTYLKQ4T4FMAA5HGDEK2HAZA3PAMNLNBGRYCEA6VLDI`
+- USDC contract (unchanged): `CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE`
 - Live IDs reference: [`docs/testnet-state.md`](./testnet-state.md).
 
 ---
