@@ -18,6 +18,7 @@ import {
 import { useWallet } from "@/lib/wallet-context";
 import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
 import { recordReceivedPadala } from "@/lib/history";
+import { track } from "@/lib/analytics";
 import {
   Button,
   Card,
@@ -379,6 +380,7 @@ function BucketCard({
       setStatus("Polling for finality…");
       const r = await pollFinality(hash);
       if (r.status === "SUCCESS") {
+        track("bucket_claimed", { restricted: !!restricted });
         setStatus(null);
         setReceipt({ hash, merchant });
         onClaimed();
