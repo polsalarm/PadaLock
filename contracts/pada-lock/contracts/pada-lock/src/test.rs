@@ -315,3 +315,93 @@ fn cancel_refunds_remaining() {
     // Sender got back 20 of the 30 escrowed.
     assert_eq!(f.token_client.balance(&f.sender), after_fund + 20_0000000);
 }
+
+const EXPIRY_SECS: u64 = 2_592_000; // must mirror DEFAULT_EXPIRY_SECS in lib.rs
+
+#[test]
+fn reclaim_returns_unclaimed_after_expiry() {
+    let f = setup();
+    let buckets = vec![
+        &f.env,
+        bucket(&f.env, TUITION, 100_0000000, &f.recipient),
+        bucket(&f.env, FREE_CASH_CAT, 50_0000000, &f.recipient),
+    ];
+    let before = f.token_client.balance(&f.sender);
+    let id = f.client.create_padala(&f.sender, &buckets);
+    assert_eq!(f.token_client.balance(&f.sender), before - 150_0000000);
+
+    // Family never claims; fast-forward past expiry.
+    f.env
+        .ledger()
+        .set_timestamp(f.env.ledger().timestamp() + EXPIRY_SECS + 1);
+
+    let refunded = f.client.reclaim(&id);
+    assert_eq!(refunded, 150_0000000);
+    // Sender whole again.
+    assert_eq!(f.token_client.balance(&f.sender), before);
+
+    // Buckets marked settled (claimed_by == sender flags a reclaim).
+    let p = f.client.get_padala(&id);
+    assert!(p.buckets.get(0).unwrap().claimed);
+    assert_eq!(p.buckets.get(0).unwrap().claimed_by, Some(f.sender.clone()));
+}
+
+#[test]
+fn reclaim_only_returns_unclaimed_buckets() {
+    let f = setup();
+    f.client.add_merchant(&TUITION, &f.school);
+    let buckets = vec![
+        &f.env,
+        bucket(&f.env, TUITION, 100_0000000, &f.recipient),
+        bucket(&f.env, FREE_CASH_CAT, 50_0000000, &f.recipient),
+    ];
+    let before = f.token_client.balance(&f.sender);
+    let id = f.client.create_padala(&f.sender, &buckets);
+
+    // Recipient claims the tuition bucket to the school.
+    f.client.claim(&id, &0, &f.school);
+
+    f.env
+        .ledger()
+        .set_timestamp(f.env.ledger().timestamp() + EXPIRY_SECS + 1);
+
+    // Only the unclaimed free-cash bucket (50) comes back.
+    let refunded = f.client.reclaim(&id);
+    assert_eq!(refunded, 50_0000000);
+    assert_eq!(f.token_client.balance(&f.sender), before - 100_0000000);
+}
+
+#[test]
+#[should_panic(expected = "Error(Contract, #15)")]
+fn reclaim_before_expiry_reverts() {
+    let f = setup();
+    let buckets = vec![&f.env, bucket(&f.env, FREE_CASH_CAT, 50_0000000, &f.recipient)];
+    let id = f.client.create_padala(&f.sender, &buckets);
+    // No time advance -> NotExpired.
+    f.client.reclaim(&id);
+}
+
+#[test]
+#[should_panic(expected = "Error(Contract, #16)")]
+fn reclaim_with_nothing_left_reverts() {
+    let f = setup();
+    let buckets = vec![&f.env, bucket(&f.env, FREE_CASH_CAT, 50_0000000, &f.recipient)];
+    let id = f.client.create_padala(&f.sender, &buckets);
+
+    let off_ramp = Address::generate(&f.env);
+    f.client.claim(&id, &0, &off_ramp); // fully claimed
+
+    f.env
+        .ledger()
+        .set_timestamp(f.env.ledger().timestamp() + EXPIRY_SECS + 1);
+    f.client.reclaim(&id); // nothing unclaimed -> NothingToReclaim
+}
+
+#[test]
+fn padala_carries_expiry() {
+    let f = setup();
+    let buckets = vec![&f.env, bucket(&f.env, FREE_CASH_CAT, 10_0000000, &f.recipient)];
+    let id = f.client.create_padala(&f.sender, &buckets);
+    let p = f.client.get_padala(&id);
+    assert_eq!(p.expires_at, p.created_at + EXPIRY_SECS);
+}
