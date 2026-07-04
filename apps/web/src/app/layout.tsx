@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { WalletProvider } from "@/lib/wallet-context";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { DesktopFrame } from "@/components/phone-frame";
 
 export const metadata: Metadata = {
   title: "PadaLock — Padala na may pangako",
@@ -33,10 +34,12 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#7A0C2E" />
       </head>
-      <body className="min-h-screen bg-surface text-on-surface">
+      <body className="min-h-screen bg-surface text-on-surface lg:bg-[#e7e7f3]">
         <WalletProvider>
-          {children}
-          <FeedbackWidget />
+          <DesktopFrame>
+            {children}
+            <FeedbackWidget />
+          </DesktopFrame>
         </WalletProvider>
         <Analytics />
         <SpeedInsights />
