@@ -99,9 +99,9 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 | Dashboard | Send / split | Family groups |
 |:---:|:---:|:---:|
-| <img src="./docs/screenshots/mobile-responsive.png" alt="Dashboard" width="210" /> | <img src="./docs/screenshots/mobile-send.png" alt="Send / split" width="210" /> | <img src="./docs/screenshots/mobile-family.png" alt="Family groups" width="210" /> |
+| <img src="./docs/screenshots/framed/mobile-responsive.png" alt="Dashboard" width="210" /> | <img src="./docs/screenshots/framed/mobile-send.png" alt="Send / split" width="210" /> | <img src="./docs/screenshots/framed/mobile-family.png" alt="Family groups" width="210" /> |
 | **Connect wallet** | **Settings** | |
-| <img src="./docs/screenshots/mobile-connect.png" alt="Connect wallet" width="210" /> | <img src="./docs/screenshots/mobile-settings.png" alt="Settings" width="210" /> | |
+| <img src="./docs/screenshots/framed/mobile-connect.png" alt="Connect wallet" width="210" /> | <img src="./docs/screenshots/framed/mobile-settings.png" alt="Settings" width="210" /> | |
 
 </div>
 
