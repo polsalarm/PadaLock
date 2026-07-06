@@ -26,6 +26,10 @@ const commands = [
     name: 'insights',
     description: 'Summary + pie chart of all feedback themes',
   },
+  {
+    name: 'export',
+    description: 'Download all feedback as a CSV file (private to you)',
+  },
 ];
 
 async function main() {

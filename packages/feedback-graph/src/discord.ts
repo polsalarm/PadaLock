@@ -5,6 +5,8 @@ import {
 import { ingest } from './ingest';
 import { buildInsights } from './cluster';
 import { pieChartUrl } from './chart';
+import { feedbackToCsv } from './export';
+import { feedbackCount } from './db';
 
 const API = 'https://discord.com/api/v10';
 const EPHEMERAL = 64;
@@ -65,6 +67,16 @@ export async function handleInteraction(
       return { type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE };
     }
 
+    if (name === 'export') {
+      // Ephemeral: the CSV contains wallet addresses, so only show it to the
+      // person who ran the command.
+      void runExport(i.token);
+      return {
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+        data: { flags: EPHEMERAL },
+      };
+    }
+
     return msg('Unknown command.', true);
   }
 
@@ -116,7 +128,29 @@ async function runInsights(token: string): Promise<void> {
   }
 }
 
-/** Edit the original deferred response. */
+async function runExport(token: string): Promise<void> {
+  try {
+    const n = feedbackCount();
+    if (n === 0) {
+      await followup(token, { content: 'No feedback to export yet.' });
+      return;
+    }
+    const csv = feedbackToCsv();
+    const stamp = new Date().toISOString().slice(0, 10);
+    await followupFile(
+      token,
+      csv,
+      `padalock-feedback-${stamp}.csv`,
+      `📄 Exported ${n} feedback row(s).`,
+    );
+  } catch (err) {
+    await followup(token, {
+      content: `Export failed: ${(err as Error).message}`,
+    });
+  }
+}
+
+/** Edit the original deferred response (JSON body). */
 async function followup(
   token: string,
   body: Record<string, unknown>,
@@ -133,5 +167,36 @@ async function followup(
   );
   if (!res.ok) {
     throw new Error(`followup ${res.status}: ${await res.text()}`);
+  }
+}
+
+/** Edit the original deferred response, attaching a file (multipart). */
+async function followupFile(
+  token: string,
+  content: string,
+  filename: string,
+  message: string,
+): Promise<void> {
+  const appId = process.env.DISCORD_APP_ID;
+  if (!appId) throw new Error('DISCORD_APP_ID not set');
+  const form = new FormData();
+  form.append(
+    'payload_json',
+    JSON.stringify({
+      content: message,
+      attachments: [{ id: 0, filename }],
+    }),
+  );
+  form.append(
+    'files[0]',
+    new Blob([content], { type: 'text/csv' }),
+    filename,
+  );
+  const res = await fetch(
+    `${API}/webhooks/${appId}/${token}/messages/@original`,
+    { method: 'PATCH', body: form },
+  );
+  if (!res.ok) {
+    throw new Error(`followupFile ${res.status}: ${await res.text()}`);
   }
 }
