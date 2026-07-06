@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { track } from "@/lib/analytics";
 import { useWallet } from "@/lib/wallet-context";
+import { getUsername } from "@/lib/profile";
 
 // Scoped per wallet address so each wallet is asked once (localStorage is
 // shared across wallets in the same browser, so a single flag would suppress
@@ -85,6 +86,7 @@ export function FeedbackWidget() {
           ratings,
           message,
           address,
+          username: getUsername(),
         }),
       });
     } catch {

@@ -22,6 +22,7 @@ interface FeedbackBody {
   ratings?: Record<string, number>;
   message?: string;
   address?: string;
+  username?: string;
 }
 
 function star(n: number): string {
@@ -50,6 +51,9 @@ export async function POST(req: Request) {
   const ratings =
     body.ratings && typeof body.ratings === "object" ? body.ratings : {};
 
+  const username =
+    typeof body.username === "string" ? body.username.trim().slice(0, 40) : "";
+
   const webhook = process.env.FEEDBACK_WEBHOOK_URL;
   if (webhook) {
     const lines = Object.keys(CATEGORY_LABELS)
@@ -57,6 +61,7 @@ export async function POST(req: Request) {
       .map((k) => `• ${CATEGORY_LABELS[k]}: ${star(Number(ratings[k]))}`);
     const content = [
       `**PadaLock feedback** — Overall ${star(rating)} (${rating}/5)`,
+      username ? `from: **${username}**` : "",
       ...lines,
       message ? `> ${message}` : "_(no message)_",
       address ? `wallet: \`${address}\`` : "",
@@ -92,7 +97,7 @@ export async function POST(req: Request) {
           text: message,
           rating,
           wallet: address || undefined,
-          user: address || undefined,
+          user: username || address || undefined,
         }),
       });
     } catch {

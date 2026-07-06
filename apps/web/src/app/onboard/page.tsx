@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import { newMnemonic } from "@/lib/wallet";
+import { setUsername } from "@/lib/profile";
 import { track } from "@/lib/analytics";
 import {
   Button,
@@ -13,12 +14,13 @@ import {
   TopAppBar,
 } from "@/components/ui";
 
-type Step = "intro" | "mnemonic" | "password";
+type Step = "username" | "intro" | "mnemonic" | "password";
 
 export default function OnboardPage() {
   const router = useRouter();
   const { create, connectExternal } = useWallet();
-  const [step, setStep] = useState<Step>("intro");
+  const [step, setStep] = useState<Step>("username");
+  const [username, setUsernameInput] = useState("");
   const [mnemonic, setMnemonic] = useState<string>("");
   const [acked, setAcked] = useState(false);
   const [password, setPassword] = useState("");
@@ -64,6 +66,35 @@ export default function OnboardPage() {
     <PageShell>
       <TopAppBar title="Create Wallet" />
       <main className="flex flex-1 flex-col gap-lg px-margin-mobile py-lg">
+        {step === "username" && (
+          <>
+            <Card>
+              <h2 className="mb-xs font-headline-md text-headline-md text-on-surface">
+                Ano ang pangalan mo?
+              </h2>
+              <p className="mb-md font-body-md text-body-md text-on-surface-variant">
+                Ipapakita ito sa iyong padala at feedback. Pwede palitan mamaya.
+              </p>
+              <Input
+                label="Username"
+                value={username}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                autoFocus
+                maxLength={40}
+              />
+            </Card>
+            <Button
+              disabled={username.trim().length < 2}
+              onClick={() => {
+                setUsername(username);
+                setStep("intro");
+              }}
+            >
+              Continue
+            </Button>
+          </>
+        )}
+
         {step === "intro" && (
           <>
             <Card>
