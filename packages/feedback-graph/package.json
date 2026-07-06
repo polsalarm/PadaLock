@@ -9,6 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "register": "tsx src/register.ts",
+    "export": "tsx src/export.ts",
     "test": "vitest run"
   },
   "dependencies": {

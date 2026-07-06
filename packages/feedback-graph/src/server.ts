@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { verifyKey } from 'discord-interactions';
 import { handleInteraction } from './discord';
 import { ingest } from './ingest';
+import { feedbackToCsv } from './export';
 
 const PORT = Number(process.env.PORT ?? 3005);
 const PUBLIC_KEY = process.env.DISCORD_PUBLIC_KEY ?? '';
@@ -77,6 +78,26 @@ const server = createServer(async (req, res) => {
 
   if (req.method === 'GET' && req.url === '/health') {
     res.writeHead(200).end('ok');
+    return;
+  }
+
+  // CSV download of all feedback. Guarded by the ingest secret (?key= or
+  // x-ingest-secret header) so it isn't world-readable.
+  if (req.method === 'GET' && req.url?.startsWith('/export.csv')) {
+    if (INGEST_SECRET) {
+      const url = new URL(req.url, 'http://localhost');
+      const key = url.searchParams.get('key') ?? req.headers['x-ingest-secret'];
+      if (key !== INGEST_SECRET) {
+        res.writeHead(401).end('bad or missing key');
+        return;
+      }
+    }
+    const csv = feedbackToCsv();
+    res.writeHead(200, {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': 'attachment; filename="padalock-feedback.csv"',
+    });
+    res.end(csv);
     return;
   }
 
