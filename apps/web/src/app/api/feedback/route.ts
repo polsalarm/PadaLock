@@ -74,5 +74,31 @@ export async function POST(req: Request) {
     }
   }
 
+  // Forward to the feedback-graph service so app feedback joins Discord
+  // feedback in one store (powers the /insights clustering + pie chart).
+  // Best-effort: never fail the user's submission if the service is down.
+  const graphUrl = process.env.FEEDBACK_GRAPH_URL;
+  if (graphUrl) {
+    try {
+      await fetch(`${graphUrl.replace(/\/$/, "")}/ingest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(process.env.INGEST_SECRET
+            ? { "x-ingest-secret": process.env.INGEST_SECRET }
+            : {}),
+        },
+        body: JSON.stringify({
+          text: message,
+          rating,
+          wallet: address || undefined,
+          user: address || undefined,
+        }),
+      });
+    } catch {
+      // best-effort — do not fail submission on graph error
+    }
+  }
+
   return NextResponse.json({ ok: true });
 }
