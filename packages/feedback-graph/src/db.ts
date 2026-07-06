@@ -64,6 +64,16 @@ export function getDb(): Database.Database {
   return db;
 }
 
+/** Local wall-clock timestamp "YYYY-MM-DD HH:MM:SS" (server machine's tz). */
+function nowLocal(): string {
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, '0');
+  return (
+    `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ` +
+    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+  );
+}
+
 export function insertFeedback(
   userId: string,
   username: string,
@@ -73,8 +83,8 @@ export function insertFeedback(
 ): void {
   getDb()
     .prepare(
-      `INSERT INTO feedback (user_id, username, text, embedding, source, rating, wallet)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO feedback (user_id, username, text, embedding, source, rating, wallet, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       userId,
@@ -84,6 +94,7 @@ export function insertFeedback(
       meta.source ?? 'discord',
       meta.rating ?? null,
       meta.wallet ?? null,
+      nowLocal(),
     );
 }
 
