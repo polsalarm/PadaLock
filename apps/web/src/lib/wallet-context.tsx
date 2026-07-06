@@ -48,6 +48,32 @@ const EXTERNAL_WALLET_KEY = "padalock.external.wallet.v1";
 
 const Ctx = createContext<WalletApi | null>(null);
 
+function short(a: string): string {
+  return a.length > 12 ? `${a.slice(0, 6)}…${a.slice(-6)}` : a;
+}
+
+/**
+ * Guard against external-wallet account drift: a DecoratedSignature's hint is
+ * the last 4 bytes of the signer's public key. If none of the signatures match
+ * the tx source account, the wallet signed with the wrong account — the network
+ * would otherwise fail this with a cryptic txBadAuth. Throw something the user
+ * can act on instead.
+ */
+function assertSignedBySource(signedXdr: string, expected: string): void {
+  const tx = TransactionBuilder.fromXDR(signedXdr, NETWORK.passphrase);
+  // Fee-bump txs wrap an inner tx; the guard only applies to plain txs here.
+  if (!("signatures" in tx)) return;
+  const wantHint = Keypair.fromPublicKey(expected).rawPublicKey().subarray(-4);
+  const ok = tx.signatures.some((s) => s.hint().equals(wantHint));
+  if (!ok) {
+    throw new Error(
+      `Your wallet signed with a different account than the one connected ` +
+        `(${short(expected)}). Open your wallet extension, switch to ` +
+        `${short(expected)}, then try again — or reconnect the wallet.`
+    );
+  }
+}
+
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<State>({ status: "loading" });
   const [keypair, setKeypair] = useState<Keypair | null>(null);
@@ -95,7 +121,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           typeof window !== "undefined"
             ? window.localStorage.getItem(EXTERNAL_WALLET_KEY) ?? undefined
             : undefined;
-        return signWithExternalWallet(xdr, state.publicKey, walletId);
+        const signedXdr = await signWithExternalWallet(
+          xdr,
+          state.publicKey,
+          walletId
+        );
+        // External wallets (Freighter/xBull) let the user switch the active
+        // account without telling the app. If the wallet signed with a
+        // different account than the one connected, the network rejects the
+        // tx with txBadAuth. Catch it here with a clear, actionable message.
+        assertSignedBySource(signedXdr, state.publicKey);
+        return signedXdr;
       }
       if (!keypair) throw new Error("Local key unavailable");
       const tx = TransactionBuilder.fromXDR(xdr, NETWORK.passphrase);
