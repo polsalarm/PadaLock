@@ -1,0 +1,27 @@
+{
+  "name": "@padalock/feedback-graph",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "register": "tsx src/register.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "better-sqlite3": "^11.3.0",
+    "discord-interactions": "^4.1.0",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^20",
+    "tsx": "^4.19.0",
+    "typescript": "^5",
+    "vitest": "^2.1.0"
+  }
+}
