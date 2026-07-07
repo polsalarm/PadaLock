@@ -1,4 +1,4 @@
-import type { Theme } from './cluster';
+import type { Theme } from './cluster.js';
 
 const PALETTE = [
   '#4f46e5',
