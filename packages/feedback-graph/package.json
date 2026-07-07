@@ -6,21 +6,21 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts",
+    "dev": "vercel dev",
     "register": "tsx src/register.ts",
-    "export": "tsx src/export.ts",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
     "@google/genai": "^2.10.0",
-    "better-sqlite3": "^11.3.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "@vercel/functions": "^3.7.5",
     "discord-interactions": "^4.1.0",
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^20",
+    "@vercel/node": "^5.8.22",
     "tsx": "^4.19.0",
     "typescript": "^5",
     "vitest": "^2.1.0"
