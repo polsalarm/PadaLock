@@ -1,5 +1,5 @@
-import { insertFeedback, type FeedbackMeta } from './db';
-import { embed } from './gemini';
+import { insertFeedback, type FeedbackMeta } from './pg.js';
+import { embed } from './gemini.js';
 
 /**
  * Store one piece of feedback. Embeds at write time so /insights stays fast.
@@ -21,5 +21,5 @@ export async function ingest(
       : '');
   if (!forEmbed) throw new Error('empty feedback');
   const vector = await embed(forEmbed);
-  insertFeedback(userId, username, clean || forEmbed, vector, meta);
+  await insertFeedback(userId, username, clean || forEmbed, vector, meta);
 }
