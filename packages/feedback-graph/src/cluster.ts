@@ -1,5 +1,5 @@
-import { allFeedback, type FeedbackRow } from './db';
-import { generate } from './gemini';
+import { allFeedback, type FeedbackRow } from './pg.js';
+import { generate } from './gemini.js';
 
 export interface Theme {
   label: string;
@@ -76,7 +76,7 @@ async function labelCluster(samples: string[]): Promise<string> {
 
 /** Cluster all stored feedback and produce labelled themes + a text summary. */
 export async function buildInsights(): Promise<Insights> {
-  const rows = allFeedback();
+  const rows = await allFeedback();
   const total = rows.length;
 
   const rated = rows.filter((r) => r.rating != null);
