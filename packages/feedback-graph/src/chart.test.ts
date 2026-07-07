@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { pieChartUrl } from './chart';
-import type { Theme } from './cluster';
+import { pieChartUrl } from './chart.js';
+import type { Theme } from './cluster.js';
 
 const themes: Theme[] = [
   { label: 'Claim Flow', count: 4, share: 0.5, samples: [] },
