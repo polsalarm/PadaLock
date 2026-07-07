@@ -2,11 +2,11 @@ import {
   InteractionType,
   InteractionResponseType,
 } from 'discord-interactions';
-import { ingest } from './ingest';
-import { buildInsights } from './cluster';
-import { pieChartUrl } from './chart';
-import { feedbackToCsv } from './export';
-import { feedbackCount } from './db';
+import { ingest } from './ingest.js';
+import { buildInsights } from './cluster.js';
+import { pieChartUrl } from './chart.js';
+import { exportCsv } from './export.js';
+import { feedbackCount } from './pg.js';
 
 const API = 'https://discord.com/api/v10';
 const EPHEMERAL = 64;
@@ -35,16 +35,25 @@ function opt(i: Interaction, name: string): string {
   return i.data?.options?.find((o) => o.name === name)?.value ?? '';
 }
 
+export interface InteractionResult {
+  /** Immediate JSON response Discord expects within 3s. */
+  body: Record<string, unknown>;
+  /**
+   * Work to finish AFTER acking (deferred commands). The serverless caller must
+   * keep the function alive for this via waitUntil(), or it gets killed.
+   */
+  background?: Promise<void>;
+}
+
 /**
- * Handle a verified interaction. Returns the immediate JSON response.
- * For /insights it returns a DEFERRED ack and finishes the work in the
- * background via followup().
+ * Handle a verified interaction. Returns the immediate response plus, for
+ * deferred commands, a background promise the caller should waitUntil().
  */
 export async function handleInteraction(
   i: Interaction,
-): Promise<Record<string, unknown>> {
+): Promise<InteractionResult> {
   if (i.type === InteractionType.PING) {
-    return { type: InteractionResponseType.PONG };
+    return { body: { type: InteractionResponseType.PONG } };
   }
 
   if (i.type === InteractionType.APPLICATION_COMMAND) {
@@ -55,32 +64,40 @@ export async function handleInteraction(
       const who = actor(i);
       try {
         await ingest(who.id, who.username, text);
-        return msg('Feedback logged ✅ — salamat!', true);
+        return { body: msg('Feedback logged ✅ — salamat!', true) };
       } catch (err) {
-        return msg(`Could not log feedback: ${(err as Error).message}`, true);
+        return {
+          body: msg(`Could not log feedback: ${(err as Error).message}`, true),
+        };
       }
     }
 
     if (name === 'insights') {
       // Ack now, do the heavy lifting after (3s Discord deadline).
-      void runInsights(i.token);
-      return { type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE };
+      return {
+        body: {
+          type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+        },
+        background: runInsights(i.token),
+      };
     }
 
     if (name === 'export') {
       // Ephemeral: the CSV contains wallet addresses, so only show it to the
       // person who ran the command.
-      void runExport(i.token);
       return {
-        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-        data: { flags: EPHEMERAL },
+        body: {
+          type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+          data: { flags: EPHEMERAL },
+        },
+        background: runExport(i.token),
       };
     }
 
-    return msg('Unknown command.', true);
+    return { body: msg('Unknown command.', true) };
   }
 
-  return msg('Unsupported interaction.', true);
+  return { body: msg('Unsupported interaction.', true) };
 }
 
 function msg(content: string, ephemeral = false): Record<string, unknown> {
@@ -130,12 +147,12 @@ async function runInsights(token: string): Promise<void> {
 
 async function runExport(token: string): Promise<void> {
   try {
-    const n = feedbackCount();
+    const n = await feedbackCount();
     if (n === 0) {
       await followup(token, { content: 'No feedback to export yet.' });
       return;
     }
-    const csv = feedbackToCsv();
+    const csv = await exportCsv();
     const stamp = new Date().toISOString().slice(0, 10);
     await followupFile(
       token,
