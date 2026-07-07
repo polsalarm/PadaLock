@@ -1,7 +1,4 @@
-import 'dotenv/config';
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { allFeedback, type FeedbackRow } from './db';
+import { allFeedback, type FeedbackRow } from './pg.js';
 
 const COLUMNS: (keyof FeedbackRow)[] = [
   'id',
@@ -19,25 +16,14 @@ function cell(v: unknown): string {
   return `"${s.replace(/"/g, '""')}"`;
 }
 
-/** Serialize all feedback rows to CSV (embedding column omitted — it's huge). */
-export function feedbackToCsv(rows: FeedbackRow[] = allFeedback()): string {
+/** Serialize feedback rows to CSV (embedding column omitted — it's huge). */
+export function feedbackToCsv(rows: FeedbackRow[]): string {
   const header = COLUMNS.join(',');
   const lines = rows.map((r) => COLUMNS.map((c) => cell(r[c])).join(','));
   return [header, ...lines].join('\r\n');
 }
 
-/** CLI: `npm run export` → writes data/feedback-export.csv */
-function main(): void {
-  const rows = allFeedback();
-  const csv = feedbackToCsv(rows);
-  const dir = resolve(process.cwd(), 'data');
-  mkdirSync(dir, { recursive: true });
-  const out = resolve(dir, 'feedback-export.csv');
-  writeFileSync(out, csv, 'utf8');
-  console.log(`Wrote ${rows.length} rows → ${out}`);
-}
-
-// Run only when invoked directly (not when imported by the server).
-if (process.argv[1] && process.argv[1].endsWith('export.ts')) {
-  main();
+/** Convenience: fetch all rows and serialize. */
+export async function exportCsv(): Promise<string> {
+  return feedbackToCsv(await allFeedback());
 }
