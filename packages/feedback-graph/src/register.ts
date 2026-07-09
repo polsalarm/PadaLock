@@ -1,5 +1,5 @@
 /**
- * Register the /feedback and /insights slash commands with Discord.
+ * Register the /feedback, /insights, and /export slash commands with Discord.
  * Run once (and again whenever command defs change):  npm run register
  *
  * Uses guild-scoped registration when DISCORD_GUILD_ID is set (updates

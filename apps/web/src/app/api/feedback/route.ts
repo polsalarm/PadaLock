@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { feedbackGraphIngestUrl } from "@/lib/feedback-graph";
 
 /**
  * Collects basic user feedback for the Level 4 submission.
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
   const graphUrl = process.env.FEEDBACK_GRAPH_URL;
   if (graphUrl) {
     try {
-      await fetch(`${graphUrl.replace(/\/$/, "")}/ingest`, {
+      await fetch(feedbackGraphIngestUrl(graphUrl), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

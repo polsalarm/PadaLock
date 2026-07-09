@@ -16,7 +16,7 @@
 
 **[🚀 Live demo](https://padalock.vercel.app)** · **[🎬 Demo video](./docs/demo-video/padalock-demo.mp4)** · **[🔎 Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE)**
 
-<sub>StellarX Philippines · Track 1 — Remittance & Cross-Border · Risein Orange Belt (Level 3)</sub>
+<sub>StellarX Philippines - Track 1 - Remittance & Cross-Border</sub>
 
 </div>
 
@@ -58,7 +58,6 @@
 [Testing & CI](#-testing--ci) ·
 [Deployment](#️-deployment) ·
 [Routes](#-routes) ·
-[Compliance](#-risein-compliance) ·
 [Roadmap](#️-mainnet-roadmap)
 
 ---
@@ -109,7 +108,19 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 | CI/CD — all checks passing | Contract & tx history (Stellar Expert) |
 |:---:|:---:|
-| <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline — all checks passed" width="440" /> | <img src="./docs/screenshots/stellar-contract.png" alt="PadaLock contract on Stellar Expert" width="360" /> |
+| <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline all checks passed" width="440" /> | <img src="./docs/screenshots/contracts/USDC%20PadaLock%20contract.png" alt="USDC PadaLock contract on Stellar Expert" width="260" /> <img src="./docs/screenshots/contracts/XLM%20PadaLock%20contract.png" alt="XLM PadaLock contract on Stellar Expert" width="260" /> |
+
+### Vercel analytics proof
+
+| Live traffic and monitoring |
+|:---:|
+| <img src="./docs/screenshots/vercel-analytics/padalock-analytics.png" alt="Vercel Analytics for PadaLock" width="760" /> |
+
+### Discord feedback proof
+
+| Feedback collection, `/insights` summary, and CSV export |
+|:---:|
+| <img src="./docs/screenshots/discord-feedback-proof.png" alt="Discord feedback collection, summary, and CSV export proof" width="760" /> |
 
 ### ✅ Tests
 
@@ -162,6 +173,7 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 - **🪙 Dashboard asset switcher** — headline your balance in USDC or XLM; the choice is remembered.
 - **🔗 Deep-link + QR claim share** — send-success shows a shareable claim link, QR, and native Share sheet for low-tech family.
 - **👛 Hybrid wallet** — built-in self-custodial wallet (BIP-39 + Argon2 + AES-GCM) **or** external via Stellar Wallets Kit (Freighter, xBull, Albedo, Lobstr, Ledger).
+- **Discord feedback loop** - in-app feedback posts to Discord and to `@padalock/feedback-graph`; slash commands generate `/insights` summaries and private `/export` CSV files for proof and iteration.
 
 ---
 
@@ -171,6 +183,7 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 contracts/pada-lock/   Soroban contract (Rust)
 apps/web/              Next.js 16 self-custodial PWA (sender + receiver)
 packages/sdk/          shared TypeScript SDK (RPC, tx builders, polling)
+packages/feedback-graph/ Discord slash commands, feedback ingest, Gemini summaries, CSV export
 docs/                  deploy guide, demo script, testnet state, screenshots
 plan.md                phased build plan
 ```
@@ -183,6 +196,7 @@ plan.md                phased build plan
 - **Soroban** Rust SDK (`soroban-sdk` 25)
 - **Next.js 16** App Router · React 19 · Tailwind · PWA, mobile-first
 - **Self-custodial wallet** — BIP-39 mnemonic → Argon2id → AES-GCM
+- **Discord + Gemini feedback insights** - Discord Interactions API, Neon Postgres, Gemini embeddings/summaries, `/insights`, and CSV export
 - **npm workspaces** monorepo · typed SDK boundary · simulate-before-sign · finality polling
 
 ---
@@ -232,6 +246,12 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
   | `NEXT_PUBLIC_XLM_SAC_TESTNET` | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
   | `NEXT_PUBLIC_USDC_ISSUER_TESTNET` | `GAZ5YSMH4Z2VXLLVR7FE7RENVBSDLU5U4PCJZYHRFZSBANA765TZEUQE` |
   | `NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN` | `testanchor.stellar.org` |
+  | `FEEDBACK_WEBHOOK_URL` | Discord incoming webhook for visible feedback collection |
+  | `FEEDBACK_GRAPH_URL` | `https://padalock-feedback-graph.vercel.app` |
+  | `INGEST_SECRET` | Shared secret used by the web app and feedback graph ingest API |
+
+- **Feedback graph (Vercel)** - `packages/feedback-graph`; deploys `https://padalock-feedback-graph.vercel.app` with `/api/interactions`, `/api/ingest`, `/api/health`, and `/api/export`.
+  Discord's **Interactions Endpoint URL** points to `/api/interactions`. `/feedback` logs Discord-native feedback, `/insights` clusters all stored rows into a summary + chart, and `/export` returns a private CSV file.
 
 ---
 
@@ -245,28 +265,6 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 | `/send` | OFW splits padala across buckets |
 | `/claim/[id]` | Family member claims per bucket |
 | `/padala/[id]` | Sender transparency: who claimed what, when |
-
----
-
-## 🏅 Risein compliance
-
-<details>
-<summary><strong>Orange Belt (Level 3) — Advanced contracts + production-ready dApp</strong></summary>
-
-| Requirement | Where in PadaLock |
-|---|---|
-| Advanced smart contract | `create_padala` / `claim` / `create_recurring` / `execute_due` / `cancel_recurring` / `reclaim` / `get_reputation` — escrow, multi-recipient, recurring, sender reclaim on expiry, TTL-durable storage, on-chain reputation. |
-| Inter-contract communication | Cross-contract calls to the **USDC SAC** (`transfer` / `balance`) to move escrowed funds to merchants. |
-| Event streaming & real-time updates | Contract emits an event per bucket on create/claim; SDK reads via RPC `getEvents` (`packages/sdk/src/read.ts`); `/padala/[id]` renders the live claim ledger. |
-| CI/CD pipeline | [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) — `cargo test` + Vitest + `next build` on every push/PR. |
-| Contract deployment workflow | [`docs/deploy.md`](./docs/deploy.md) — build, deploy, seed merchants, capture IDs. |
-| Mobile responsive frontend | Mobile-first PWA (Tailwind), bottom nav, install prompt. |
-| Error handling & loading states | Simulation guards, `pollFinality` (never trusts `sendTransaction`), pending spinners, success/error badges. |
-| Tests (contract + frontend) | 16 `cargo test` + 20 Vitest = **36 passing**. |
-| Production architecture | npm-workspace monorepo, typed SDK boundary, env-driven config, simulate-before-sign, finality polling. |
-| Documentation & demo | This README + [`docs/`](./docs) + demo video. |
-
-</details>
 
 ---
 

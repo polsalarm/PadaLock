@@ -36,7 +36,7 @@ Discord  ──/insights──►  server.ts ──► cluster.ts ──► them
 3. Register commands: `npm run register --workspace=@padalock/feedback-graph`
 4. Start server: `npm run dev --workspace=@padalock/feedback-graph`
 5. Expose it publicly (e.g. `ngrok http 3005`) and paste
-   `https://<public-url>/interactions` into the app's **Interactions Endpoint
+   `https://<public-url>/api/interactions` into the app's **Interactions Endpoint
    URL** in the Developer Portal. Discord sends a PING to verify — the server
    answers PONG automatically.
 
@@ -44,7 +44,7 @@ Discord  ──/insights──►  server.ts ──► cluster.ts ──► them
 
 - **Deferred response:** `/insights` acks immediately, then edits the message
   once clustering + chart are ready (Discord's 3s limit).
-- **Storage:** local sqlite at `data/feedback.db` (git-ignored).
+- **Storage:** Postgres via `DATABASE_URL` or `POSTGRES_URL`.
 - **Chart:** rendered by QuickChart via an embed image URL — zero local render
   deps. Swap `chart.ts` for `@napi-rs/canvas` if you want fully self-hosted.
 - Embeddings are cached at write time, so `/insights` never re-embeds.

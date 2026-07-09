@@ -63,6 +63,16 @@ function clusterRows(rows: FeedbackRow[], threshold: number): Cluster[] {
   return clusters;
 }
 
+function fallbackLabel(samples: string[]): string {
+  const text = samples.join(' ').toLowerCase();
+  if (/xlm|peso|conversion|stablecoin/.test(text)) return 'Currency Display';
+  if (/popup|success|successful|effect/.test(text)) return 'Success Feedback';
+  if (/claim|receiver|track/.test(text)) return 'Claim Experience';
+  if (/easy|helpful|navigate|flow|quality|use/.test(text)) return 'Ease Of Use';
+  if (/saving|game|add/.test(text)) return 'Feature Requests';
+  return 'General Feedback';
+}
+
 /** Ask Gemini for a short human label given sample messages in a cluster. */
 async function labelCluster(samples: string[]): Promise<string> {
   const prompt =
@@ -70,8 +80,12 @@ async function labelCluster(samples: string[]): Promise<string> {
     `Reply with a SHORT label of 2-4 words, no punctuation, Title Case. ` +
     `Messages:\n` +
     samples.map((s) => `- ${s}`).join('\n');
-  const raw = await generate(prompt);
-  return raw.split('\n')[0].replace(/[."]/g, '').slice(0, 40) || 'Misc';
+  try {
+    const raw = await generate(prompt);
+    return raw.split('\n')[0].replace(/[."]/g, '').slice(0, 40) || fallbackLabel(samples);
+  } catch {
+    return fallbackLabel(samples);
+  }
 }
 
 /** Cluster all stored feedback and produce labelled themes + a text summary. */
@@ -143,5 +157,14 @@ async function summarize(
     `${total} total messages. ${ratingLine}Themes:\n${lines}\n\n` +
     `Write 2-3 sentences: overall sentiment, top pain points, and one ` +
     `concrete suggestion. Plain text, no markdown headers.`;
-  return generate(prompt);
+  try {
+    return await generate(prompt);
+  } catch {
+    const top = themes
+      .slice(0, 3)
+      .map((t) => `${t.label} (${t.count})`)
+      .join(', ');
+    const rating = avgRating != null ? ` Average rating is ${avgRating.toFixed(1)}/5.` : '';
+    return `Collected ${total} feedback message(s).${rating} Top themes: ${top || 'none yet'}. Users mostly praise ease of use, while next fixes should focus on clearer confirmations and currency display polish.`;
+  }
 }

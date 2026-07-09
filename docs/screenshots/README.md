@@ -9,7 +9,10 @@ root `README.md` references resolve:
 | `tests-vitest.png` | Frontend + SDK — `vitest`, 18 passed | ✅ added |
 | `mobile-responsive.png` | Mobile-responsive UI | ⬜ Open live site → Chrome DevTools device toolbar (`Ctrl+Shift+M`, iPhone) → `Win+Shift+S` → save here. |
 | `ci-pipeline.png` | CI/CD pipeline (both jobs green) | ⬜ GitHub → Actions → latest **CI** run → snip the two green jobs → save here. |
-| `stellar-contract.png` | Contract + tx history on Stellar Expert | ⬜ Open the [contract page](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE) → snip summary + history → save here. |
+| `contracts/USDC PadaLock contract.png` | Current USDC PadaLock contract on Stellar Expert | Added. Shows `CB62...TBG7RF5YE`. |
+| `contracts/XLM PadaLock contract.png` | Current XLM PadaLock contract on Stellar Expert | Added. Shows `CC6...LV4PVTM4KVM`. |
+| `vercel-analytics/padalock-analytics.png` | Vercel Analytics live traffic proof | Added. Shows Vercel Analytics activity for the deployed app. |
+| `discord-feedback-proof.png` | Discord feedback channel + `/insights` summary + CSV export proof | Composite added from `docs/screenshots/discord-feedback/`; replace with a final single screenshot if needed. |
 
 ⬜ items 404 in the root README until the PNG is dropped in with the exact filename.
 
