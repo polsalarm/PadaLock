@@ -108,7 +108,7 @@ Filipino OFWs send **~$36B/yr** home. The recurring pain: the sender has **no co
 
 | CI/CD — all checks passing | Contract & tx history (Stellar Expert) |
 |:---:|:---:|
-| <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline all checks passed" width="440" /> | <img src="./docs/screenshots/contracts/USDC%20PadaLock%20contract.png" alt="USDC PadaLock contract on Stellar Expert" width="260" /> <img src="./docs/screenshots/contracts/XLM%20PadaLock%20contract.png" alt="XLM PadaLock contract on Stellar Expert" width="260" /> |
+| <img src="./docs/screenshots/ci-pipeline.png" alt="CI pipeline all checks passed" width="440" /> | <img src="./docs/screenshots/contracts/usdc-padalock-contract.png" alt="USDC PadaLock contract on Stellar Expert" width="260" /> <img src="./docs/screenshots/contracts/xlm-padalock-contract.png" alt="XLM PadaLock contract on Stellar Expert" width="260" /> |
 
 ### Vercel analytics proof
 
