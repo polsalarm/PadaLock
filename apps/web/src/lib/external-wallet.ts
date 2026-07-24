@@ -1,6 +1,6 @@
 "use client";
 
-import { NETWORK } from "@padalock/sdk";
+import { IS_MAINNET, NETWORK } from "@padalock/sdk";
 
 /**
  * Stellar Wallets Kit v2 (static API) — Freighter / xBull / Albedo / Lobstr / etc.
@@ -18,7 +18,7 @@ async function kit() {
     );
     StellarWalletsKit.init({
       modules: defaultModules(),
-      network: Networks.TESTNET,
+      network: IS_MAINNET ? Networks.PUBLIC : Networks.TESTNET,
     });
     initialized = true;
   }
