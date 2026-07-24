@@ -14,17 +14,15 @@ import {
   BASE_FEE,
   NETWORK,
   USDC_CODE,
-  USDC_ISSUER_TESTNET,
-  USDC_SAC_TESTNET,
+  USDC_ISSUER,
+  USDC_SAC,
   getRpcServer,
   pollFinality,
 } from "@padalock/sdk";
 
-const HORIZON_URL = "https://horizon-testnet.stellar.org";
-
 let _horizon: Horizon.Server | null = null;
 function getHorizon(): Horizon.Server {
-  if (!_horizon) _horizon = new Horizon.Server(HORIZON_URL);
+  if (!_horizon) _horizon = new Horizon.Server(NETWORK.horizonUrl);
   return _horizon;
 }
 
@@ -87,11 +85,11 @@ export async function sendXlm(args: {
  * Read-only USDC SAC balance for a Stellar account. Returns string in stroops.
  */
 export async function getUsdcBalance(publicKey: string): Promise<string> {
-  if (!USDC_SAC_TESTNET) return "0";
+  if (!USDC_SAC) return "0";
   const server = getRpcServer();
   const acct = await server.getAccount(publicKey);
   const source = new Account(acct.accountId(), acct.sequenceNumber());
-  const contract = new Contract(USDC_SAC_TESTNET);
+  const contract = new Contract(USDC_SAC);
 
   const tx = new TransactionBuilder(source, {
     fee: BASE_FEE,
@@ -113,6 +111,7 @@ export async function getUsdcBalance(publicKey: string): Promise<string> {
 }
 
 export async function friendbotFund(publicKey: string): Promise<string> {
+  if (!NETWORK.friendbotUrl) throw new Error("No faucet on mainnet — fund with real XLM");
   const url = `${NETWORK.friendbotUrl}?addr=${encodeURIComponent(publicKey)}`;
   const res = await fetch(url);
   if (res.ok) return "funded";
@@ -129,7 +128,7 @@ export async function ensureUsdcTrustline(
   publicKey: string,
   sign: (xdr: string) => Promise<string>
 ): Promise<string> {
-  if (!USDC_ISSUER_TESTNET) throw new Error("USDC issuer not configured");
+  if (!USDC_ISSUER) throw new Error("USDC issuer not configured");
   const server = getRpcServer();
   const acct = await server.getAccount(publicKey);
   const source = new Account(acct.accountId(), acct.sequenceNumber());
@@ -140,7 +139,7 @@ export async function ensureUsdcTrustline(
   })
     .addOperation(
       Operation.changeTrust({
-        asset: new Asset(USDC_CODE, USDC_ISSUER_TESTNET),
+        asset: new Asset(USDC_CODE, USDC_ISSUER),
       })
     )
     .setTimeout(120)
