@@ -12,6 +12,7 @@ import {
   getXlmBalance,
   usdcToPhp,
 } from "@/lib/balance";
+import { IS_MAINNET } from "@padalock/sdk";
 import {
   BottomNav,
   Button,
@@ -146,13 +147,15 @@ export default function Dashboard() {
             <span className="font-label-caps text-label-caps uppercase text-primary-fixed-dim">
               Available Balance
             </span>
-            <button
-              onClick={onFund}
-              disabled={busy}
-              className="rounded-full border border-outline-variant/30 bg-primary-container px-sm py-1 font-label-caps text-label-caps uppercase text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary disabled:opacity-50"
-            >
-              {busy ? "Funding…" : "Fund testnet"}
-            </button>
+            {!IS_MAINNET && (
+              <button
+                onClick={onFund}
+                disabled={busy}
+                className="rounded-full border border-outline-variant/30 bg-primary-container px-sm py-1 font-label-caps text-label-caps uppercase text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary disabled:opacity-50"
+              >
+                {busy ? "Funding…" : "Fund testnet"}
+              </button>
+            )}
           </div>
           {/* Asset toggle — choose which token headlines the balance */}
           <div className="relative z-10 flex w-fit gap-1 rounded-full bg-on-primary/10 p-0.5">
