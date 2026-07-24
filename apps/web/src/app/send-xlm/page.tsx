@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
 import { getXlmBalance, sendXlm } from "@/lib/balance";
+import { IS_MAINNET, STELLAR_EXPERT_NETWORK } from "@padalock/sdk";
 import {
   BottomNav,
   Button,
@@ -137,7 +138,7 @@ export default function SendXlmPage() {
               </StatusBadge>
             </div>
             <p className="font-body-sm text-body-sm text-on-surface">
-              Payment confirmed on testnet.
+              Payment confirmed on {IS_MAINNET ? "mainnet" : "testnet"}.
             </p>
             <div className="mt-2 font-label-caps text-label-caps uppercase text-on-surface-variant">
               Transaction hash
@@ -146,7 +147,7 @@ export default function SendXlmPage() {
               {tx.hash}
             </div>
             <a
-              href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`}
+              href={`https://stellar.expert/explorer/${STELLAR_EXPERT_NETWORK}/tx/${tx.hash}`}
               target="_blank"
               rel="noreferrer"
               className="mt-2 inline-flex items-center gap-1 font-label-caps text-label-caps uppercase text-primary underline"
