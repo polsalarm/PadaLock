@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
-import { NETWORK, PADALOCK_CONTRACT_ID, USDC_SAC_TESTNET } from "@padalock/sdk";
+import { IS_MAINNET, NETWORK, PADALOCK_CONTRACT_ID, USDC_SAC } from "@padalock/sdk";
 import {
   BottomNav,
   Button,
@@ -36,7 +36,7 @@ export default function SettingsPage() {
   const rows = [
     { label: "Your address", value: state.publicKey },
     { label: "PadaLock contract", value: PADALOCK_CONTRACT_ID },
-    { label: "USDC contract", value: USDC_SAC_TESTNET },
+    { label: "USDC contract", value: USDC_SAC },
     { label: "RPC", value: NETWORK.rpcUrl },
   ];
 
@@ -72,7 +72,7 @@ export default function SettingsPage() {
         </Card>
 
         <h2 className="px-xs font-headline-sm text-headline-sm text-on-surface">
-          Network — Stellar testnet
+          Network — Stellar {IS_MAINNET ? "mainnet" : "testnet"}
         </h2>
 
         <div className="flex flex-col gap-sm">
