@@ -10,6 +10,7 @@ import {
   getReputation,
   parseAsset,
   pollFinality,
+  STELLAR_EXPERT_NETWORK,
   submitSignedXdr,
   type BucketView,
   type PadalaView,
@@ -609,9 +610,9 @@ function Receipt({
   amount: string;
 }) {
   const txUrl = hash
-    ? `https://stellar.expert/explorer/testnet/tx/${hash}`
+    ? `https://stellar.expert/explorer/${STELLAR_EXPERT_NETWORK}/tx/${hash}`
     : null;
-  const merchantUrl = `https://stellar.expert/explorer/testnet/account/${merchant}`;
+  const merchantUrl = `https://stellar.expert/explorer/${STELLAR_EXPERT_NETWORK}/account/${merchant}`;
   return (
     <div className="space-y-2 rounded-lg border border-tertiary/30 bg-tertiary-fixed/10 p-sm">
       <div className="flex items-center gap-1 font-label-caps text-label-caps uppercase text-tertiary-container">
