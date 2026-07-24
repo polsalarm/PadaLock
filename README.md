@@ -11,10 +11,11 @@
 [![CI](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml/badge.svg)](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml)
 &nbsp;![Tests](https://img.shields.io/badge/tests-36%20passing-brightgreen)
 &nbsp;![Stellar](https://img.shields.io/badge/Stellar-testnet-7D00FF?logo=stellar&logoColor=white)
+&nbsp;![Stellar](https://img.shields.io/badge/Stellar-mainnet-7D00FF?logo=stellar&logoColor=white)
 &nbsp;![Soroban](https://img.shields.io/badge/Soroban-Rust-CE412B?logo=rust&logoColor=white)
 &nbsp;![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
 
-**[🚀 Live demo](https://padalock.vercel.app)** · **[🎬 Demo video](./docs/demo-video/padalock-demo.mp4)** · **[🔎 Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE)**
+**[🚀 Live demo (testnet)](https://padalock.vercel.app)** · **[🌐 Mainnet app](https://padalock-mainnet.vercel.app)** · **[🎬 Demo video](./docs/demo-video/padalock-demo.mp4)** · **[🔎 Testnet contract](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE)** · **[🔎 Mainnet contract](https://stellar.expert/explorer/public/contract/CBE7OMDVRVC2DEDZXXVKF6EHUTPM5FYFVB2IP27W2PI24WHI4AAZNQVK)**
 
 <sub>StellarX Philippines - Track 1 - Remittance & Cross-Border</sub>
 
@@ -26,11 +27,13 @@
 
 | | |
 |---|---|
-| **Live demo** | https://padalock.vercel.app |
+| **Live demo (testnet)** | https://padalock.vercel.app |
+| **Live app (mainnet)** | https://padalock-mainnet.vercel.app — real XLM/USDC, real fees |
 | **Demo video** | [`docs/demo-video/padalock-demo.mp4`](./docs/demo-video/padalock-demo.mp4) |
-| **Network** | Stellar **testnet** |
-| **Contract — USDC** | [`CB62IOP5…TBG7RF5YE`](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE) |
-| **Contract — XLM** | [`CC6LNV5T…LV4PVTM4KVM`](https://stellar.expert/explorer/testnet/contract/CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM) |
+| **Network** | Stellar **testnet** (primary demo) + Stellar **mainnet** (deployed, live) |
+| **Contract — USDC (testnet)** | [`CB62IOP5…TBG7RF5YE`](https://stellar.expert/explorer/testnet/contract/CB62IOP52GFYM7FFKHFVJLINQJJBHFWIVFGACGZ3MSMPELSTBG7RF5YE) |
+| **Contract — XLM (testnet)** | [`CC6LNV5T…LV4PVTM4KVM`](https://stellar.expert/explorer/testnet/contract/CC6LNV5T6PIKMUJGWUHSE3ZEDU4YTKNQCRUGQHZXS422ALV4PVTM4KVM) |
+| **Contract — USDC (mainnet)** | [`CBE7OMDV…HI4AAZNQVK`](https://stellar.expert/explorer/public/contract/CBE7OMDVRVC2DEDZXXVKF6EHUTPM5FYFVB2IP27W2PI24WHI4AAZNQVK) — merchants whitelisted (test keypairs, see [`docs/mainnet-state.md`](./docs/mainnet-state.md)) |
 | **Sample interaction tx** | [`8214e348…158d4f4`](https://stellar.expert/explorer/testnet/tx/8214e34844f89515fd08ef2db494f45c3cfb5e11134b7441ecf722fcc158d4f4) · more in [`docs/testnet-state.md`](./docs/testnet-state.md) |
 
 <div align="center">
@@ -39,7 +42,7 @@
 
 **[▶︎ Open the live app](https://padalock.vercel.app)** &nbsp;·&nbsp; create a wallet &nbsp;·&nbsp; fund with one tap &nbsp;·&nbsp; send a purpose-locked padala in under a minute.
 
-*Runs on Stellar testnet — play with real on-chain money, zero risk.*
+*Runs on Stellar testnet — play with real on-chain money, zero risk. A [mainnet build](https://padalock-mainnet.vercel.app) is also deployed — real XLM/USDC, no faucet.*
 
 </div>
 
@@ -58,7 +61,7 @@
 [Testing & CI](#-testing--ci) ·
 [Deployment](#️-deployment) ·
 [Routes](#-routes) ·
-[Roadmap](#️-mainnet-roadmap)
+[Mainnet status & roadmap](#️-mainnet-status--roadmap)
 
 ---
 
@@ -184,7 +187,7 @@ contracts/pada-lock/   Soroban contract (Rust)
 apps/web/              Next.js 16 self-custodial PWA (sender + receiver)
 packages/sdk/          shared TypeScript SDK (RPC, tx builders, polling)
 packages/feedback-graph/ Discord slash commands, feedback ingest, Gemini summaries, CSV export
-docs/                  deploy guide, demo script, testnet state, screenshots
+docs/                  deploy guide, demo script, testnet/mainnet state, screenshots
 plan.md                phased build plan
 ```
 
@@ -192,7 +195,7 @@ plan.md                phased build plan
 
 ## 🧰 Tech stack
 
-- **Stellar** testnet · `@stellar/stellar-sdk` v14 (`rpc` namespace)
+- **Stellar** testnet + mainnet (network switch via `NEXT_PUBLIC_STELLAR_NETWORK`) · `@stellar/stellar-sdk` v14 (`rpc` namespace)
 - **Soroban** Rust SDK (`soroban-sdk` 25)
 - **Next.js 16** App Router · React 19 · Tailwind · PWA, mobile-first
 - **Self-custodial wallet** — BIP-39 mnemonic → Argon2id → AES-GCM
@@ -233,9 +236,18 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 
 ## ☁️ Deployment
 
-- **Contract** → [`docs/deploy.md`](./docs/deploy.md); live IDs in [`docs/testnet-state.md`](./docs/testnet-state.md).
-- **Frontend (Vercel)** → npm-workspace monorepo. Set the project **Root Directory to `apps/web`**
-  (Settings → Build & Deployment); Vercel auto-detects Next.js and installs from the monorepo root.
+- **Contract** → [`docs/deploy.md`](./docs/deploy.md); live IDs in [`docs/testnet-state.md`](./docs/testnet-state.md) (testnet) and [`docs/mainnet-state.md`](./docs/mainnet-state.md) (mainnet).
+- **Frontend (Vercel)** → npm-workspace monorepo, project **`padalock`** (testnet), Root Directory
+  **`apps/web`** with "include files outside Root Directory" enabled (needed so the build can see
+  the sibling `@padalock/sdk` workspace package). Since it's a workspace, install/build/output are
+  explicit overrides, not auto-detected:
+
+  | Setting | Value |
+  |---|---|
+  | Install Command | `npm install` |
+  | Build Command | `npm run sdk:build && npm run build --workspace=@padalock/web` |
+  | Output Directory | `apps/web/.next` |
+
   [`.vercelignore`](./.vercelignore) keeps the upload small (excludes `target/`, `node_modules`, `.next`).
 
   | Env var | Value (testnet) |
@@ -249,6 +261,24 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
   | `FEEDBACK_WEBHOOK_URL` | Discord incoming webhook for visible feedback collection |
   | `FEEDBACK_GRAPH_URL` | `https://padalock-feedback-graph.vercel.app` |
   | `INGEST_SECRET` | Shared secret used by the web app and feedback graph ingest API |
+
+- **Mainnet** → **[padalock-mainnet.vercel.app](https://padalock-mainnet.vercel.app)**, separate Vercel
+  project (`padalock-mainnet`), same repo, same Root Directory/build settings as `padalock` above.
+  `NEXT_PUBLIC_STELLAR_NETWORK=mainnet` flips `@padalock/sdk`'s `NETWORK` to `Networks.PUBLIC` +
+  `mainnet.sorobanrpc.com` + `horizon.stellar.org`; `/api/faucet` hard-403s (no faucet exists on
+  mainnet — real XLM only). Contract deployed with `admin` = deployer key, `token` = Circle USDC SAC;
+  all 4 merchant categories whitelisted (test keypairs — see [`docs/mainnet-state.md`](./docs/mainnet-state.md)).
+
+  | Env var | Value (mainnet) |
+  |---|---|
+  | `NEXT_PUBLIC_STELLAR_NETWORK` | `mainnet` |
+  | `NEXT_PUBLIC_PADALOCK_CONTRACT_ID_MAINNET` | `CBE7OMDVRVC2DEDZXXVKF6EHUTPM5FYFVB2IP27W2PI24WHI4AAZNQVK` |
+  | `NEXT_PUBLIC_USDC_SAC_MAINNET` | `CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75` |
+  | `NEXT_PUBLIC_USDC_ISSUER_MAINNET` | `GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN` |
+  | `NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN` | `testanchor.stellar.org` (placeholder — swap for a real PH anchor before real recipients cash out) |
+
+  Mainnet deploy cost: ~21.4 XLM resource/rent fee for wasm upload + contract create, on top of
+  normal account reserve. Full breakdown in [`docs/mainnet-state.md`](./docs/mainnet-state.md).
 
 - **Feedback graph (Vercel)** - `packages/feedback-graph`; deploys `https://padalock-feedback-graph.vercel.app` with `/api/interactions`, `/api/ingest`, `/api/health`, and `/api/export`.
   Discord's **Interactions Endpoint URL** points to `/api/interactions`. `/feedback` logs Discord-native feedback, `/insights` clusters all stored rows into a summary + chart, and `/export` returns a private CSV file.
@@ -268,9 +298,16 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 
 ---
 
-## 🛣️ Mainnet roadmap
+## 🛣️ Mainnet status & roadmap
 
-- Partner with a PH anchor (Coins.ph / Anclap PHP) for a real off-ramp
+**Live on mainnet today:**
+- Contract deployed (`CBE7OMDV…HI4AAZNQVK`), admin + Circle USDC SAC wired in
+- All 4 restricted categories whitelisted (tuition/utility/medical/groceries — test keypairs for now)
+- Frontend live at [padalock-mainnet.vercel.app](https://padalock-mainnet.vercel.app), full network switch (RPC/Horizon/passphrase/wallet-kit), faucet hard-disabled
+
+**Still needed before real recipients use it:**
+- Swap the 4 test merchant keypairs for real school/biller/clinic/store accounts
+- Partner with a PH anchor (Coins.ph / Anclap PHP) for a real off-ramp — `NEXT_PUBLIC_SEP24_ANCHOR_DOMAIN` still points at `testanchor.stellar.org`
 - KYC-light onboarding via SEP-12 for senders abroad
 - Merchant whitelist governance — schools via DepEd, utilities via biller APIs
 - SEP-31 cross-border send from non-USDC corridors (USD/SGD/AED)
@@ -281,7 +318,7 @@ two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across worksp
 
 ## Ready to see it?
 
-**[🚀 Launch the live demo](https://padalock.vercel.app)** &nbsp;|&nbsp; **[🎬 Watch the video](./docs/demo-video/padalock-demo.mp4)** &nbsp;|&nbsp; **[⭐ Star the repo](https://github.com/polsalarm/PadaLock)**
+**[🚀 Launch the live demo](https://padalock.vercel.app)** &nbsp;|&nbsp; **[🌐 Mainnet app](https://padalock-mainnet.vercel.app)** &nbsp;|&nbsp; **[🎬 Watch the video](./docs/demo-video/padalock-demo.mp4)** &nbsp;|&nbsp; **[⭐ Star the repo](https://github.com/polsalarm/PadaLock)**
 
 <br>
 
