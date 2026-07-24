@@ -8,7 +8,7 @@ import {
   nativeToScVal,
   rpc,
 } from "@stellar/stellar-sdk";
-import { BASE_FEE, NETWORK, USDC_SAC_TESTNET, pollFinality } from "@padalock/sdk";
+import { BASE_FEE, IS_MAINNET, NETWORK, USDC_SAC, pollFinality } from "@padalock/sdk";
 
 /**
  * Testnet demo faucet: mints 1000 test USDC to the requested address.
@@ -18,11 +18,14 @@ import { BASE_FEE, NETWORK, USDC_SAC_TESTNET, pollFinality } from "@padalock/sdk
 const MINT_AMOUNT = 10_000_000_000n; // 1000 USDC @ 7dp
 
 export async function POST(req: Request) {
+  if (IS_MAINNET) {
+    return NextResponse.json({ error: "Faucet disabled on mainnet" }, { status: 403 });
+  }
   const secret = process.env.FAUCET_ISSUER_SECRET;
   if (!secret) {
     return NextResponse.json({ error: "Faucet not configured" }, { status: 500 });
   }
-  if (!USDC_SAC_TESTNET) {
+  if (!USDC_SAC) {
     return NextResponse.json({ error: "USDC SAC not configured" }, { status: 500 });
   }
 
@@ -42,7 +45,7 @@ export async function POST(req: Request) {
     const server = new rpc.Server(NETWORK.rpcUrl);
     const acct = await server.getAccount(issuer.publicKey());
     const source = new Account(acct.accountId(), acct.sequenceNumber());
-    const contract = new Contract(USDC_SAC_TESTNET);
+    const contract = new Contract(USDC_SAC);
 
     const tx = new TransactionBuilder(source, {
       fee: BASE_FEE,
