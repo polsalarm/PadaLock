@@ -20,6 +20,9 @@ export const NETWORK = IS_MAINNET
       friendbotUrl: 'https://friendbot.stellar.org',
     } as const;
 
+/** stellar.expert URL segment for the active network. */
+export const STELLAR_EXPERT_NETWORK = IS_MAINNET ? 'public' : 'testnet';
+
 export const USDC_SAC_TESTNET =
   (process.env.NEXT_PUBLIC_USDC_SAC_TESTNET ?? '').trim();
 
