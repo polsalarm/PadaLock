@@ -9,7 +9,8 @@
 *Padala na may pangako — send money home that can only be spent the way it was meant to.*
 
 [![CI](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml/badge.svg)](https://github.com/polsalarm/PadaLock/actions/workflows/ci.yml)
-&nbsp;![Tests](https://img.shields.io/badge/tests-36%20passing-brightgreen)
+&nbsp;![Tests](https://img.shields.io/badge/tests-43%20passing-brightgreen)
+&nbsp;[![Security review](https://img.shields.io/badge/security-internal%20review-informational)](./docs/SECURITY-REVIEW.md)
 &nbsp;![Stellar](https://img.shields.io/badge/Stellar-testnet-7D00FF?logo=stellar&logoColor=white)
 &nbsp;![Stellar](https://img.shields.io/badge/Stellar-mainnet-7D00FF?logo=stellar&logoColor=white)
 &nbsp;![Soroban](https://img.shields.io/badge/Soroban-Rust-CE412B?logo=rust&logoColor=white)
@@ -59,6 +60,7 @@
 [Tech stack](#️-tech-stack) ·
 [Quick start](#-quick-start) ·
 [Testing & CI](#-testing--ci) ·
+[Security review](#-security-review) ·
 [Deployment](#️-deployment) ·
 [Routes](#-routes) ·
 [Mainnet status & roadmap](#️-mainnet-status--roadmap)
@@ -221,16 +223,55 @@ contract IDs, then follow [`docs/demo-script.md`](./docs/demo-script.md).
 ## ✅ Testing & CI
 
 ```bash
-npm run contract:test                  # 16 Soroban unit tests (cargo)
-npm test                               # SDK + web Vitest (20)
+npm run contract:test                  # 21 Soroban unit tests (cargo)
+npm test                               # SDK + web Vitest (22)
 cd packages/sdk && npx vitest run      # SDK only (6)
 ```
 
-> **16 contract + 20 frontend/SDK = 36 passing.**
+> **21 contract + 22 frontend/SDK = 43 passing.**
 
 Every push and PR to `main` runs [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) —
 two parallel jobs: **contract** (`cargo test`) and **web** (Vitest across workspaces +
 `next build`). Status badge is at the top of this README.
+
+---
+
+## 🔐 Security review
+
+PadaLock has had a **first-party security review** covering the Soroban contract,
+the wallet cryptography, the server route handlers and the dependency tree. The
+full report — scope, method, findings and reproduction commands — is in
+[`docs/SECURITY-REVIEW.md`](./docs/SECURITY-REVIEW.md).
+
+> ⚠️ **This is a self-conducted review, not a third-party audit.** No external
+> firm has audited PadaLock. Do not treat the mainnet deployment as audited
+> software.
+
+**Result at review time (2026-08-31)**
+
+| | |
+|---|---|
+| First-party critical / high | **0** |
+| First-party medium | 2 — faucet rate limiting, feedback webhook sanitisation |
+| First-party low | 1 — address validated by shape, not StrKey checksum |
+| Third-party (dependencies) | 1 critical + 15 high, all transitive via the hardware-wallet connector chain |
+| Tests | **43 passing** (21 contract · 6 SDK · 16 web) |
+| Type check / build | clean |
+
+**Verified controls** — Argon2id (`t=3, m=64 MiB`) + AES-256-GCM via WebCrypto for
+the built-in wallet; the mnemonic never leaves the device; `require_auth` on every
+state-changing contract entrypoint; `overflow-checks = true` in the release
+profile; secrets confined to `app/api/**` route handlers; the faucet hard-fails on
+mainnet.
+
+Reproduce it yourself:
+
+```bash
+cd contracts/pada-lock && cargo test    # 21 passing
+npm test --workspace=@padalock/sdk      # 6 passing
+npm test --workspace=@padalock/web      # 16 passing
+npm audit --omit=dev                    # dependency advisories
+```
 
 ---
 
