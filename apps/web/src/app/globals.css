@@ -68,6 +68,29 @@
   --spacing-margin-mobile: 20px;
   --spacing-touch-target: 44px;
 
+  /* Brand hero — stays a deep maroon in both themes. `primary` becomes a light
+     tone in dark mode (it has to, it is used as a text colour), so the balance
+     card needs its own token or it would invert into pale pink. */
+  --color-hero: #5d0518;
+  --color-on-hero: #ffffff;
+  --color-hero-dim: #ffb3b6;
+  --color-hero-glow: #7c1f2c;
+
+  /* Desktop mockup backdrop behind the phone frame */
+  --color-desktop-backdrop: #e7e7f3;
+
+  /* Elevation — brand-tinted, two-layer (contact shadow + ambient spread) */
+  --shadow-card:
+    0 1px 2px rgba(59, 7, 20, 0.06),
+    0 10px 24px -10px rgba(59, 7, 20, 0.16);
+  --shadow-card-hover:
+    0 2px 4px rgba(59, 7, 20, 0.08),
+    0 18px 36px -12px rgba(59, 7, 20, 0.26);
+  --shadow-hero:
+    0 2px 6px rgba(59, 7, 20, 0.16),
+    0 22px 44px -14px rgba(93, 5, 24, 0.42);
+  --shadow-inset-panel: inset 0 1px 2px rgba(59, 7, 20, 0.07);
+
   /* Border radius */
   --radius-DEFAULT: 0.25rem;
   --radius-lg: 0.5rem;
