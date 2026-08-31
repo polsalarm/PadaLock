@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@/lib/wallet-context";
+import { hasSeenIntro } from "@/lib/intro";
 
 export default function Splash() {
   const router = useRouter();
@@ -11,7 +12,9 @@ export default function Splash() {
   useEffect(() => {
     if (state.status === "loading") return;
     const t = setTimeout(() => {
-      if (state.status === "no-wallet") router.replace("/onboard");
+      if (state.status === "no-wallet") {
+        router.replace(hasSeenIntro() ? "/onboard" : "/welcome");
+      }
       else if (state.status === "locked") router.replace("/login");
       else if (state.status === "unlocked") router.replace("/dashboard");
     }, 900);
