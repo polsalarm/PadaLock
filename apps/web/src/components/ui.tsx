@@ -51,10 +51,10 @@ export function PageShell({
   className?: string;
 }) {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-surface-bright">
+    <div className="app-gradient relative flex min-h-screen w-full flex-col">
       <div className="sun-motif-bg" />
       <div
-        className={`mx-auto flex w-full max-w-[480px] flex-1 flex-col bg-surface relative z-10 ${className}`}
+        className={`relative z-10 mx-auto flex w-full max-w-[480px] flex-1 flex-col ${className}`}
       >
         {children}
       </div>
