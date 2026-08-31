@@ -224,8 +224,8 @@ export function StatusBadge({
 }) {
   const styles = {
     neutral: "bg-surface-container text-on-surface-variant",
-    ready: "bg-secondary-fixed/30 text-on-secondary-fixed-variant",
-    claimed: "bg-tertiary-fixed/30 text-tertiary-container",
+    ready: "bg-secondary-container/30 text-secondary",
+    claimed: "bg-tertiary-container/25 text-tertiary",
     restricted: "bg-error-container/20 text-on-error-container",
   }[variant];
   return (
