@@ -13,23 +13,21 @@ import {
   usdcToPhp,
 } from "@/lib/balance";
 import { IS_MAINNET } from "@padalock/sdk";
-import {
-  BottomNav,
-  Button,
-  Card,
-  PageShell,
-  TopAppBar,
-} from "@/components/ui";
+import { Card, PageShell } from "@/components/ui";
 import { track } from "@/lib/analytics";
+import { useT } from "@/lib/prefs";
 
 export default function Dashboard() {
   const router = useRouter();
+  const t = useT();
   const { state, lock, signTxXdr } = useWallet();
   const [balance, setBalance] = useState<string>("0");
   const [xlm, setXlm] = useState<string>("0");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [heroAsset, setHeroAsset] = useState<"USDC" | "XLM">("USDC");
+  const [showAddr, setShowAddr] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("padalock.heroAsset.v1");
