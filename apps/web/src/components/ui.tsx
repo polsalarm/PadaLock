@@ -128,12 +128,13 @@ export function Button({
   variant = "primary",
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "golden" | "ghost";
+  variant?: "primary" | "gradient" | "golden" | "ghost";
 }) {
   const base =
     "flex h-[56px] w-full items-center justify-center gap-sm rounded-full font-headline-sm text-headline-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface";
   const styles = {
     primary: "bg-primary text-on-primary hover:opacity-90",
+    gradient: "cta-gradient text-white hover:brightness-110",
     golden:
       "bg-secondary-container text-on-secondary-container shadow-[0_8px_20px_rgba(93,5,24,0.08)]",
     ghost:
