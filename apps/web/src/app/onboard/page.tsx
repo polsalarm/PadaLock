@@ -25,6 +25,8 @@ export default function OnboardPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const stepIndex = STEPS.indexOf(step);
+
   function startCreate() {
     setMnemonic(newMnemonic());
     setStep("mnemonic");
