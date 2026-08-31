@@ -236,135 +236,123 @@ export default function Dashboard() {
                 aria-pressed={heroAsset === a}
                 className={`rounded-full px-sm py-1 font-label-caps text-label-caps uppercase transition-colors ${
                   heroAsset === a
-                    ? "bg-on-primary text-primary"
-                    : "text-primary-fixed-dim"
+                    ? "bg-on-hero text-hero"
+                    : "text-hero-dim"
                 }`}
               >
                 {a}
               </button>
             ))}
           </div>
-          <div className="relative z-10 flex flex-col">
-            <div className="flex items-baseline gap-xs">
-              <span className="font-currency-lg text-display-lg-mobile tracking-tight">
-                {heroValue}
+
+          {showAddr && (
+            <div className="relative z-10 flex items-center gap-sm rounded-lg bg-on-hero/10 p-sm">
+              <span className="min-w-0 flex-1 break-all font-currency-md text-[11px] leading-4 text-on-hero">
+                {publicKey}
               </span>
-              <span className="font-body-sm text-body-sm text-primary-fixed-dim">
-                {heroAsset}
-              </span>
+              <button
+                onClick={onCopy}
+                className="flex h-9 shrink-0 items-center gap-1 rounded-full bg-on-hero px-sm font-label-caps text-label-caps uppercase text-hero focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
+              >
+                <span className="material-symbols-outlined text-[15px]" aria-hidden="true">
+                  {copied ? "check" : "content_copy"}
+                </span>
+                {copied ? t("dash.copied") : t("dash.copy")}
+              </button>
             </div>
-            <span className="mt-1 font-body-sm text-body-sm text-inverse-primary">
-              {heroSub}
-            </span>
-          </div>
-          {/* The other token, shown compact below */}
-          <div className="relative z-10 flex items-baseline justify-between border-t border-on-primary/15 pt-sm">
-            <span className="font-label-caps text-label-caps uppercase text-primary-fixed-dim">
+          )}
+
+          {/* The other token, compact */}
+          <div className="relative z-10 flex items-baseline justify-between border-t border-on-hero/15 pt-sm">
+            <button
+              onClick={() => refresh(publicKey)}
+              className="flex items-center gap-1 rounded font-label-caps text-label-caps uppercase text-hero-dim focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
+            >
+              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
+                refresh
+              </span>
               {otherSym}
-            </span>
-            <span className="font-currency-md text-currency-md text-on-primary">
+            </button>
+            <span className="font-currency-md text-currency-md text-on-hero">
               {otherValue}
             </span>
           </div>
-          <div className="relative z-10 mt-xs flex items-center gap-xs opacity-75">
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
-              refresh
-            </span>
-            <button
-              onClick={() => refresh(publicKey)}
-              className="rounded font-label-caps text-label-caps focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary"
+
+          {/* Primary actions — the Add Cash / Cash Out pill pair */}
+          <div className="relative z-10 mt-xs grid grid-cols-2 gap-sm">
+            <Link
+              href="/send"
+              className="flex h-12 items-center justify-center gap-1 rounded-full bg-on-hero font-headline-sm text-body-md font-semibold text-hero transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
             >
-              Refresh balance
-            </button>
+              {t("dash.sendPadala")}
+            </Link>
+            {IS_MAINNET ? (
+              <button
+                onClick={() => setShowAddr(true)}
+                className="flex h-12 items-center justify-center gap-1 rounded-full bg-on-hero/15 font-headline-sm text-body-md font-semibold text-on-hero transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
+              >
+                {t("dash.receive")}
+              </button>
+            ) : (
+              <button
+                onClick={onFund}
+                disabled={busy}
+                className="flex h-12 items-center justify-center gap-1 rounded-full bg-on-hero/15 font-headline-sm text-body-md font-semibold text-on-hero transition-all active:scale-95 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
+              >
+                {busy ? t("dash.funding") : t("dash.fundTestnet")}
+              </button>
+            )}
           </div>
         </section>
 
-        {/* Assets — tap a token to send it (wallet-style list) */}
-        <section className="flex flex-col gap-sm">
-          <div className="flex items-baseline justify-between px-xs">
-            <h2 className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-              My tokens
-            </h2>
-            <span className="font-body-sm text-[12px] text-on-surface-variant/80">
-              Tap a token to send
-            </span>
-          </div>
-          {[
-            {
-              sym: "USDC",
-              name: "USD Coin",
-              badge: "$",
-              tone: "bg-secondary-container text-on-secondary-container",
-              balance: usdcHuman,
-              sub: `≈ ₱${php}`,
-              href: "/send",
-            },
-            {
-              sym: "XLM",
-              name: "Stellar Lumens",
-              badge: "✦",
-              tone: "bg-tertiary-container text-on-tertiary-container",
-              balance: xlm,
-              sub: "Network fees",
-              href: "/send-xlm",
-            },
-          ].map((t) => (
+        {/* 2x2 shortcut grid */}
+        <section className="grid grid-cols-2 gap-sm">
+          {shortcuts.map((s) => (
             <Link
-              key={t.sym}
-              href={t.href}
-              aria-label={`Send ${t.sym}`}
-              className="grid min-h-[82px] grid-cols-[44px_minmax(0,1fr)_112px] items-center gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all hover:bg-surface-container-low active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              key={s.href}
+              href={s.href}
+              className="flex min-h-[172px] flex-col justify-between gap-sm rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-sm shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:bg-surface-container-low hover:shadow-card-hover active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <div
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-headline-sm text-headline-sm ${t.tone}`}
-              >
-                {t.badge}
+              <div className="flex items-start justify-between gap-1">
+                <span className="min-w-0 font-headline-sm text-body-md font-semibold text-on-surface">
+                  {s.title}
+                </span>
+                <span
+                  className="material-symbols-outlined shrink-0 text-[18px] text-on-surface-variant/60"
+                  aria-hidden="true"
+                >
+                  chevron_right
+                </span>
+              </div>
+              <div className={`flex flex-1 items-center justify-center rounded-lg shadow-inset-panel ${s.tone}`}>
+                <span className="material-symbols-outlined text-[40px]" aria-hidden="true">
+                  {s.icon}
+                </span>
               </div>
               <div className="min-w-0">
-                <div className="truncate font-headline-sm text-headline-sm text-on-surface">
-                  {t.sym}
+                {s.value !== null && (
+                  <div className="truncate font-currency-md text-currency-md text-on-surface">
+                    {s.value}
+                  </div>
+                )}
+                <div className="truncate font-body-sm text-[12px] leading-4 text-on-surface-variant/80">
+                  {s.sub}
                 </div>
-                <div className="mt-0.5 truncate font-body-sm text-[13px] leading-4 text-on-surface-variant">
-                  {t.name}
-                </div>
-              </div>
-              <div className="flex min-w-0 flex-col items-end gap-xs text-right">
-                <div className="max-w-full truncate font-currency-md text-[13px] leading-5 text-on-surface">
-                  {t.balance}
-                </div>
-                <div className="max-w-full truncate font-body-sm text-[11px] leading-4 text-on-surface-variant/70">
-                  {t.sub}
-                </div>
-                <span className="inline-flex h-7 items-center gap-0.5 rounded-full bg-primary/10 px-sm font-label-caps text-label-caps uppercase text-primary">
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">
-                    send
-                  </span>
-                  Send
-                </span>
               </div>
             </Link>
           ))}
         </section>
 
-        <Link href="/family">
-          <Button variant="ghost">
-            <span className="material-symbols-outlined">groups</span>
-            Family groups
-          </Button>
-        </Link>
-
         {/* Quick stats */}
-        <section
-          className="grid grid-cols-3 gap-sm"
-        >
+        <section className="grid grid-cols-3 gap-sm">
           {[
-            { label: "This month", value: "—" },
-            { label: "Buckets claimed", value: "—" },
-            { label: "Pending claims", value: "—" },
+            { label: t("dash.thisMonth"), value: "—" },
+            { label: t("dash.bucketsClaimed"), value: "—" },
+            { label: t("dash.pendingClaims"), value: "—" },
           ].map((s) => (
             <div
               key={s.label}
-              className="flex min-w-0 flex-col gap-xs rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+              className="flex min-w-0 flex-col gap-xs rounded-lg border border-surface-variant/60 bg-surface-container-lowest p-sm shadow-card"
             >
               <span className="font-label-caps text-label-caps uppercase text-on-surface-variant">
                 {s.label}
