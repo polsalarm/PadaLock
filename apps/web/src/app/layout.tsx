@@ -35,14 +35,21 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/mascot/app-icon.png" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#7A0C2E" />
+        {/* Paint the stored theme before first paint — no white flash on dark. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
-      <body className="min-h-screen bg-surface text-on-surface lg:bg-[#e7e7f3]">
-        <WalletProvider>
-          <DesktopFrame>
-            {children}
-            <FeedbackWidget />
-          </DesktopFrame>
-        </WalletProvider>
+      <body className="min-h-screen bg-surface text-on-surface lg:bg-desktop-backdrop">
+        <PrefsProvider>
+          <WalletProvider>
+            <DesktopFrame>
+              {children}
+              {/* Mounted here, not per page: a page-level nav remounts on every
+                  route change and replays its entrance animation. */}
+              <GlassNav />
+              <FeedbackWidget />
+            </DesktopFrame>
+          </WalletProvider>
+        </PrefsProvider>
         <Analytics />
         <SpeedInsights />
       </body>
