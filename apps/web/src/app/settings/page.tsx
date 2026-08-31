@@ -1,31 +1,127 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useWallet } from "@/lib/wallet-context";
-import { IS_MAINNET, NETWORK, PADALOCK_CONTRACT_ID, USDC_SAC } from "@padalock/sdk";
 import {
-  BottomNav,
-  Button,
-  Card,
-  PageShell,
-  StatusBadge,
-  TopAppBar,
-} from "@/components/ui";
+  IS_MAINNET,
+  NETWORK,
+  PADALOCK_CONTRACT_ID,
+  STELLAR_EXPERT_NETWORK,
+  USDC_SAC,
+} from "@padalock/sdk";
+import { getUsername, setUsername } from "@/lib/profile";
+import {
+  fmtAmount,
+  fmtAmountCompact,
+  getAccountActivity,
+  shortKey,
+  type ActivitySummary,
+} from "@/lib/portfolio";
+import { usePrefs, type ThemeChoice } from "@/lib/prefs";
+import { LANGS, type Lang } from "@/lib/i18n";
+import { Button, Card, PageShell, StatusBadge, TopAppBar } from "@/components/ui";
 
 function shorten(a: string): string {
   return a.length > 16 ? `${a.slice(0, 8)}…${a.slice(-8)}` : a;
 }
 
+/** Pill segmented control — used for both theme and language. */
+function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+  label,
+}: {
+  value: T;
+  options: ReadonlyArray<{ id: T; label: string; icon?: string }>;
+  onChange: (next: T) => void;
+  label: string;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="flex gap-1 rounded-full bg-surface-container p-1"
+    >
+      {options.map((o) => {
+        const on = o.id === value;
+        return (
+          <button
+            key={o.id}
+            role="radio"
+            aria-checked={on}
+            onClick={() => onChange(o.id)}
+            className={`flex min-h-9 min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-full px-1 font-label-caps text-[10px] uppercase leading-4 tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+              on
+                ? "bg-primary text-on-primary shadow-card"
+                : "text-on-surface-variant hover:bg-surface-container-high"
+            }`}
+          >
+            {o.icon && (
+              <span className="material-symbols-outlined shrink-0 text-[14px]" aria-hidden="true">
+                {o.icon}
+              </span>
+            )}
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="px-xs font-headline-sm text-headline-sm text-on-surface">
+      {children}
+    </h2>
+  );
+}
+
 export default function SettingsPage() {
   const router = useRouter();
   const { state, lock, destroy } = useWallet();
-  const [copied, setCopied] = useState<string | null>(null);
+  const { t, theme, setTheme, lang, setLang } = usePrefs();
 
-  if (state.status !== "unlocked") {
-    if (typeof window !== "undefined") router.replace("/");
-    return null;
-  }
+  const [copied, setCopied] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [nameSaved, setNameSaved] = useState(false);
+
+  const [activity, setActivity] = useState<ActivitySummary | null>(null);
+  const [txState, setTxState] = useState<"idle" | "loading" | "error">("loading");
+
+  const publicKey = state.status === "unlocked" ? state.publicKey : null;
+
+  useEffect(() => {
+    setName(getUsername());
+  }, []);
+
+  const loadActivity = useCallback(async (pub: string) => {
+    setTxState("loading");
+    try {
+      setActivity(await getAccountActivity(pub));
+      setTxState("idle");
+    } catch {
+      setTxState("error");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!publicKey) return;
+    void loadActivity(publicKey);
+  }, [publicKey, loadActivity]);
+
+  useEffect(() => {
+    // "loading" is the state on first paint — bouncing on it sends the user
+    // straight back to "/" before the wallet has had a chance to unlock.
+    if (state.status === "locked" || state.status === "no-wallet") {
+      router.replace("/");
+    }
+  }, [state.status, router]);
+
+  if (state.status !== "unlocked" || !publicKey) return null;
 
   async function copy(label: string, value: string) {
     await navigator.clipboard.writeText(value);
