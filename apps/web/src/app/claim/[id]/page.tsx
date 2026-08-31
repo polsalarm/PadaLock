@@ -396,7 +396,7 @@ function BucketCard({
   }
 
   return (
-    <article className="relative overflow-hidden rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+    <article className="relative overflow-hidden rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-md shadow-card">
       <div className="absolute right-0 top-0 rounded-bl-xl p-3">
         {bucket.claimed ? (
           <StatusBadge variant="claimed">
