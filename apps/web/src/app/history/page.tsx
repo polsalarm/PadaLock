@@ -9,7 +9,6 @@ import { fmtStroops, fmtStroopsPhp } from "@/lib/balance";
 import { getReceivedPadalas, getSentPadalas } from "@/lib/history";
 import { contactName } from "@/lib/contacts";
 import {
-  BottomNav,
   Button,
   Card,
   PageShell,
@@ -106,7 +105,7 @@ export default function HistoryPage() {
   return (
     <PageShell>
       <TopAppBar title="My Padala" />
-      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[100px] pt-md">
+      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[148px] pt-md">
         {/* Sent / Received toggle */}
         <div className="flex rounded-full bg-surface-variant p-1">
           {(["sent", "received"] as const).map((t) => (
@@ -126,7 +125,7 @@ export default function HistoryPage() {
 
         {/* Summary strip */}
         <div className="flex gap-sm">
-          <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-card">
             <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
               {sent ? "Padala sent" : "Padala received"}
             </div>
@@ -134,7 +133,7 @@ export default function HistoryPage() {
               {padalaCount}
             </div>
           </div>
-          <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <div className="flex-1 rounded-lg border border-surface-variant bg-surface-container-lowest p-sm shadow-card">
             <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
               {sent ? "Active" : "To claim"}
             </div>
@@ -259,7 +258,6 @@ export default function HistoryPage() {
           })}
         </div>
       </main>
-      <BottomNav />
     </PageShell>
   );
 }
