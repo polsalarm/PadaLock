@@ -6,8 +6,6 @@ import type {
   InputHTMLAttributes,
   ReactNode,
 } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 /* ───────── Brand ───────── */
 
@@ -104,43 +102,6 @@ export function TopAppBar({
         </div>
       </div>
     </header>
-  );
-}
-
-export function BottomNav() {
-  const path = usePathname();
-  const tabs = [
-    { href: "/dashboard", icon: "home", label: "Home" },
-    { href: "/history", icon: "account_balance_wallet", label: "Padala" },
-    { href: "/settings", icon: "settings", label: "Settings" },
-  ];
-  return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[72px] w-full max-w-[480px] items-center justify-around rounded-t-xl bg-surface-container px-md pb-safe shadow-[0_-8px_20px_rgba(93,5,24,0.08)]">
-      {tabs.map((t) => {
-        const active = path === t.href || (t.href === "/dashboard" && path === "/");
-        return (
-          <Link
-            key={t.href}
-            href={t.href}
-            aria-current={active ? "page" : undefined}
-            className={`flex flex-col items-center justify-center rounded-full px-lg py-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-              active
-                ? "bg-primary text-on-primary"
-                : "text-on-surface-variant"
-            }`}
-          >
-            <span
-              className="material-symbols-outlined"
-              data-weight={active ? "fill" : undefined}
-              aria-hidden="true"
-            >
-              {t.icon}
-            </span>
-            <span className="mt-1 font-label-caps text-label-caps">{t.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
 
