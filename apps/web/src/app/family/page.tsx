@@ -13,7 +13,7 @@ import {
   setPendingGroup,
   type FamilyGroup,
 } from "@/lib/groups";
-import { BottomNav, Card, PageShell, TopAppBar } from "@/components/ui";
+import { Card, PageShell, TopAppBar } from "@/components/ui";
 
 function validAddr(a: string): boolean {
   return a.startsWith("G") && a.length === 56;
@@ -55,7 +55,7 @@ export default function FamilyPage() {
   return (
     <PageShell>
       <TopAppBar title="Family Groups" back={() => router.back()} />
-      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[100px] pt-md">
+      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[148px] pt-md">
         <p className="font-body-sm text-body-sm text-on-surface-variant">
           Gumawa ng grupo ng pamilya (parang GC). Sa Send, isang pindot lang —
           mahahati agad ang padala sa bawat miyembro.
@@ -114,7 +114,6 @@ export default function FamilyPage() {
           ))
         )}
       </main>
-      <BottomNav />
     </PageShell>
   );
 }
