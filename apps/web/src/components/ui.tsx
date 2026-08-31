@@ -115,7 +115,7 @@ export function Card({
   return (
     <div
       {...props}
-      className={`rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-md shadow-[0_4px_12px_rgba(0,0,0,0.04)] ${className}`}
+      className={`rounded-xl border border-surface-variant/50 bg-surface-container-lowest p-md shadow-card ${className}`}
     >
       {children}
     </div>
