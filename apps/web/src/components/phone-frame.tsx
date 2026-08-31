@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
  */
 export function DesktopFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="lg:flex lg:min-h-[100dvh] lg:items-center lg:justify-center lg:bg-[#e7e7f3] lg:p-6">
+    <div className="lg:flex lg:min-h-[100dvh] lg:items-center lg:justify-center lg:bg-desktop-backdrop lg:p-6">
       {/* device body */}
       <div className="relative lg:h-[calc(100dvh-3rem)] lg:max-h-[900px] lg:w-[420px] lg:shrink-0 lg:rounded-[3rem] lg:bg-neutral-900 lg:p-[12px] lg:shadow-[0_30px_70px_-20px_rgba(31,31,60,0.55)] lg:ring-1 lg:ring-black/50">
         {/* side buttons (desktop only) */}
