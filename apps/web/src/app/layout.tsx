@@ -4,6 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { WalletProvider } from "@/lib/wallet-context";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { GlassNav } from "@/components/glass-nav";
+import { PrefsProvider, THEME_BOOT_SCRIPT } from "@/lib/prefs";
 import { DesktopFrame } from "@/components/phone-frame";
 
 export const metadata: Metadata = {
