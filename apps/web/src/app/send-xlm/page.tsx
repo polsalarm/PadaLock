@@ -6,7 +6,6 @@ import { useWallet } from "@/lib/wallet-context";
 import { getXlmBalance, sendXlm } from "@/lib/balance";
 import { IS_MAINNET, STELLAR_EXPERT_NETWORK } from "@padalock/sdk";
 import {
-  BottomNav,
   Button,
   Card,
   Input,
@@ -73,7 +72,7 @@ export default function SendXlmPage() {
   return (
     <PageShell>
       <TopAppBar title="Send XLM" back={() => router.back()} />
-      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[100px] pt-md">
+      <main className="flex flex-1 flex-col gap-gutter px-margin-mobile pb-[148px] pt-md">
         {/* Balance */}
         <Card>
           <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
@@ -177,7 +176,6 @@ export default function SendXlmPage() {
           </Card>
         )}
       </main>
-      <BottomNav />
     </PageShell>
   );
 }
