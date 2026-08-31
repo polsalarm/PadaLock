@@ -433,29 +433,25 @@ export default function SettingsPage() {
           ))}
         </div>
 
+        {/* ── Session ── */}
         <div className="mt-md flex flex-col gap-sm">
           <Button variant="ghost" onClick={lock}>
             <span className="material-symbols-outlined">logout</span>
-            {state.mode === "local" ? "Lock wallet" : "Disconnect wallet"}
+            {isLocal ? t("set.lockWallet") : t("set.disconnectWallet")}
           </Button>
           <button
             onClick={() => {
-              if (
-                confirm(
-                  "Forget wallet on this device? Built-in wallet requires your recovery phrase to restore. This cannot be undone."
-                )
-              ) {
+              if (confirm(t("set.forgetConfirm"))) {
                 destroy();
                 router.replace("/");
               }
             }}
             className="py-sm text-center font-body-sm text-body-sm text-error underline"
           >
-            Forget wallet on this device
+            {t("set.forgetWallet")}
           </button>
         </div>
       </main>
-      <BottomNav />
     </PageShell>
   );
 }
