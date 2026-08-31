@@ -190,3 +190,403 @@ body {
 
 /* Safe area */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ─── Liquid glass navigation ─── */
+
+@keyframes glass-nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scaleX(0.55);
+    filter: blur(6px);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleX(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes glass-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Bloom behind the nav so the glass has colour to refract */
+.glass-nav-bloom {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 480px);
+  bottom: 0;
+  height: 200px;
+  z-index: 40;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 25% 100%, rgba(93, 5, 24, 0.18) 0%, rgba(93, 5, 24, 0) 68%),
+    radial-gradient(110% 85% at 82% 100%, rgba(255, 199, 44, 0.22) 0%, rgba(255, 199, 44, 0) 66%);
+}
+
+.glass-nav {
+  background:
+    linear-gradient(158deg, rgba(64, 10, 24, 0.78) 0%, rgba(24, 5, 11, 0.86) 100%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 20px 44px -14px rgba(40, 2, 12, 0.6),
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  animation: glass-nav-in 680ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Specular sweep across the top edge of the bar */
+.glass-nav::after {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.02) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.glass-nav-item {
+  animation: glass-item-in 520ms cubic-bezier(0.34, 1.4, 0.5, 1) backwards;
+}
+
+/* The iOS-26 style lens: a magnifying blob wider than the bar itself */
+.glass-lens {
+  backdrop-filter: blur(7px) saturate(210%) brightness(1.22);
+  -webkit-backdrop-filter: blur(7px) saturate(210%) brightness(1.22);
+  background: radial-gradient(
+    circle at 34% 26%,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.16) 52%,
+    rgba(255, 255, 255, 0.02) 76%
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.65),
+    inset 0 -10px 22px rgba(126, 172, 255, 0.4),
+    0 0 0 1.5px rgba(255, 255, 255, 0.5),
+    0 10px 30px rgba(88, 136, 255, 0.38);
+}
+
+/* Chromatic refraction rim — white arc top-left, blue arc bottom-right */
+.glass-lens::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 200deg,
+    rgba(255, 255, 255, 0.95) 0deg,
+    rgba(128, 182, 255, 0.9) 46deg,
+    rgba(255, 255, 255, 0) 104deg,
+    rgba(255, 255, 255, 0) 208deg,
+    rgba(255, 255, 255, 0.85) 268deg,
+    rgba(150, 196, 255, 0.9) 330deg,
+    rgba(255, 255, 255, 0.95) 360deg
+  );
+  mask: radial-gradient(closest-side, transparent 85%, #000 87%);
+  -webkit-mask: radial-gradient(closest-side, transparent 85%, #000 87%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-nav,
+  .glass-nav-item {
+    animation: none;
+  }
+  .glass-lens {
+    transition: none;
+  }
+}
+
+/* ─── Dark theme ───
+   Only the token values change; every utility already reads them, so the whole
+   app flips without touching component markup. `html[data-theme]` outranks the
+   `:root` block Tailwind emits for @theme. */
+
+html[data-theme="dark"] {
+  --color-background: #141011;
+  --color-on-background: #ece0e0;
+  --color-surface: #141011;
+  --color-on-surface: #ece0e0;
+  --color-on-surface-variant: #d6c2c3;
+  --color-surface-variant: #4f3b3d;
+  --color-surface-dim: #141011;
+  --color-surface-bright: #3b3132;
+  --color-surface-container-lowest: #0e0b0c;
+  --color-surface-container-low: #1c1819;
+  --color-surface-container: #201c1d;
+  --color-surface-container-high: #2b2627;
+  --color-surface-container-highest: #363031;
+  --color-surface-tint: #ffb3b6;
+  --color-inverse-surface: #ece0e0;
+  --color-inverse-on-surface: #362f30;
+
+  --color-primary: #ffb3b6;
+  --color-on-primary: #5f111d;
+  --color-primary-container: #7c1f2c;
+  --color-on-primary-container: #ffdada;
+  --color-inverse-primary: #a23b46;
+
+  --color-secondary: #f6bf22;
+  --color-on-secondary: #3e2e00;
+  --color-secondary-container: #5a4300;
+  --color-on-secondary-container: #ffdf99;
+
+  --color-tertiary: #88d6af;
+  --color-on-tertiary: #00391f;
+  --color-tertiary-container: #005236;
+  --color-on-tertiary-container: #a4f3ca;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-outline: #a08c8d;
+  --color-outline-variant: #534346;
+
+  /* Material's "fixed" roles are meant to stay put across themes, but every use
+     here pairs a tinted `bg-*-fixed/30` with `text-on-*-fixed-variant` — a
+     pairing that assumes a light ground. Flip them so those chips stay legible. */
+  --color-primary-fixed: #7c1f2c;
+  --color-primary-fixed-dim: #5f111d;
+  --color-on-primary-fixed: #ffdada;
+  --color-on-primary-fixed-variant: #ffb3b6;
+
+  --color-secondary-fixed: #5a4300;
+  --color-secondary-fixed-dim: #3e2e00;
+  --color-on-secondary-fixed: #ffdf99;
+  --color-on-secondary-fixed-variant: #f6bf22;
+
+  --color-tertiary-fixed: #005236;
+  --color-tertiary-fixed-dim: #00391f;
+  --color-on-tertiary-fixed: #a4f3ca;
+  --color-on-tertiary-fixed-variant: #88d6af;
+
+  --color-hero: #45030f;
+  --color-hero-glow: #7c1f2c;
+  --color-desktop-backdrop: #0a0809;
+
+  /* Shadows read as depth on a dark ground only when they are near-black. */
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 10px 24px -10px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover:
+    0 2px 4px rgba(0, 0, 0, 0.55),
+    0 18px 36px -12px rgba(0, 0, 0, 0.7);
+  --shadow-hero:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    0 22px 44px -14px rgba(0, 0, 0, 0.65);
+  --shadow-inset-panel: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* The warm sun bloom is too hot on a dark ground — cool it down. */
+html[data-theme="dark"] .sun-motif-bg {
+  background: radial-gradient(
+    circle,
+    rgba(255, 199, 44, 0.07) 0%,
+    rgba(255, 199, 44, 0) 70%
+  );
+}
+
+html[data-theme="dark"] .glass-nav-bloom {
+  background:
+    radial-gradient(120% 90% at 25% 100%, rgba(255, 179, 182, 0.1) 0%, rgba(255, 179, 182, 0) 68%),
+    radial-gradient(110% 85% at 82% 100%, rgba(255, 199, 44, 0.12) 0%, rgba(255, 199, 44, 0) 66%);
+}
+
+/* ─── Intro carousel + onboarding ─── */
+
+/* The welcome flow runs on its own magenta→orange accent, kept in one place so
+   the tiles, pager and CTA can never drift apart. */
+:root {
+  --grad-magenta: #b01f92;
+  --grad-magenta-mid: #c92aa6;
+  --grad-magenta-bright: #dc4a9c;
+  --grad-orange: #e0763a;
+  --grad-orange-bright: #f2a45f;
+}
+
+/* Two soft blooms warm the otherwise flat page: sunrise in the top-right
+   corner, a magenta wash behind the lower-left. Both sit under the content. */
+.intro-bloom-warm {
+  position: fixed;
+  top: -120px;
+  right: -120px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(240, 150, 78, 0.34) 0%,
+    rgba(240, 150, 78, 0.1) 45%,
+    rgba(240, 150, 78, 0) 70%
+  );
+  filter: blur(20px);
+}
+
+.intro-bloom-rose {
+  position: fixed;
+  bottom: 110px;
+  left: -140px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(201, 42, 166, 0.2) 0%,
+    rgba(201, 42, 166, 0.06) 48%,
+    rgba(201, 42, 166, 0) 72%
+  );
+  filter: blur(24px);
+}
+
+/* Shared by the carousel CTA and the onboarding primary buttons, so the two
+   screens read as one flow. */
+.cta-gradient {
+  background: linear-gradient(
+    100deg,
+    var(--grad-magenta) 0%,
+    var(--grad-magenta-mid) 55%,
+    var(--grad-magenta-bright) 100%
+  );
+  box-shadow: 0 14px 30px -12px rgba(176, 31, 146, 0.6);
+}
+
+/* Button already dims disabled state via opacity — stacking a grayscale filter
+   on top washed the label out, so only the lift is dropped here. */
+.cta-gradient:disabled {
+  box-shadow: none;
+}
+
+.intro-dot-on {
+  background: linear-gradient(
+    90deg,
+    var(--grad-magenta) 0%,
+    var(--grad-magenta-bright) 100%
+  );
+}
+
+/* ─── Onboarding motion ─── */
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mascot-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes halo-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.12);
+  }
+}
+
+.step-in {
+  animation: step-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.mascot-float {
+  animation: mascot-float 4.5s ease-in-out infinite;
+}
+
+.mascot-halo {
+  background: radial-gradient(
+    circle,
+    rgba(201, 42, 166, 0.35) 0%,
+    rgba(240, 150, 78, 0.22) 45%,
+    rgba(240, 150, 78, 0) 72%
+  );
+  animation: halo-pulse 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-in,
+  .mascot-float,
+  .mascot-halo {
+    animation: none;
+  }
+}
+
+html[data-theme="dark"] .intro-bloom-warm {
+  background: radial-gradient(
+    circle,
+    rgba(240, 150, 78, 0.18) 0%,
+    rgba(240, 150, 78, 0) 70%
+  );
+}
+
+html[data-theme="dark"] .intro-bloom-rose {
+  background: radial-gradient(
+    circle,
+    rgba(220, 74, 156, 0.16) 0%,
+    rgba(220, 74, 156, 0) 72%
+  );
+}
+
+html[data-theme="dark"] .cta-gradient {
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* ─── Page ground ───
+   Every screen sits on a warm wash rather than flat white: a sunrise in the
+   top-right, a faint magenta pull at the bottom-left, over a soft vertical
+   cream. Applied on the page shell (not body) because the shells paint their
+   own opaque surface on top. */
+.app-gradient {
+  background:
+    radial-gradient(115% 75% at 90% -5%, rgba(240, 150, 78, 0.2) 0%, rgba(240, 150, 78, 0) 55%),
+    radial-gradient(95% 60% at 0% 105%, rgba(201, 42, 166, 0.12) 0%, rgba(201, 42, 166, 0) 60%),
+    linear-gradient(175deg, #fdf5f0 0%, #fcf9f8 42%, #fdf6f3 100%);
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] .app-gradient {
+  background:
+    radial-gradient(115% 75% at 90% -5%, rgba(240, 150, 78, 0.1) 0%, rgba(240, 150, 78, 0) 55%),
+    radial-gradient(95% 60% at 0% 105%, rgba(220, 74, 156, 0.1) 0%, rgba(220, 74, 156, 0) 60%),
+    linear-gradient(175deg, #191315 0%, #141011 45%, #1a1416 100%);
+  background-attachment: fixed;
+}
