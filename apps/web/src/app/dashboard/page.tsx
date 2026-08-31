@@ -49,10 +49,11 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (state.status !== "unlocked") {
+    if (state.status === "locked" || state.status === "no-wallet") {
       router.replace("/");
       return;
     }
+    if (state.status !== "unlocked") return; // still loading
     void refresh(state.publicKey);
   }, [state, refresh, router]);
 
