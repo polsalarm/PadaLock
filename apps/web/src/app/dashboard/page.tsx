@@ -63,12 +63,23 @@ export default function Dashboard() {
   const php = usdcToPhp(usdcHuman);
   const heroIsXlm = heroAsset === "XLM";
   const heroValue = heroIsXlm ? xlm : usdcHuman;
-  const heroSub = heroIsXlm ? "Native asset" : `≈ ₱${php}`;
+  const heroSub = heroIsXlm ? t("dash.nativeAsset") : `≈ ₱${php}`;
   const otherSym = heroIsXlm ? "USDC" : "XLM";
   const otherValue = heroIsXlm ? usdcHuman : xlm;
   const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Magandang umaga" : hour < 18 ? "Magandang hapon" : "Magandang gabi";
+  const greeting = t(
+    hour < 12 ? "greet.morning" : hour < 18 ? "greet.afternoon" : "greet.evening"
+  );
+
+  async function onCopy() {
+    try {
+      await navigator.clipboard.writeText(publicKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard blocked — address stays visible for manual copy */
+    }
+  }
 
   async function onFund() {
     setBusy(true);
