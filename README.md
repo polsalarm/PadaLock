@@ -305,6 +305,8 @@ npm audit --omit=dev                    # dependency advisories
 
 - **Mainnet** → **[padalock-mainnet.vercel.app](https://padalock-mainnet.vercel.app)**, separate Vercel
   project (`padalock-mainnet`), same repo, same Root Directory/build settings as `padalock` above.
+  Both projects are connected to this repository, so a push to `main` deploys testnet **and**
+  mainnet.
   `NEXT_PUBLIC_STELLAR_NETWORK=mainnet` flips `@padalock/sdk`'s `NETWORK` to `Networks.PUBLIC` +
   `mainnet.sorobanrpc.com` + `horizon.stellar.org`; `/api/faucet` hard-403s (no faucet exists on
   mainnet — real XLM only). Contract deployed with `admin` = deployer key, `token` = Circle USDC SAC;
