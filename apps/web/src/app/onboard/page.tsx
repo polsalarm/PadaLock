@@ -6,15 +6,11 @@ import { useWallet } from "@/lib/wallet-context";
 import { newMnemonic } from "@/lib/wallet";
 import { setUsername } from "@/lib/profile";
 import { track } from "@/lib/analytics";
-import {
-  Button,
-  Card,
-  Input,
-  PageShell,
-  TopAppBar,
-} from "@/components/ui";
+import { Button, Card, Input, TopAppBar } from "@/components/ui";
 
 type Step = "username" | "intro" | "mnemonic" | "password";
+
+const STEPS: Step[] = ["username", "intro", "mnemonic", "password"];
 
 export default function OnboardPage() {
   const router = useRouter();
