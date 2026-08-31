@@ -29,7 +29,6 @@ import {
   type FamilyGroup,
 } from "@/lib/groups";
 import {
-  BottomNav,
   Card,
   PageShell,
   TopAppBar,
@@ -280,7 +279,7 @@ export default function SendPage() {
   return (
     <PageShell>
       <TopAppBar title="Send Padala" back={() => router.back()} />
-      <main className="flex flex-1 flex-col gap-lg overflow-y-auto px-margin-mobile pb-[240px] pt-md">
+      <main className="flex flex-1 flex-col gap-lg overflow-y-auto px-margin-mobile pb-[280px] pt-md">
         {/* Asset choice — each asset is its own escrow contract */}
         <section className="flex flex-col gap-sm">
           <label className="block font-label-caps text-label-caps uppercase text-on-surface-variant">
@@ -370,7 +369,7 @@ export default function SendPage() {
                 }
                 onChange={(e) => setRecipient(e.target.value)}
                 aria-label="Pick a saved family member"
-                className="h-12 w-full appearance-none rounded-xl border border-surface-variant bg-surface-container-lowest pl-10 pr-10 font-body-sm text-body-sm text-on-surface shadow-[0_4px_12px_rgba(0,0,0,0.04)] outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
+                className="h-12 w-full appearance-none rounded-xl border border-surface-variant bg-surface-container-lowest pl-10 pr-10 font-body-sm text-body-sm text-on-surface shadow-card outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <option value="">Pick a saved family member…</option>
                 {contacts.map((c) => (
@@ -393,7 +392,7 @@ export default function SendPage() {
           )}
 
           {/* Raw address input */}
-          <div className="flex items-center rounded-xl border border-surface-variant bg-surface-container-lowest p-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] focus-within:border-primary-container">
+          <div className="flex items-center rounded-xl border border-surface-variant bg-surface-container-lowest p-sm shadow-card focus-within:border-primary-container">
             <div className="mr-sm flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">
               <span className="material-symbols-outlined">person</span>
             </div>
@@ -691,7 +690,6 @@ export default function SendPage() {
           </button>
         </div>
       </div>
-      <BottomNav />
     </PageShell>
   );
 }
