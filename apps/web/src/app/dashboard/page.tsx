@@ -364,34 +364,12 @@ export default function Dashboard() {
           ))}
         </section>
 
-        <Card>
-          <div className="flex items-center gap-sm">
-            <span
-              className="material-symbols-outlined text-tertiary-container"
-              data-weight="fill"
-              aria-hidden="true"
-            >
-              account_circle
-            </span>
-            <div className="flex-1">
-              <div className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-                Your public address
-              </div>
-              <div className="mt-1 break-all font-currency-md text-[12px] text-on-surface">
-                {publicKey}
-              </div>
-            </div>
-          </div>
-        </Card>
-
         {msg && (
           <Card className="border-outline-variant" role="status" aria-live="polite">
             <p className="font-body-sm text-body-sm text-on-surface">{msg}</p>
           </Card>
         )}
       </main>
-      <BottomNav />
     </PageShell>
   );
 }
-
