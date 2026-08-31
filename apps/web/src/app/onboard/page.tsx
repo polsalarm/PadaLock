@@ -111,6 +111,7 @@ export default function OnboardPage() {
               />
             </Card>
             <Button
+              variant="gradient"
               disabled={username.trim().length < 2}
               onClick={() => {
                 setUsername(username);
