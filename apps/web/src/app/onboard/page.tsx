@@ -61,11 +61,40 @@ export default function OnboardPage() {
   }
 
   return (
-    <PageShell>
-      <TopAppBar title="Create Wallet" />
-      <main className="flex flex-1 flex-col gap-lg px-margin-mobile py-lg">
+    // Fixed to the viewport rather than PageShell's min-h-screen: onboarding is
+    // a single centred screen, never a scrolling page.
+    <div className="app-gradient relative flex h-[100dvh] w-full flex-col overflow-hidden lg:h-full">
+      <div className="sun-motif-bg" />
+      <div className="relative z-10 mx-auto flex w-full max-w-[480px] flex-1 flex-col overflow-hidden">
+        <TopAppBar title="Create Wallet" />
+        {/* Progress — four filled segments, one per step */}
+        <div className="flex gap-1.5 px-margin-mobile pb-xs pt-sm" aria-hidden="true">
+          {STEPS.map((s, i) => (
+            <span
+              key={s}
+              className={`h-1 flex-1 rounded-full transition-all duration-500 ${
+                i <= stepIndex ? "intro-dot-on" : "bg-outline-variant/40"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* `m-auto` centres the step and still lets a tall one (the 12-word
+            phrase) scroll inside this box instead of growing the page. */}
+        <main className="no-scrollbar flex min-h-0 flex-1 overflow-y-auto px-margin-mobile py-lg">
+          <div key={step} className="step-in m-auto flex w-full flex-col gap-lg">
         {step === "username" && (
           <>
+            <div className="relative mx-auto flex h-28 w-28 items-center justify-center">
+              <div className="mascot-halo absolute inset-0 rounded-full blur-xl" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/mascot/full.png"
+                alt=""
+                aria-hidden="true"
+                className="mascot-float relative z-10 h-28 w-auto drop-shadow-xl"
+              />
+            </div>
             <Card>
               <h2 className="mb-xs font-headline-md text-headline-md text-on-surface">
                 Ano ang pangalan mo?
