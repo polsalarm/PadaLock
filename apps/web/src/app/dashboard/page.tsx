@@ -113,62 +113,122 @@ export default function Dashboard() {
     }
   }
 
+  /* 2x2 shortcut grid — title + chevron up top, illustration panel below. */
+  const shortcuts = [
+    {
+      href: "/send",
+      title: t("dash.sendUsdc"),
+      value: usdcHuman,
+      sub: `≈ ₱${php}`,
+      icon: "send",
+      tone: "bg-secondary-container/35 text-on-secondary-container",
+    },
+    {
+      href: "/send-xlm",
+      title: t("dash.sendXlm"),
+      value: xlm,
+      sub: t("dash.networkFees"),
+      icon: "auto_awesome",
+      tone: "bg-tertiary-container/15 text-tertiary",
+    },
+    {
+      href: "/family",
+      title: t("dash.familyCircle"),
+      value: null,
+      sub: t("dash.manageRecipients"),
+      icon: "groups",
+      tone: "bg-primary-container/12 text-primary",
+    },
+    {
+      href: "/history",
+      title: t("dash.padalaHistory"),
+      value: null,
+      sub: t("dash.trackClaim"),
+      icon: "receipt_long",
+      tone: "bg-surface-container-high text-on-surface-variant",
+    },
+  ];
+
   return (
     <PageShell>
-      <TopAppBar
-        trailing={
-          <button
-            aria-label="Lock wallet"
-            onClick={lock}
-            className="flex h-touch-target w-touch-target items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              logout
-            </span>
-          </button>
-        }
-      />
-      <main className="relative z-10 mt-md flex flex-col gap-lg px-margin-mobile pb-[100px]">
-        {/* Greeting + mascot avatar */}
-        <div className="flex items-center gap-sm">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-container shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/mascot/icon.png"
-              alt=""
-              aria-hidden="true"
-              className="h-12 w-auto translate-y-0.5"
-            />
-          </div>
+      <main className="relative z-10 flex flex-col gap-lg px-margin-mobile pb-[148px] pt-lg">
+        {/* Page title row — big title left, identity + lock right */}
+        <header className="flex items-start justify-between">
           <div className="flex flex-col">
             <span className="font-body-sm text-body-sm text-on-surface-variant">
               {greeting} 👋
             </span>
-            <span className="font-headline-sm text-headline-sm text-on-surface">
-              Welcome back
-            </span>
+            <h1 className="font-display-lg text-display-lg-mobile font-bold tracking-tight text-on-surface">
+              {t("dash.title")}
+            </h1>
           </div>
-        </div>
+          <div className="flex items-center gap-xs">
+            <button
+              aria-label={t("dash.lockWallet")}
+              onClick={lock}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">
+                lock
+              </span>
+            </button>
+            <Link
+              href="/settings"
+              aria-label={t("dash.settings")}
+              className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-container shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/mascot/icon.png"
+                alt=""
+                aria-hidden="true"
+                className="h-11 w-auto translate-y-0.5"
+              />
+            </Link>
+          </div>
+        </header>
 
-        {/* Hero balance */}
-        <section className="relative flex flex-col gap-sm overflow-hidden rounded-xl bg-primary p-lg text-on-primary shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-          <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/4 rounded-full bg-primary-container opacity-50 blur-2xl" />
-          <div className="relative z-10 flex items-start justify-between">
-            <span className="font-label-caps text-label-caps uppercase text-primary-fixed-dim">
-              Available Balance
+        {/* Hero balance card */}
+        <section className="relative flex flex-col gap-sm overflow-hidden rounded-xl bg-hero p-lg text-on-hero shadow-hero">
+          <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/4 rounded-full bg-hero-glow opacity-60 blur-2xl" />
+
+          <div className="relative z-10 flex items-center justify-between">
+            <span className="font-label-caps text-label-caps uppercase text-hero-dim">
+              {t("dash.availableBalance")}
             </span>
-            {!IS_MAINNET && (
-              <button
-                onClick={onFund}
-                disabled={busy}
-                className="rounded-full border border-outline-variant/30 bg-primary-container px-sm py-1 font-label-caps text-label-caps uppercase text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-primary disabled:opacity-50"
+            <button
+              onClick={() => setShowAddr((v) => !v)}
+              aria-expanded={showAddr}
+              className="flex items-center gap-0.5 rounded-full font-label-caps text-label-caps uppercase text-hero-dim transition-colors hover:text-on-hero focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-hero"
+            >
+              {t("dash.walletAddress")}
+              <span
+                className={`material-symbols-outlined text-[16px] transition-transform ${
+                  showAddr ? "rotate-90" : ""
+                }`}
+                aria-hidden="true"
               >
-                {busy ? "Funding…" : "Fund testnet"}
-              </button>
-            )}
+                chevron_right
+              </span>
+            </button>
           </div>
+
+          <div className="relative z-10 flex flex-col">
+            <div className="flex items-baseline gap-xs">
+              <span className="font-currency-lg text-[44px] leading-[52px] tracking-tight">
+                {heroValue}
+              </span>
+              <span className="font-body-sm text-body-sm text-hero-dim">
+                {heroAsset}
+              </span>
+            </div>
+            <span className="mt-1 font-body-sm text-body-sm text-hero-dim/80">
+              {heroSub}
+            </span>
+          </div>
+
           {/* Asset toggle — choose which token headlines the balance */}
-          <div className="relative z-10 flex w-fit gap-1 rounded-full bg-on-primary/10 p-0.5">
+          <div className="relative z-10 flex w-fit gap-1 rounded-full bg-on-hero/10 p-0.5">
             {(["USDC", "XLM"] as const).map((a) => (
               <button
                 key={a}
