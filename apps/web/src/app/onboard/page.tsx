@@ -262,13 +262,15 @@ export default function OnboardPage() {
               >
                 Back
               </Button>
-              <Button onClick={finalize} disabled={busy} className="flex-1">
+              <Button variant="gradient" onClick={finalize} disabled={busy} className="flex-1">
                 {busy ? "Encrypting…" : "Create wallet"}
               </Button>
             </div>
           </>
         )}
-      </main>
-    </PageShell>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
