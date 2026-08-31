@@ -220,7 +220,7 @@ export default function OnboardPage() {
               I&apos;ve written these 12 words down somewhere safe. Losing them =
               losing the wallet.
             </label>
-            <Button disabled={!acked} onClick={() => setStep("password")}>
+            <Button variant="gradient" disabled={!acked} onClick={() => setStep("password")}>
               Continue
             </Button>
           </>
